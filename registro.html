@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Mercy</title>
+    <link rel="stylesheet" href="css/registro.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="https://res.cloudinary.com/dpvm2gro2/image/upload/v1769711039/logo_o4wtjy.ico"
+        type="image/x-icon" />
+</head>
+
+<body class="loader_bg">
+    <div class="loader_p">
+        <div class="loader">
+            <span class="loader-text">Cargando</span>
+            <span class="load"></span>
+        </div>
+    </div>
+    <div class="contenedor">
+        <div class="lado-izquierdo">
+            <img src="https://res.cloudinary.com/dpvm2gro2/image/upload/v1769711039/logo_qp8c8w.png" alt="Mercy Logo"
+                class="logo-bankario">
+            <video autoplay loop muted class="bg-video">
+                <source src="https://res.cloudinary.com/dpvm2gro2/video/upload/v1769626115/registro_video_snzpcs.mp4"
+                    type="video/mp4">
+                tu navegador no soporta videos HTML5.
+            </video>
+            <a href="index.html" class="boton-volver">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+
+        <div class="lado-derecho">
+            <div class="formulario">
+                <h2>Crear una cuenta</h2>
+                <p>¿Ya tienes una cuenta? <a href="iniciar_sesion.html" class="inicio_btn">Inicia sesión</a></p>
+                <form id="registroForm" action="/registrar_usuario" method="post">
+                    <div class="input-doble">
+                        <input type="text" placeholder="Nombre(s)" name="nombres" required minlength="2" maxlength="30"
+                            pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="solo letras y espacios"
+                            oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')">
+                        <input type="text" placeholder="Apellido(s)" name="apellidos" required minlength="2"
+                            maxlength="30" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="solo letras y espacios"
+                            oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')">
+                    </div>
+                    <input type="email" placeholder="Correo electrónico" name="correo_electronico" required id="correo"
+                        minlength="6" maxlength="100">
+                    <div class="input-container">
+                        <input type="password" id="password" name="contrasena" placeholder="Contraseña" required
+                            minlength="8" maxlength="25" oninput="checkPasswords()" onfocus="mostrarRequisitos()"
+                            onblur="ocultarRequisitos()">
+                        <span id="eye-icon-password" class="fa fa-eye"
+                            onclick="togglePasswordVisibility('password')"></span>
+                    </div>
+
+                    <ul id="password-requisitos"
+                        style="display: none; color: white; font-size: 12px; margin-top: 4px; list-style: none; padding-left: 0;">
+                        <li id="regla-mayuscula">❌ una mayúscula</li>
+                        <li id="regla-especial">❌ un carácter especial</li>
+                        <li id="regla-minimo">❌ 8 caracteres</li>
+                        <li id="regla-maximo">✅ menos de 25 caracteres</li>
+                    </ul>
+                    <div class="input-container">
+                        <input type="password" id="confirm-password" placeholder="Confirmar contraseña"
+                            oninput="checkPasswords()">
+                        <span id="eye-icon-confirm" class="fa fa-eye"
+                            onclick="togglePasswordVisibility('confirm-password')"></span>
+                    </div>
+                    <p id="password-message" style="color: rgb(209, 34, 34); font-size: 12px; margin-top: 4px;"></p>
+                    <div class="checkbox">
+                        <input type="checkbox" required><span class="chkbx_tyc">Acepto los <a href="#" id="termsLink"
+                                style="color: #6a5d92;">términos y condiciones</a></span>
+                    </div>
+                    <button type="submit" class="boton-principal">Crear cuenta</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-alert-overlay" class="custom-alert-overlay">
+        <div id="custom-alert-box" class="custom-alert-box">
+            <span class="close-alert-btn" id="close-alert-btn">&times;</span>
+            <p id="custom-alert-message"></p>
+            <button id="custom-alert-ok-btn">ok</button>
+        </div>
+    </div>
+
+    <div id="termsModalOverlay" class="custom-alert-overlay">
+        <div id="termsModalBox" class="custom-alert-box"> <span class="close-alert-btn"
+                id="closeTermsBtn">&times;</span>
+            <h4 style="margin-bottom: 15px; text-align: center;">Términos y condiciones</h4>
+
+            <div id="termsModalBody">
+                <p style="font-size: 0.8em; opacity: 0.7; text-align: left;">Última actualización: 6 de julio de 2025
+                </p>
+                <h4 class="mb-3">1. Aceptación de los términos</h4>
+                <p>Al acceder y utilizar la plataforma "Mercy" (en adelante, "la plataforma"), usted acepta y se
+                    compromete a cumplir estos términos y condiciones de uso ("términos"). si no está de acuerdo con
+                    estos términos, no debe utilizar la plataforma. nos reservamos el derecho de modificar estos
+                    términos en cualquier momento. la continuación del uso de la plataforma después de dichas
+                    modificaciones constituirá su aceptación de los nuevos términos.</p>
+                <h4 class="mb-3">2. Descripción del servicio</h4>
+                <p>Mercy es una plataforma diseñada para ofrecer simulaciones y herramientas de análisis financiero con
+                    fines educativos y de planificación personal. no proporcionamos asesoramiento financiero
+                    profesional, legal, fiscal o de inversión. la información y las simulaciones generadas en la
+                    plataforma son solo para fines ilustrativos y no deben considerarse como una recomendación para
+                    tomar decisiones financieras reales.</p>
+                <h4 class="mb-3">3. Registro y cuentas de usuario</h4>
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i class="fas fa-check-circle me-2"
+                            style="color: #10B981; position: absolute; left: 0; top: 5px;"></i> Para acceder a ciertas
+                        funcionalidades de la plataforma, deberá registrarse y crear una cuenta. usted es responsable de
+                        mantener la confidencialidad de su contraseña y de todas las actividades que ocurran bajo su
+                        cuenta.</li>
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i class="fas fa-check-circle me-2"
+                            style="color: #10B981; position: absolute; left: 0; top: 5px;"></i> Usted se compromete a
+                        proporcionar información precisa, completa y actualizada durante el proceso de registro y a
+                        mantenerla así.</li>
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i class="fas fa-check-circle me-2"
+                            style="color: #10B981; position: absolute; left: 0; top: 5px;"></i> Nos reservamos el
+                        derecho de suspender o cancelar su cuenta si la información proporcionada es falsa, inexacta o
+                        incompleta, o si incumple estos términos.</li>
+                </ul>
+                <h4 class="mb-3">4. Uso aceptable de la plataforma</h4>
+                <p>Usted se compromete a utilizar la plataforma solo para fines lícitos y de acuerdo con estos términos.
+                    usted no debe:</p>
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i class="fas fa-times-circle me-2"
+                            style="color: #dc3545; position: absolute; left: 0; top: 5px;"></i> Utilizar la plataforma
+                        de cualquier manera que pueda dañar, deshabilitar, sobrecargar o deteriorar el servidor o la red
+                        de Mercy.</li>
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i class="fas fa-times-circle me-2"
+                            style="color: #dc3545; position: absolute; left: 0; top: 5px;"></i> Intentar obtener acceso
+                        no autorizado a cualquier parte de la plataforma, otras cuentas, sistemas informáticos o redes
+                        conectadas a cualquier servidor de Mercy.</li>
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i class="fas fa-times-circle me-2"
+                            style="color: #dc3545; position: absolute; left: 0; top: 5px;"></i> Utilizar la plataforma
+                        para cualquier actividad fraudulenta o ilegal.</li>
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i class="fas fa-times-circle me-2"
+                            style="color: #dc3545; position: absolute; left: 0; top: 5px;"></i> Cargar o transmitir
+                        cualquier virus, gusano, defecto, troyano o cualquier elemento de naturaleza destructiva.</li>
+                </ul>
+                <h4 class="mb-3">5. Propiedad intelectual</h4>
+                <p>Todos los contenidos de la plataforma, incluyendo, entre otros, textos, gráficos, logotipos, iconos,
+                    imágenes, clips de audio, descargas digitales y software, son propiedad de Mercy o de sus
+                    proveedores de contenido y están protegidos por leyes de derechos de autor y otras leyes de
+                    propiedad intelectual.</p>
+                <h4 class="mb-3">6. Exención de garantías</h4>
+                <p>La plataforma se proporciona "tal cual" y "según disponibilidad", sin garantías de ningún tipo, ya
+                    sean expresas o implícitas. Mercy no garantiza que la plataforma será ininterrumpida, libre de
+                    errores o segura, ni que los resultados obtenidos del uso de la plataforma serán precisos o
+                    confiables.</p>
+                <h4 class="mb-3">7. Limitación de responsabilidad</h4>
+                <p>En ningún caso Mercy, sus directores, empleados o agentes serán responsables de cualquier daño
+                    directo, indirecto, incidental, especial, consecuente o punitivo, incluyendo, entre otros, pérdida
+                    de beneficios, datos o uso, ya sea en una acción contractual, de negligencia o cualquier otra acción
+                    torticera, que surja de o en conexión con el uso o rendimiento de la plataforma.</p>
+                <h4 class="mb-3">8. Indemnización</h4>
+                <p>Usted acepta indemnizar y eximir de responsabilidad a Mercy, sus afiliados, directores, agentes y
+                    empleados de cualquier reclamo o demanda, incluidos los honorarios de abogados, realizados por
+                    cualquier tercero debido a o que surja de su uso de la plataforma, su violación de estos términos o
+                    su violación de cualquier derecho de otro.</p>
+                <h4 class="mb-3">9. Ley aplicable</h4>
+                <p>Estos términos se regirán e interpretarán de acuerdo con las leyes de méxico, sin tener en cuenta sus
+                    principios de conflicto de leyes.</p>
+                <h4 class="mb-3">10. Contacto</h4>
+                <p>Si tiene alguna pregunta sobre estos términos, puede contactarnos a través de
+                    mercysimulaciones@gmail.com</p>
+            </div>
+
+            <button id="acceptTermsBtn" class="boton-principal" style="margin-top: 20px; width: 50%;">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <script src="js/registro.js"></script>
+
+</body>
+
+</html>

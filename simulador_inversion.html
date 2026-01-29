@@ -1,0 +1,110 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Mercy - Simulador de inversión{% endblock %}
+
+{% block extra_css %}
+<link href="css/simulador_comun.css" rel="stylesheet">
+{% endblock %}
+
+{% block navbar_actions %}
+<button class="btn btn-glass" id="browserBackBtn">
+    <i class="bi bi-arrow-left-circle-fill me-2"></i>
+    <span class="d-none d-sm-inline">Regresar</span>
+</button>
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <section id="simulacion-inversion-section" class="content-section">
+        <div class="glass-card p-4 fade-in">
+            <h2 class="mb-4 titulo-dashboard text-center">¡Simulador de inversión!</h2>
+            <p class="lead text-muted text-center mb-5">Estima el crecimiento de tu dinero con el poder del interés
+                compuesto.</p>
+
+            <div id="simulation-form-section" class="mt-5">
+                <h3 class="mb-4 titulo-dashboard text-center">Calcula tu inversión</h3>
+                <form id="investmentSimulationForm" class="row g-4 justify-content-center">
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="initialAmount" class="form-label mb-2"><i
+                                    class="bi bi-cash-stack me-2"></i>Monto inicial:</label>
+                            <input type="number" class="form-control glass-input" id="initialAmount"
+                                placeholder="Ej: 1000" min="0" required>
+                            <div class="invalid-feedback">Ingresa un monto inicial válido (mayor o igual a 0).</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="monthlyContribution" class="form-label mb-2"><i
+                                    class="bi bi-currency-dollar me-2"></i>Aporte mensual:</label>
+                            <input type="number" class="form-control glass-input" id="monthlyContribution"
+                                placeholder="Ej: 100" min="0" required>
+                            <div class="invalid-feedback">Ingresa un aporte mensual válido (mayor o igual a 0).</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="annualReturnRate" class="form-label mb-2"><i
+                                    class="bi bi-graph-up-arrow me-2"></i>Tasa de rendimiento anual (%):</label>
+                            <input type="number" class="form-control glass-input" id="annualReturnRate"
+                                placeholder="Ej: 8" min="0" step="0.01" required>
+                            <div class="invalid-feedback">Ingresa una tasa de rendimiento válida (mayor o igual a 0).
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="investmentTerm" class="form-label mb-2"><i
+                                    class="bi bi-calendar-range-fill me-2"></i>Plazo de inversión (años):</label>
+                            <input type="number" class="form-control glass-input" id="investmentTerm"
+                                placeholder="Ej: 5" min="1" required>
+                            <div class="invalid-feedback">Ingresa un plazo de inversión válido (mayor a 0).</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-primary btn-lg mt-4">
+                            <i class="bi bi-calculator-fill me-2"></i> Calcular Inversión
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_modals %}
+<div class="modal fade" id="resultsModal" tabindex="-1" aria-labelledby="resultsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="resultsModalLabel">Resultados de tu simulación de inversión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body text-center">
+                <i class="bi bi-cash-coin text-success fs-1 mb-3"></i>
+                <p class="lead text-muted mb-4">Aquí tienes una estimación del crecimiento de tu inversión:</p>
+                <div class="glass-card p-3 mb-3 text-start">
+                    <p class="mb-1 text-muted">Monto inicial: <strong id="modalInitialAmount"></strong></p>
+                    <p class="mb-1 text-muted">Aporte mensual: <strong id="modalMonthlyContribution"></strong></p>
+                    <p class="mb-1 text-muted">Tasa de rendimiento anual: <strong id="modalAnnualReturnRate"></strong>
+                    </p>
+                    <p class="mb-0 text-muted">Plazo de inversión: <strong id="modalInvestmentTerm"></strong></p>
+                </div>
+                <p class="fs-4 fw-bold text-success" id="modalFinalAmount"></p>
+                <p class="fs-5 fw-bold text-primary" id="modalTotalGain"></p>
+                <p class="text-muted"><small>Estos resultados son una estimación. El rendimiento real puede
+                        variar.</small></p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">¡Entendido!</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="js/simulador_inversion.js"></script>
+{% endblock %}

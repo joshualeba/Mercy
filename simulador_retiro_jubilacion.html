@@ -1,0 +1,135 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Mercy - Simulador de retiro y jubilación{% endblock %}
+
+{% block extra_css %}
+<link href="css/simulador_comun.css" rel="stylesheet">
+{% endblock %}
+
+{% block navbar_actions %}
+<button class="btn btn-glass" id="browserBackBtn">
+    <i class="bi bi-arrow-left-circle-fill me-2"></i>
+    <span class="d-none d-sm-inline">Regresar</span>
+</button>
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <section id="retiro-jubilacion-section" class="content-section">
+        <div class="glass-card p-4 fade-in">
+            <h2 class="mb-4 titulo-dashboard text-center">¡Simulador de retiro y jubilación!</h2>
+            <p class="lead text-muted text-center mb-5">Proyecta tus ahorros para la jubilación y estima tu ingreso
+                mensual al retiro.</p>
+
+            <div id="retirement-simulation-form-section" class="mt-5">
+                <h3 class="mb-4 titulo-dashboard text-center">Define tu plan de retiro</h3>
+                <form id="retirementPlanForm" class="row g-4 justify-content-center">
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="currentAge" class="form-label mb-2"><i class="bi bi-person-fill me-2"></i>Edad
+                                actual:</label>
+                            <input type="number" class="form-control glass-input" id="currentAge" placeholder="Ej: 30"
+                                min="18" max="99" required>
+                            <div class="invalid-feedback">Ingresa tu edad actual (entre 18 y 99).</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="retirementAge" class="form-label mb-2"><i
+                                    class="bi bi-calendar-check-fill me-2"></i>Edad de retiro deseada:</label>
+                            <input type="number" class="form-control glass-input" id="retirementAge"
+                                placeholder="Ej: 65" min="18" max="100" required>
+                            <div class="invalid-feedback">Ingresa tu edad de retiro deseada (mayor a tu edad actual y
+                                hasta 100).</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="currentSavings" class="form-label mb-2"><i
+                                    class="bi bi-cash-stack me-2"></i>Ahorro actual para el retiro:</label>
+                            <input type="number" class="form-control glass-input" id="currentSavings"
+                                placeholder="Ej: 50000" min="0" required>
+                            <div class="invalid-feedback">Ingresa tu ahorro actual (mayor o igual a 0).</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="monthlyContribution" class="form-label mb-2"><i
+                                    class="bi bi-piggy-bank-fill me-2"></i>Contribución mensual al retiro:</label>
+                            <input type="number" class="form-control glass-input" id="monthlyContribution"
+                                placeholder="Ej: 500" min="0" required>
+                            <div class="invalid-feedback">Ingresa tu contribución mensual (mayor o igual a 0).</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="annualReturnRate" class="form-label mb-2"><i
+                                    class="bi bi-graph-up-arrow me-2"></i>Tasa de rendimiento anual estimada
+                                (%):</label>
+                            <input type="number" class="form-control glass-input" id="annualReturnRate"
+                                placeholder="Ej: 5 (para 5%)" min="0" step="0.01" required>
+                            <div class="invalid-feedback">Ingresa una tasa de rendimiento anual (mayor o igual a 0).
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="desiredMonthlyExpenses" class="form-label mb-2"><i
+                                    class="bi bi-currency-dollar me-2"></i>Gastos mensuales deseados al retiro:</label>
+                            <input type="number" class="form-control glass-input" id="desiredMonthlyExpenses"
+                                placeholder="Ej: 10000" min="0" required>
+                            <div class="invalid-feedback">Ingresa tus gastos mensuales deseados (mayor o igual a 0).
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-primary btn-lg mt-4">
+                            <i class="bi bi-calculator-fill me-2"></i> Calcular plan de retiro
+                        </button>
+                    </div>
+                </form>
+
+                <div id="retirement-results-section" class="d-none mt-5 glass-card p-4">
+                    <h3 class="mb-4 titulo-dashboard text-center">Resultados de tu plan de retiro</h3>
+                    <div class="row text-center mb-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 glass-panel h-100">
+                                <i class="bi bi-clock-fill text-info fs-3 mb-2"></i>
+                                <h5 class="text-muted">Años hasta el retiro</h5>
+                                <p class="fs-4 fw-bold text-dark" id="yearsToRetirementResult"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 glass-panel h-100">
+                                <i class="bi bi-bank2 text-success fs-3 mb-2"></i>
+                                <h5 class="text-muted">Ahorro proyectado al retiro</h5>
+                                <p class="fs-4 fw-bold text-dark" id="projectedSavingsResult"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 glass-panel h-100">
+                                <i class="bi bi-wallet-fill text-primary fs-3 mb-2"></i>
+                                <h5 class="text-muted">Ingreso mensual estimado (4% regla)</h5>
+                                <p class="fs-4 fw-bold text-dark" id="estimatedMonthlyIncomeResult"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="retirement-summary-message" class="alert text-center mt-4"></div>
+
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="button" class="btn btn-outline-secondary btn-lg" id="resetRetirementForm">
+                            <i class="bi bi-arrow-repeat me-2"></i> Recalcular plan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="js/simulador_retiro_jubilacion.js"></script>
+{% endblock %}

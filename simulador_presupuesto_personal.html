@@ -1,0 +1,113 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Mercy - Simulador de presupuesto personal{% endblock %}
+
+{% block extra_css %}
+<link href="css/simulador_comun.css" rel="stylesheet">
+{% endblock %}
+
+{% block navbar_actions %}
+<button class="btn btn-glass" id="browserBackBtn">
+    <i class="bi bi-arrow-left-circle-fill me-2"></i>
+    <span class="d-none d-sm-inline">Regresar</span>
+</button>
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <section id="simulacion-presupuesto-section" class="content-section">
+        <div class="glass-card p-4 fade-in">
+            <h2 class="mb-4 titulo-dashboard text-center">¡Simulador de presupuesto personal!</h2>
+            <p class="lead text-muted text-center mb-5">Visualiza cómo tus ingresos y gastos impactan tu capacidad de
+                ahorro y cumplimiento de objetivos.</p>
+
+            <div id="budget-simulation-form-section" class="mt-5">
+                <h3 class="mb-4 titulo-dashboard text-center">Define tu presupuesto mensual</h3>
+                <form id="personalBudgetForm" class="row g-4 justify-content-center">
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="monthlyIncome" class="form-label mb-2"><i
+                                    class="bi bi-graph-up me-2"></i>Ingresos mensuales:</label>
+                            <input type="number" class="form-control glass-input" id="monthlyIncome"
+                                placeholder="Ej: 15000" min="0" required>
+                            <div class="invalid-feedback">Ingresa tus ingresos mensuales (mayor o igual a 0).</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="fixedExpenses" class="form-label mb-2"><i
+                                    class="bi bi-cash-coin me-2"></i>Gastos fijos mensuales:</label>
+                            <input type="number" class="form-control glass-input" id="fixedExpenses"
+                                placeholder="Ej: 8000" min="0" required>
+                            <div class="invalid-feedback">Ingresa tus gastos fijos (mayor o igual a 0).</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="variableExpenses" class="form-label mb-2"><i class="bi bi-bag me-2"></i>Gastos
+                                variables mensuales:</label>
+                            <input type="number" class="form-control glass-input" id="variableExpenses"
+                                placeholder="Ej: 3000" min="0" required>
+                            <div class="invalid-feedback">Ingresa tus gastos variables (mayor o igual a 0).</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-5">
+                        <div class="form-group glass-card p-4">
+                            <label for="desiredSavings" class="form-label mb-2"><i
+                                    class="bi bi-piggy-bank me-2"></i>Ahorro deseado mensual:</label>
+                            <input type="number" class="form-control glass-input" id="desiredSavings"
+                                placeholder="Ej: 1000" min="0" required>
+                            <div class="invalid-feedback">Ingresa tu ahorro deseado (mayor o igual a 0).</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-primary btn-lg mt-4">
+                            <i class="bi bi-pie-chart-fill me-2"></i> Generar presupuesto
+                        </button>
+                    </div>
+                </form>
+
+                <div id="budget-results-section" class="d-none mt-5 glass-card p-4">
+                    <h3 class="mb-4 titulo-dashboard text-center">Resumen de tu presupuesto</h3>
+                    <div class="row text-center mb-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 glass-panel h-100">
+                                <i class="bi bi-arrow-up-circle-fill text-success fs-3 mb-2"></i>
+                                <h5 class="text-muted">Ingresos totales</h5>
+                                <p class="fs-4 fw-bold text-dark" id="totalIncomeResult"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 glass-panel h-100">
+                                <i class="bi bi-arrow-down-circle-fill text-danger fs-3 mb-2"></i>
+                                <h5 class="text-muted">Gastos totales</h5>
+                                <p class="fs-4 fw-bold text-dark" id="totalExpensesResult"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 glass-panel h-100">
+                                <i class="bi bi-piggy-bank-fill text-primary fs-3 mb-2"></i>
+                                <h5 class="text-muted">Ahorro disponible</h5>
+                                <p class="fs-4 fw-bold text-dark" id="availableSavingsResult"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="budget-summary-message" class="alert alert-info text-center mt-4"></div>
+
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="button" class="btn btn-outline-secondary btn-lg" id="resetBudgetForm">
+                            <i class="bi bi-arrow-repeat me-2"></i> Hacer otro presupuesto
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="js/simulador_presupuesto_personal.js"></script>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Mercy - SOFIPOs{% endblock %}
+
+{% block extra_css %}
+<link href="css/dashboard.css" rel="stylesheet">
+<link href="css/simulador_comun.css" rel="stylesheet">
+<style>
+    .chart-container {
+        position: relative;
+        height: 400px;
+        width: 100%;
+    }
+
+    .nicap-badge {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        border-radius: 20px;
+    }
+
+    .nicap-1 {
+        background-color: var(--success-color);
+        color: white;
+    }
+
+    .nicap-2 {
+        background-color: var(--warning-color);
+        color: white;
+    }
+
+    /* Ajuste para que el navbar no choque con el contenido si el CSS varía ligeramente */
+    body {
+        padding-top: 80px;
+    }
+</style>
+{% endblock %}
+
+{% block navbar_actions %}
+<button class="btn btn-glass" id="browserBackBtn">
+    <i class="bi bi-arrow-left-circle-fill me-2"></i>
+    <span class="d-none d-sm-inline">Regresar</span>
+</button>
+{% endblock %}
+
+{% block content %}
+<main class="main-content" style="margin-top: 0; margin-left: 0;">
+    <section class="content-section">
+        <div class="glass-card p-4 fade-in">
+            <h2 class="mb-4 titulo-dashboard text-center">Comparador de rendimientos SOFIPOs</h2>
+            <p class="lead text-muted text-center mb-5">Analiza las mejores tasas del mercado en tiempo real y visualiza
+                su crecimiento.</p>
+
+            <div class="glass-panel p-4 mb-5">
+                <h4 class="text-center mb-4">Rendimiento anual estimado (%)</h4>
+                <div class="chart-container">
+                    <canvas id="sofiposChart"></canvas>
+                </div>
+            </div>
+
+            <h3 class="titulo-dashboard mb-4">Detalle de entidades</h3>
+            <div id="sofipos-cards-container" class="row g-4">
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/sofipos.js"></script>
+{% endblock %}
