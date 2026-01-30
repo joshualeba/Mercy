@@ -9,7 +9,8 @@
 
 html {
     scroll-behavior: smooth;
-    overflow: hidden; /* previene el scroll en desktop */
+    overflow: hidden;
+    /* previene el scroll en desktop */
 }
 
 body {
@@ -99,18 +100,22 @@ body::-webkit-scrollbar-thumb {
         letter-spacing: 1px;
         transform: translateX(0px);
     }
+
     40% {
         letter-spacing: 2px;
         transform: translateX(26px);
     }
+
     80% {
         letter-spacing: 1px;
         transform: translateX(32px);
     }
+
     90% {
         letter-spacing: 2px;
         transform: translateX(0px);
     }
+
     100% {
         letter-spacing: 1px;
         transform: translateX(0px);
@@ -122,18 +127,22 @@ body::-webkit-scrollbar-thumb {
         width: 16px;
         transform: translateX(0px);
     }
+
     40% {
         width: 100%;
         transform: translateX(0px);
     }
+
     80% {
         width: 16px;
         transform: translateX(64px);
     }
+
     90% {
         width: 100%;
         transform: translateX(0px);
     }
+
     100% {
         width: 16px;
         transform: translateX(0px);
@@ -145,18 +154,22 @@ body::-webkit-scrollbar-thumb {
         transform: translateX(0px);
         width: 16px;
     }
+
     40% {
         transform: translateX(0%);
         width: 80%;
     }
+
     80% {
         width: 100%;
         transform: translateX(0px);
     }
+
     90% {
         width: 80%;
         transform: translateX(15px);
     }
+
     100% {
         transform: translateX(0px);
         width: 16px;
@@ -176,7 +189,8 @@ body.loaded .loader_p {
     width: 100vw;
 }
 
-.lado-izquierdo, .lado-derecho {
+.lado-izquierdo,
+.lado-derecho {
     width: 50vw;
     position: relative;
 }
@@ -198,13 +212,23 @@ body.loaded .loader_p {
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 80px;
-    border-radius: 40px;
+    width: 100px;
+    /* Aumentado de 80px */
+    height: 100px;
+    /* Definido alto explícito */
+    padding: 15px;
+    /* Padding añadido como en index */
+    border-radius: 20px;
+    /* Reducido radio para caja más cuadrada con bordes redondeados */
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+    /* Efecto glass */
+    backdrop-filter: blur(10px);
+    object-fit: contain;
 }
 
 .boton-volver {
@@ -277,7 +301,8 @@ body.loaded .loader_p {
     flex: 1;
 }
 
-input, select {
+input,
+select {
     background: rgba(255, 255, 255, 0.2);
     border: none;
     padding: 12px 15px;
@@ -290,7 +315,8 @@ input, select {
 select {
     padding: 12px 20px;
     background-color: rgba(255, 255, 255, 0.1);
-    color: #000; /* color del texto en select */
+    color: #000;
+    /* color del texto en select */
     backdrop-filter: blur(10px);
     appearance: none;
     -webkit-appearance: none;
@@ -303,7 +329,8 @@ select option {
     background-color: #00000010;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
     border: 1px solid #fff;
     outline: none;
 }
@@ -320,10 +347,12 @@ input::placeholder {
 }
 
 .input-container input {
-    padding-right: 40px; /* espacio para el ícono */
+    padding-right: 40px;
+    /* espacio para el ícono */
 }
 
-#eye-icon-password, #eye-icon-confirm {
+#eye-icon-password,
+#eye-icon-confirm {
     position: absolute;
     right: 10px;
     top: 50%;
@@ -431,7 +460,7 @@ input.match {
     visibility: visible;
 }
 
-body.blur-active > *:not(.custom-alert-overlay) {
+body.blur-active>*:not(.custom-alert-overlay) {
     filter: blur(15px);
     pointer-events: none;
 }
@@ -514,7 +543,8 @@ body.blur-active > *:not(.custom-alert-overlay) {
     font-size: 1.3em;
 }
 
-#termsModalBody p, #termsModalBody ul {
+#termsModalBody p,
+#termsModalBody ul {
     margin-bottom: 1rem;
 }
 
@@ -546,10 +576,12 @@ body.blur-active > *:not(.custom-alert-overlay) {
         flex-direction: column;
         position: relative;
         min-height: 100vh;
-        height: auto; /* permite que el contenido crezca */
+        height: auto;
+        /* permite que el contenido crezca */
     }
 
-    .lado-izquierdo, .lado-derecho {
+    .lado-izquierdo,
+    .lado-derecho {
         width: 100%;
     }
 
@@ -563,7 +595,8 @@ body.blur-active > *:not(.custom-alert-overlay) {
         object-fit: cover;
     }
 
-    .logo-bankario, .boton-volver {
+    .logo-bankario,
+    .boton-volver {
         z-index: 10;
     }
 
@@ -571,10 +604,12 @@ body.blur-active > *:not(.custom-alert-overlay) {
         position: relative;
         width: 100%;
         min-height: 100vh;
-        background-color: rgba(0, 0, 0, 0.5); /* transparencia de login */
+        background-color: rgba(0, 0, 0, 0.5);
+        /* transparencia de login */
         display: flex;
         justify-content: center;
-        align-items: center; /* centrado vertical */
+        align-items: center;
+        /* centrado vertical */
         padding: 40px 20px;
         z-index: 1;
         margin-top: -100vh;
@@ -586,7 +621,8 @@ body.blur-active > *:not(.custom-alert-overlay) {
         backdrop-filter: blur(15px);
         padding: 25px;
         gap: 12px;
-        margin-top: 0; /* sin margen superior */
+        margin-top: 0;
+        /* sin margen superior */
     }
 
     .formulario h2 {
