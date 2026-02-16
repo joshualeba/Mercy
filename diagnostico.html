@@ -59,83 +59,274 @@
 {% endblock %}
 
 {% block content %}
-<main class="main-content">
-    <section class="content-section">
-        <div class="glass-card p-4 fade-in">
-            <h2 class="mb-4 titulo-dashboard text-center">Diagnóstico de salud financiera 360°</h2>
-            <p class="lead text-muted text-center mb-5">Ingresa tus datos reales y recibe un análisis instantáneo.</p>
+<main class="main-content d-flex align-items-center justify-content-center"
+    style="min-height: 85vh; background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.05), transparent 40%);">
+    <section class="w-100" style="max-width: 750px;">
 
-            <div class="row justify-content-center g-5">
-                <div class="col-lg-5">
-                    <form id="healthForm" class="glass-panel p-4 h-100">
-                        <h5 class="mb-4 text-primary"><i class="bi bi-pencil-fill me-2"></i> Tus datos mensuales</h5>
+        <!-- Welcome Screen (Initial State) -->
+        <div id="welcomeScreen" class="text-center fade-in">
+            <div class="mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-white shadow-sm rounded-circle p-4"
+                    style="width: 100px; height: 100px;">
+                    <i class="bi bi-activity text-primary display-4"></i>
+                </div>
+            </div>
+            <h1 class="fw-bold mb-3 ls-tight text-dark" style="font-size: 2.5rem;">Diagnóstico Financiero 360°</h1>
+            <p class="text-muted fs-5 mb-5 mx-auto" style="max-width: 500px; line-height: 1.6;">
+                Descubre el estado real de tus finanzas en menos de un minuto. Una evaluación profesional.
+            </p>
+            <button id="startBtn"
+                class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-lg hover-scale transition-all fw-bold mb-5">
+                Comenzar Diagnóstico <i class="bi bi-arrow-right ms-2"></i>
+            </button>
 
-                        <div class="mb-3">
-                            <label class="form-label small text-muted">Ingresos netos (lo que recibes)</label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" id="ingresos" class="form-control glass-input"
-                                    placeholder="Ej: 15000" required>
+            <!-- Privacy & Trust Indicators -->
+            <div class="row justify-content-center g-4 mt-2">
+                <div class="col-md-4">
+                    <div class="p-3 bg-white rounded-4 shadow-sm h-100 border border-light transition-all hover-lift">
+                        <i class="bi bi-shield-check text-success fs-2 mb-2 d-block"></i>
+                        <h6 class="fw-bold text-dark mb-1">100% Confidencial</h6>
+                        <p class="text-muted small mb-0 lh-sm">Tus datos nunca se guardan ni se comparten.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 bg-white rounded-4 shadow-sm h-100 border border-light transition-all hover-lift">
+                        <i class="bi bi-speedometer2 text-primary fs-2 mb-2 d-block"></i>
+                        <h6 class="fw-bold text-dark mb-1">Resultados al instante</h6>
+                        <p class="text-muted small mb-0 lh-sm">Obtén tu puntaje y análisis en segundos.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 bg-white rounded-4 shadow-sm h-100 border border-light transition-all hover-lift">
+                        <i class="bi bi-award text-warning fs-2 mb-2 d-block"></i>
+                        <h6 class="fw-bold text-dark mb-1">Criterio profesional</h6>
+                        <p class="text-muted small mb-0 lh-sm">Basado en reglas financieras probadas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wizard Container (Hidden Initially) -->
+        <div id="wizardContainer" class="d-none">
+            <!-- Progress Indicator -->
+            <div class="d-flex justify-content-between mb-4 px-2">
+                <span class="text-uppercase small fw-bold text-muted tracking-wide">Pregunta <span
+                        id="currentStepNum">1</span> de 4</span>
+                <div class="progress"
+                    style="width: 150px; height: 6px; background-color: rgba(0,0,0,0.05); border-radius: 10px;">
+                    <div id="wizardProgress" class="progress-bar bg-primary" role="progressbar"
+                        style="width: 25%; border-radius: 10px;"></div>
+                </div>
+            </div>
+
+            <!-- Card Principal -->
+            <div class="card border-0 shadow-lg rounded-5 overflow-hidden bg-white position-relative">
+                <div class="card-body p-5">
+                    <form id="wizardForm" onsubmit="return false;" autocomplete="off">
+
+                        <!-- Paso 1: Ingresos -->
+                        <div class="step-content active fade-in" data-step="1">
+                            <label class="d-block text-muted text-uppercase fw-bold small mb-3 letter-spacing-2">Paso 1
+                                de 4</label>
+                            <h2 class="fw-bold mb-3 text-dark display-6">¿Cuáles son tus ingresos netos mensuales?</h2>
+                            <p class="text-muted mb-4 opacity-75">El dinero que recibes libre de impuestos (sueldo,
+                                rentas, negocios).</p>
+
+                            <div class="input-group input-group-lg border-bottom border-2 has-focus-primary mb-4">
+                                <span class="input-group-text bg-transparent border-0 ps-0 text-muted"><i
+                                        class="bi bi-currency-dollar fs-4"></i></span>
+                                <input type="text" inputmode="numeric" maxlength="15" oninput="formatCurrency(this)"
+                                    class="form-control border-0 bg-transparent fs-2 fw-bold text-dark ps-2 shadow-none"
+                                    id="ingresos" placeholder="0" required>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small text-muted">Gastos fijos (Renta, Luz, Comida)</label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" id="gastos" class="form-control glass-input" placeholder="Ej: 8000"
-                                    required>
+
+                            <!-- Quick Selects -->
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('ingresos', 10000)">$10,000</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('ingresos', 20000)">$20,000</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('ingresos', 40000)">$40,000</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('ingresos', 80000)">+$80,000</button>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small text-muted">Pago de deudas (Tarjetas, Créditos)</label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" id="deuda" class="form-control glass-input" placeholder="Ej: 2000"
-                                    required>
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label small text-muted">Ahorro total acumulado (Fondo)</label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" id="ahorro" class="form-control glass-input" placeholder="Ej: 5000"
-                                    required>
+
+                            <div class="alert alert-light border-0 bg-light rounded-4 d-flex align-items-center p-3">
+                                <i class="bi bi-shield-lock text-primary fs-4 me-3"></i>
+                                <small class="text-muted lh-sm">Tu información es 100% privada. Usamos este dato para
+                                    calcular tu capacidad financiera real.</small>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 btn-lg shadow-sm">
-                            <i class="bi bi-activity me-2"></i> Diagnosticarme
-                        </button>
+                        <!-- Paso 2: Gastos -->
+                        <div class="step-content d-none fade-in" data-step="2">
+                            <label class="d-block text-muted text-uppercase fw-bold small mb-3 letter-spacing-2">Paso 2
+                                de 4</label>
+                            <h2 class="fw-bold mb-3 text-dark display-6">¿Cuánto gastas en necesidades básicas?</h2>
+                            <p class="text-muted mb-4 opacity-75">Suma renta, servicios, transporte y alimentación. Solo
+                                lo indispensable para vivir.</p>
+
+                            <div class="input-group input-group-lg border-bottom border-2 has-focus-primary mb-4">
+                                <span class="input-group-text bg-transparent border-0 ps-0 text-muted"><i
+                                        class="bi bi-currency-dollar fs-4"></i></span>
+                                <input type="text" inputmode="numeric" maxlength="15" oninput="formatCurrency(this)"
+                                    class="form-control border-0 bg-transparent fs-2 fw-bold text-dark ps-2 shadow-none"
+                                    id="gastos" placeholder="0" required>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('gastos', 5000)">$5,000</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('gastos', 12000)">$12,000</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('gastos', 25000)">$25,000</button>
+                            </div>
+
+                            <div class="alert alert-light border-0 bg-light rounded-4 d-flex align-items-center p-3">
+                                <i class="bi bi-house-check text-success fs-4 me-3"></i>
+                                <small class="text-muted lh-sm">Sugerencia: Una finanza sana destina máximo el 50% de
+                                    ingresos a gastos fijos.</small>
+                            </div>
+                        </div>
+
+                        <!-- Paso 3: Deudas -->
+                        <div class="step-content d-none fade-in" data-step="3">
+                            <label class="d-block text-muted text-uppercase fw-bold small mb-3 letter-spacing-2">Paso 3
+                                de 4</label>
+                            <h2 class="fw-bold mb-3 text-dark display-6">¿Cuánto destinas al pago de deudas?</h2>
+                            <p class="text-muted mb-4 opacity-75">Mensualidad de tarjetas, préstamos, hipoteca o
+                                financiamiento automotriz.</p>
+
+                            <div class="input-group input-group-lg border-bottom border-2 has-focus-primary mb-4">
+                                <span class="input-group-text bg-transparent border-0 ps-0 text-muted"><i
+                                        class="bi bi-currency-dollar fs-4"></i></span>
+                                <input type="text" inputmode="numeric" maxlength="15" oninput="formatCurrency(this)"
+                                    class="form-control border-0 bg-transparent fs-2 fw-bold text-dark ps-2 shadow-none"
+                                    id="deuda" placeholder="0" required>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('deuda', 0)">$0 (Sin deuda)</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('deuda', 2000)">$2,000</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('deuda', 5000)">$5,000</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('deuda', 15000)">+$15,000</button>
+                            </div>
+
+                            <div class="alert alert-light border-0 bg-light rounded-4 d-flex align-items-center p-3">
+                                <i class="bi bi-graph-down-arrow text-warning fs-4 me-3"></i>
+                                <small class="text-muted lh-sm">Importante: Si tus deudas superan el 30% de tus
+                                    ingresos, es una señal de alerta.</small>
+                            </div>
+                        </div>
+
+                        <!-- Paso 4: Ahorro -->
+                        <div class="step-content d-none fade-in" data-step="4">
+                            <label class="d-block text-muted text-uppercase fw-bold small mb-3 letter-spacing-2">Paso 4
+                                de 4</label>
+                            <h2 class="fw-bold mb-3 text-dark display-6">¿Cuánto tienes ahorrado hoy?</h2>
+                            <p class="text-muted mb-4 opacity-75">Suma tus cuentas de ahorro, fondos de emergencia o
+                                dinero líquido disponible.</p>
+
+                            <div class="input-group input-group-lg border-bottom border-2 has-focus-primary mb-4">
+                                <span class="input-group-text bg-transparent border-0 ps-0 text-muted"><i
+                                        class="bi bi-currency-dollar fs-4"></i></span>
+                                <input type="text" inputmode="numeric" maxlength="15" oninput="formatCurrency(this)"
+                                    class="form-control border-0 bg-transparent fs-2 fw-bold text-dark ps-2 shadow-none"
+                                    id="ahorro" placeholder="0" required>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('ahorro', 1000)">Iniciando ($1k)</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('ahorro', 10000)">$10,000</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('ahorro', 50000)">$50,000</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                    onclick="setInput('ahorro', 100000)">+$100,000</button>
+                            </div>
+
+                            <div class="alert alert-light border-0 bg-light rounded-4 d-flex align-items-center p-3">
+                                <i class="bi bi-piggy-bank text-info fs-4 me-3"></i>
+                                <small class="text-muted lh-sm">Un fondo de emergencia ideal cubre de 3 a 6 meses de tus
+                                    gastos fijos.</small>
+                            </div>
+                        </div>
                     </form>
                 </div>
 
-                <div class="col-lg-7 d-none" id="resultSection">
-                    <div class="glass-panel p-4 h-100 text-center">
-                        <h3 class="mb-3">Tu score financiero</h3>
+                <div class="card-footer bg-white border-0 p-5 pt-0 d-flex justify-content-between align-items-center">
+                    <button type="button"
+                        class="btn btn-link text-decoration-none text-muted px-0 d-flex align-items-center hover-dark"
+                        id="prevBtn" disabled>
+                        <i class="bi bi-arrow-left me-2"></i> Anterior
+                    </button>
+                    <button type="button" class="btn btn-dark rounded-pill px-5 py-3 shadow-lg hover-scale"
+                        id="nextBtn">
+                        Siguiente <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
 
-                        <div class="position-relative d-inline-block mb-3">
-                            <div class="score-circle"
-                                style="width: 150px; height: 150px; border-radius: 50%; border: 10px solid #e0e0e0; display: flex; align-items: center; justify-content: center;">
-                                <div>
-                                    <span id="scoreValue" class="display-3 fw-bold">0</span>
-                                </div>
+            <div class="text-center mt-4">
+                <span class="badge bg-white text-muted border border-light shadow-sm fw-normal px-3 py-2 rounded-pill">
+                    <i class="bi bi-lock-fill me-1 text-primary pb-1"></i> Tus datos son confidenciales y no se guardan
+                </span>
+            </div>
+        </div>
+
+        <!-- Resultados (Reporte) -->
+        <div id="resultSection" class="d-none fade-in">
+            <div class="card border-0 shadow-lg rounded-5 overflow-hidden bg-white">
+                <!-- Header Status -->
+                <div class="p-5 text-center position-relative overflow-hidden" id="reportHeader"
+                    style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+
+                    <h5 class="text-uppercase text-muted fw-bold small letter-spacing-2 mb-4">Resultado del Análisis
+                    </h5>
+
+                    <div class="d-flex justify-content-center align-items-center mb-4">
+                        <div class="position-relative">
+                            <svg width="200" height="200" class="transform-rotate-90">
+                                <circle cx="100" cy="100" r="90" fill="none" stroke="#dee2e6" stroke-width="12">
+                                </circle>
+                                <circle id="scoreCirclePath" cx="100" cy="100" r="90" fill="none" stroke="currentColor"
+                                    stroke-width="12" stroke-dasharray="565" stroke-dashoffset="565"
+                                    stroke-linecap="round" class="text-primary transition-dash"></circle>
+                            </svg>
+                            <div class="position-absolute top-50 start-50 translate-middle text-center">
+                                <span id="scoreValue" class="display-2 fw-bold text-dark lh-1">0</span>
+                                <span class="d-block text-muted small mt-1">Puntos</span>
                             </div>
                         </div>
-                        <h4 id="scoreMessage" class="fw-bold mb-4"></h4>
+                    </div>
 
-                        <div class="text-start">
-                            <h6 class="text-muted mb-3 ms-1">ANÁLISIS DETALLADO:</h6>
-                            <div id="analisisContainer" class="d-flex flex-column gap-3">
-                            </div>
-                        </div>
+                    <h2 id="scoreMessage" class="fw-bold text-dark mb-2"></h2>
+                    <p id="scoreSubMessage" class="lead text-muted mx-auto" style="max-width: 600px;"></p>
+                </div>
 
-                        <button class="btn btn-outline-secondary w-100 mt-4" id="btnRehacer">
-                            <i class="bi bi-arrow-clockwise me-2"></i> Hacer otro diagnóstico
+                <!-- Insights List -->
+                <div class="p-5 bg-white">
+                    <h5 class="fw-bold mb-4 text-dark border-bottom pb-2">Recomendaciones Personalizadas</h5>
+                    <div id="analisisContainer" class="d-flex flex-column gap-3">
+                        <!-- Cards injertadas por JS -->
+                    </div>
+
+                    <div class="mt-5 text-center pt-3">
+                        <button class="btn btn-outline-dark rounded-pill px-5 py-2" id="btnRehacer">
+                            <i class="bi bi-arrow-repeat me-2"></i> Realizar nuevo diagnóstico
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+
     </section>
 </main>
 {% endblock %}
@@ -164,9 +355,22 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
 
-        // 1. Inicialización UI
-        const loader = document.querySelector('.loader_p');
-        if (loader) setTimeout(() => { loader.style.display = 'none'; }, 500);
+        // 1. FORZAR OCULTAR LOADER
+        const loaders = document.querySelectorAll('.loader_p, .loader');
+        loaders.forEach(loader => {
+            loader.style.display = 'none';
+            loader.classList.add('d-none'); // Bootstrap class for good measure
+        });
+        document.body.classList.remove('loader_bg'); // Remove body class if exists
+
+        // Fallback to ensure loader disappears even if something else blocks
+        setTimeout(() => {
+            loaders.forEach(loader => {
+                loader.style.display = 'none';
+                loader.classList.add('d-none');
+            });
+            document.body.classList.remove('loader_bg');
+        }, 1000); // 1 second fallback
 
         // Theme toggle logic
         const themeToggle = document.getElementById('themeToggle');
@@ -188,8 +392,18 @@
         }
 
         // 2. Modal Helper
-        const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+        // Initialize manually to avoid reference errors if element is missing
+        let messageModal;
+        const modalEl = document.getElementById('messageModal');
+        if (modalEl) {
+            messageModal = new bootstrap.Modal(modalEl);
+        }
+
         function showMessage(titulo, texto, tipo) {
+            if (!messageModal) {
+                alert(texto); // Fallback
+                return;
+            }
             document.getElementById('messageModalTitle').innerText = titulo;
             document.getElementById('messageText').innerText = texto;
             const icon = document.getElementById('messageIcon');
@@ -202,106 +416,293 @@
             messageModal.show();
         }
 
-        // 3. Lógica del Diagnóstico
-        const form = document.getElementById('healthForm');
-        if (form) {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const btn = form.querySelector('button[type="submit"]');
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Calculando...';
-                btn.disabled = true;
+        // --- VARIABLES DE ESTADO ---
+        let currentStep = 1;
+        const totalSteps = 4;
 
-                try {
-                    const datos = {
-                        ingresos: document.getElementById('ingresos').value,
-                        gastos: document.getElementById('gastos').value,
-                        deuda: document.getElementById('deuda').value,
-                        ahorro: document.getElementById('ahorro').value
-                    };
+        // --- ELEMENTOS DOM ---
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const startBtn = document.getElementById('startBtn');
+        const wizardContainer = document.getElementById('wizardContainer');
+        const resultSection = document.getElementById('resultSection');
 
-                    const res = await fetch('/api/calcular_salud', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(datos)
-                    });
-                    const data = await res.json();
+        const wizardProgress = document.getElementById('wizardProgress');
+        const currentStepNum = document.getElementById('currentStepNum');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const wizardForm = document.getElementById('wizardForm');
 
-                    if (data.success) {
-                        // Mostrar resultados
-                        const resultSection = document.getElementById('resultSection');
-                        resultSection.classList.remove('d-none');
+        // Helper for Quick Selects
+        window.setInput = (id, val) => {
+            const el = document.getElementById(id);
+            // Format immediately with commas
+            el.value = new Intl.NumberFormat('en-US').format(val);
+            el.focus();     // Focus to trigger any styles
+        };
 
-                        // Scroll suave en móviles
-                        if (window.innerWidth < 992) {
-                            setTimeout(() => resultSection.scrollIntoView({ behavior: 'smooth' }), 100);
-                        }
+        // Currency Formatter
+        window.formatCurrency = (input) => {
+            // 1. Get raw numbers
+            let value = input.value.replace(/\D/g, '');
 
-                        // Score y Color
-                        animateValue("scoreValue", 0, data.puntaje, 1500);
-                        const msgEl = document.getElementById('scoreMessage');
-                        const circle = document.querySelector('.score-circle');
+            // 2. Limit length (optional safety)
+            if (value.length > 15) value = value.slice(0, 15);
 
-                        msgEl.innerText = data.mensaje_general;
-                        let color = '#EF4444'; // Rojo
-                        if (data.puntaje >= 80) color = '#10B981'; // Verde
-                        else if (data.puntaje >= 50) color = '#F59E0B'; // Amarillo
+            // 3. Format if exists
+            if (value === "") {
+                input.value = "";
+            } else {
+                input.value = new Intl.NumberFormat('en-US').format(value);
+            }
+        };
 
-                        msgEl.style.color = color;
-                        circle.style.borderColor = color;
+        // --- INICIALIZACIÓN ---
+        startBtn.addEventListener('click', () => {
+            welcomeScreen.classList.add('d-none');
+            wizardContainer.classList.remove('d-none');
+            wizardContainer.classList.add('fade-in');
+            updateStepView();
+        });
 
-                        // Tarjetas de Consejos
-                        const container = document.getElementById('analisisContainer');
-                        container.innerHTML = '';
+        // --- NAVEGACIÓN WIZARD ---
+        nextBtn.addEventListener('click', handleNext);
+        prevBtn.addEventListener('click', handlePrev);
 
-                        data.analisis_detallado.forEach(item => {
-                            let icon = 'bi-check-circle-fill', colorCls = 'text-success', bg = 'rgba(16,185,129,0.1)';
-                            if (item.estado === 'mal') { icon = 'bi-exclamation-triangle-fill'; colorCls = 'text-danger'; bg = 'rgba(239,68,68,0.1)'; }
-                            else if (item.estado === 'regular') { icon = 'bi-info-circle-fill'; colorCls = 'text-warning'; bg = 'rgba(245,158,11,0.1)'; }
+        // Enter para avanzar
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !wizardContainer.classList.contains('d-none') && resultSection.classList.contains('d-none')) {
+                handleNext();
+            }
+        });
 
-                            container.innerHTML += `
-                <div class="d-flex align-items-start p-3 rounded" style="background:${bg}; border:1px solid ${item.estado === 'mal' ? 'rgba(239,68,68,0.3)' : 'rgba(0,0,0,0.05)'}">
-                    <i class="bi ${icon} ${colorCls} fs-3 me-3 mt-1"></i>
-                    <div>
-                        <h6 class="fw-bold mb-1 ${colorCls}">${item.titulo}</h6>
-                        <p class="mb-0 small opacity-75" style="color:var(--text-dark)">${item.texto}</p>
-                    </div>
-                </div>`;
-                        });
-
-                    } else {
-                        showMessage('Atención', data.message, 'warning');
-                    }
-                } catch (e) {
-                    showMessage('Error', 'Error de conexión con el servidor.', 'error');
-                } finally {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
+        function handleNext() {
+            if (validateStep(currentStep)) {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    updateStepView();
+                } else {
+                    submitDiagnosis();
                 }
+            }
+        }
+
+        function handlePrev() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepView();
+            }
+        }
+
+        function updateStepView() {
+            // Update Progress UI
+            wizardProgress.style.width = `${(currentStep / totalSteps) * 100}%`;
+            currentStepNum.innerText = currentStep;
+
+            // Visibility of Steps
+            document.querySelectorAll('.step-content').forEach(el => {
+                el.classList.add('d-none');
+                el.classList.remove('active', 'fade-in');
+            });
+            const activeStep = document.querySelector(`.step-content[data-step="${currentStep}"]`);
+            activeStep.classList.remove('d-none');
+            // Small delay for fade effect
+            setTimeout(() => activeStep.classList.add('active', 'fade-in'), 10);
+
+            // Focus Input
+            const input = activeStep.querySelector('input');
+            if (input) input.focus();
+
+            // Button Logic
+            prevBtn.disabled = currentStep === 1;
+            prevBtn.classList.toggle('text-muted', currentStep === 1);
+            prevBtn.classList.toggle('text-primary', currentStep > 1);
+
+            if (currentStep === totalSteps) {
+                nextBtn.innerHTML = 'Ver resultado <i class="bi bi-stars ms-2"></i>';
+                nextBtn.classList.remove('btn-dark');
+                nextBtn.classList.add('btn-primary');
+            } else {
+                nextBtn.innerHTML = 'Siguiente <i class="bi bi-arrow-right ms-2"></i>';
+                nextBtn.classList.add('btn-dark');
+                nextBtn.classList.remove('btn-primary');
+            }
+        }
+
+        function validateStep(step) {
+            const activeStep = document.querySelector(`.step-content[data-step="${step}"]`);
+            const input = activeStep.querySelector('input');
+            if (!input.checkValidity()) {
+                // Custom slick validation feedback
+                input.classList.add('is-invalid');
+                setTimeout(() => input.classList.remove('is-invalid'), 2000);
+                return false;
+            }
+            return true;
+        }
+
+        // --- SUBMIT & API ---
+        async function submitDiagnosis() {
+            nextBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Analizando...';
+            nextBtn.disabled = true;
+
+            // Strip commas before sending
+            const cleanVal = (id) => {
+                const val = document.getElementById(id).value;
+                return val.replace(/,/g, '');
+            };
+
+            const datos = {
+                ingresos: cleanVal('ingresos'),
+                gastos: cleanVal('gastos'),
+                deuda: cleanVal('deuda'),
+                ahorro: cleanVal('ahorro')
+            };
+
+            try {
+                const res = await fetch('/api/calcular_salud', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    wizardContainer.classList.add('d-none');
+                    resultSection.classList.remove('d-none');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    renderResults(data);
+                } else {
+                    alert(data.message); // Fallback simple alert for now
+                    nextBtn.disabled = false;
+                    updateStepView();
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Hubo un error de conexión.");
+                nextBtn.disabled = false;
+                updateStepView();
+            }
+        }
+
+        function renderResults(data) {
+            // Animation for Score Number
+            const scoreObj = document.getElementById("scoreValue");
+            let start = 0;
+            const duration = 2000;
+            const end = data.puntaje;
+            let startTime = null;
+
+            function animation(currentTime) {
+                if (!startTime) startTime = currentTime;
+                const progress = Math.min((currentTime - startTime) / duration, 1);
+                scoreObj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) requestAnimationFrame(animation);
+            }
+            requestAnimationFrame(animation);
+
+            // Circle Animation
+            const circle = document.getElementById('scoreCirclePath');
+            const circumference = 565;
+            const offset = circumference - (data.puntaje / 100) * circumference;
+            setTimeout(() => {
+                circle.style.strokeDashoffset = offset;
+
+                // Dynamic Color based on score
+                circle.classList.remove('text-primary', 'text-warning', 'text-danger', 'text-success');
+                if (data.puntaje >= 80) circle.classList.add('text-success');
+                else if (data.puntaje >= 50) circle.classList.add('text-warning');
+                else circle.classList.add('text-danger');
+            }, 100);
+
+            // Messages
+            document.getElementById('scoreMessage').innerText = data.mensaje_general;
+
+            let subMsg = "";
+            if (data.puntaje >= 80) subMsg = "Tus finanzas son sólidas. Estás construyendo un excelente patrimonio.";
+            else if (data.puntaje >= 50) subMsg = "Tienes estabilidad, pero necesitas ajustar algunos hábitos para crecer.";
+            else subMsg = "Es urgente tomar acción. Reduce deudas y controla gastos inmediatamente.";
+            document.getElementById('scoreSubMessage').innerText = subMsg;
+
+            // Details Container
+            const container = document.getElementById('analisisContainer');
+            container.innerHTML = '';
+
+            data.analisis_detallado.forEach((item, index) => {
+                let icon = 'bi-check-circle-fill';
+                let colorClass = 'success';
+                let bgClass = 'bg-success';
+
+                if (item.estado === 'mal') { icon = 'bi-x-circle-fill'; colorClass = 'danger'; bgClass = 'bg-danger'; }
+                else if (item.estado === 'regular') { icon = 'bi-exclamation-circle-fill'; colorClass = 'warning'; bgClass = 'bg-warning'; }
+
+                container.innerHTML += `
+                    <div class="d-flex align-items-start p-3 rounded-4 mb-2 bg-light border border-light fade-in" style="animation-delay: ${index * 150}ms">
+                        <div class="rounded-circle ${bgClass} bg-opacity-10 p-2 me-3 d-flex align-items-center justify-content-center" style="width:40px; height:40px; min-width:40px;">
+                            <i class="bi ${icon} text-${colorClass}"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1 text-dark">${item.titulo}</h6>
+                            <p class="mb-0 text-muted small lh-sm">${item.texto}</p>
+                        </div>
+                    </div>
+                `;
             });
         }
 
-        // 4. Botón Rehacer (Sin recargar)
+        // Reset
         const btnRehacer = document.getElementById('btnRehacer');
         if (btnRehacer) {
             btnRehacer.addEventListener('click', () => {
-                document.getElementById('resultSection').classList.add('d-none');
-                form.reset();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-        }
+                resultSection.classList.add('d-none');
+                welcomeScreen.classList.remove('d-none');
+                wizardForm.reset();
+                currentStep = 1;
+                nextBtn.disabled = false;
 
-        function animateValue(id, start, end, duration) {
-            const obj = document.getElementById(id);
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                obj.innerHTML = Math.floor(progress * (end - start) + start);
-                if (progress < 1) window.requestAnimationFrame(step);
-            };
-            window.requestAnimationFrame(step);
+                // Reset Visuals
+                document.getElementById('scoreCirclePath').style.strokeDashoffset = 565;
+                document.getElementById('scoreValue').innerHTML = '0';
+            });
         }
     });
 </script>
+
+<style>
+    /* Estilos Custom Adicionales para sensación Premium */
+    .ls-tight {
+        letter-spacing: -0.02em;
+    }
+
+    .letter-spacing-2 {
+        letter-spacing: 2px;
+    }
+
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+
+    .hover-scale:hover {
+        transform: scale(1.02);
+    }
+
+    .hover-dark:hover {
+        color: #000 !important;
+    }
+
+    .has-focus-primary:focus-within {
+        border-color: var(--bs-primary) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .transition-dash {
+        transition: stroke-dashoffset 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Input Reset */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
 {% endblock %}

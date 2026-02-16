@@ -1,10 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // ==========================================
-    // 1. LÓGICA DE UI (NAVBAR, TEMA, DROPDOWN)
-    // ==========================================
 
-    // Loader
+    // --- Loader Logic (CRITICAL) ---
     const loader = document.querySelector('.loader_p');
     if (loader) {
         setTimeout(() => {
@@ -13,205 +9,222 @@ document.addEventListener('DOMContentLoaded', () => {
                 loader.style.display = 'none';
                 document.body.classList.remove('loader_bg');
             }, 500);
-        }, 1000);
+        }, 800);
     }
 
-    // Botón Regresar
-    const browserBackBtn = document.getElementById('browserBackBtn');
-    if (browserBackBtn) {
-        browserBackBtn.addEventListener('click', () => {
-            // Intentar ir al dashboard, si no hay historial ir atrás
-            window.history.back();
-        });
-    }
+    // --- State ---
+    let sofiposData = [];
+    let currentSort = 'rate_desc';
+    let currentInvestment = 10000;
+    let currentSearch = '';
+    let isGridView = true;
 
-    // Tema Oscuro/Claro
-    const themeToggle = document.getElementById('themeToggle');
+    // --- DOM Elements ---
+    const cardsContainer = document.getElementById('sofipos-cards-container');
+    const searchInput = document.getElementById('searchInput'); // Fix ID
+    const investInput = document.getElementById('investInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const gridViewBtn = document.getElementById('gridViewBtn');
+    const listViewBtn = document.getElementById('listViewBtn');
+    const noResults = document.getElementById('noResults');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const chartCanvas = document.getElementById('sofiposChart');
     const themeIcon = document.getElementById('themeIcon');
+    const themeToggle = document.getElementById('themeToggle');
     const htmlElement = document.documentElement;
 
+    // --- Theme Logic ---
     if (themeToggle && themeIcon && htmlElement) {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            htmlElement.setAttribute('data-theme', savedTheme);
-            if (savedTheme === 'dark') {
-                themeIcon.classList.remove('bi-sun-fill');
-                themeIcon.classList.add('bi-moon-fill');
-            } else {
-                themeIcon.classList.remove('bi-moon-fill');
-                themeIcon.classList.add('bi-sun-fill');
-            }
-        }
+        const updateThemeIcon = () => {
+            const isDark = htmlElement.getAttribute('data-theme') === 'dark';
+            themeIcon.className = isDark ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+        };
+        updateThemeIcon();
 
         themeToggle.addEventListener('click', () => {
-            if (htmlElement.getAttribute('data-theme') === 'dark') {
-                htmlElement.setAttribute('data-theme', 'light');
-                themeIcon.classList.remove('bi-moon-fill');
-                themeIcon.classList.add('bi-sun-fill');
-            } else {
-                htmlElement.setAttribute('data-theme', 'dark');
-                themeIcon.classList.remove('bi-sun-fill');
-                themeIcon.classList.add('bi-moon-fill');
-            }
-            localStorage.setItem('theme', htmlElement.getAttribute('data-theme'));
+            const newTheme = htmlElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon();
+            renderApp(); // Re-render chart
         });
     }
 
-    // Dropdown de Usuario
-    const userBtn = document.getElementById('userBtn');
-    const userDropdown = document.getElementById('userDropdown');
-
-    if (userBtn && userDropdown) {
-        userBtn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            userDropdown.classList.toggle('show');
-            const isShown = userDropdown.classList.contains('show');
-            userBtn.setAttribute('aria-expanded', isShown);
-        });
-
-        // Cerrar al hacer click fuera
-        document.addEventListener('click', (event) => {
-            if (!userBtn.contains(event.target) && !userDropdown.contains(event.target)) {
-                userDropdown.classList.remove('show');
-                userBtn.setAttribute('aria-expanded', 'false');
-            }
-        });
-    }
-
-    // Modal Logout
-    const logoutBtn = document.getElementById('logoutBtn');
-    const confirmLogoutBtn = document.getElementById('confirmLogout');
-    let logoutModal;
-    if (document.getElementById('logoutModal')) {
-        logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
-    }
-
-    if (logoutBtn && logoutModal) {
-        logoutBtn.addEventListener('click', () => {
-            userDropdown.classList.remove('show'); // Cerrar dropdown
-            logoutModal.show();
-        });
-    }
-
-    if (confirmLogoutBtn) {
-        confirmLogoutBtn.addEventListener('click', () => {
-            window.location.href = "/logout";
-        });
-    }
-
-    // ==========================================
-    // 2. LÓGICA DE DATOS SOFIPOS (GRÁFICA)
-    // ==========================================
-
-    async function loadSofiposData() {
+    // --- 1. Load Data ---
+    async function loadData() {
         try {
             const response = await fetch('/api/sofipos_data');
             const result = await response.json();
-
             if (result.success) {
-                renderChart(result.data);
-                renderCards(result.data);
+                sofiposData = result.data;
+                renderApp();
             } else {
-                console.error('Error al cargar datos:', result.message);
+                cardsContainer.innerHTML = `<div class="alert alert-danger w-100">Error al cargar datos: ${result.message}</div>`;
             }
-        } catch (error) {
-            console.error('Error de red:', error);
+        } catch (e) {
+            console.error(e);
+            cardsContainer.innerHTML = `<div class="alert alert-danger w-100">Error de conexión con el servidor.</div>`;
         }
     }
 
-    function renderChart(data) {
-        const ctx = document.getElementById('sofiposChart').getContext('2d');
-        
-        // Filtrar los top 10 para que la gráfica no se vea amontonada
-        // O usar todos si prefieres
-        const displayData = data.slice(0, 15); 
+    // --- 2. Render Logic ---
+    function renderApp() {
+        // Filter
+        let filtered = sofiposData.filter(s => s.nombre.toLowerCase().includes(currentSearch.toLowerCase()));
 
-        const names = displayData.map(item => item.nombre);
-        const rates = displayData.map(item => item.tasa);
-        
-        // Color verde para tasas arriba de 13%, azul para el resto
-        const backgroundColors = displayData.map(item => 
-            item.tasa >= 13.0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(37, 99, 235, 0.5)' 
-        );
+        // Sort
+        filtered.sort((a, b) => {
+            if (currentSort === 'rate_desc') return b.tasa - a.tasa;
+            if (currentSort === 'rate_asc') return a.tasa - b.tasa;
+            if (currentSort === 'nicap_asc') return a.nicap - b.nicap; // Lower is better (1 best)
+            return 0;
+        });
 
-        // Detectar si es modo oscuro para cambiar color de texto de la gráfica
+        // Update Chart
+        updateChart(filtered.slice(0, 10));
+
+        // Render Cards
+        cardsContainer.innerHTML = '';
+
+        if (filtered.length === 0) {
+            if (noResults) noResults.classList.remove('d-none');
+        } else {
+            if (noResults) noResults.classList.add('d-none');
+        }
+
+        filtered.forEach(s => {
+            // Calculate Logic
+            const earning = (currentInvestment * (s.tasa / 100) * (s.plazo / 360));
+            const total = currentInvestment + earning;
+
+            // Format
+            const rateClass = s.tasa >= 13 ? 'text-success' : (s.tasa >= 10 ? 'text-primary' : 'text-muted');
+
+            // --- Feature Injection (Make it useful!) ---
+            const getFeatures = (name) => {
+                const n = name.toLowerCase();
+                if (n.includes('nu')) return ['Disponibilidad 24/7', 'Sin monto mínimo', 'Pago diario'];
+                if (n.includes('finsus')) return ['Pago mensual', 'Plazos flexibles', 'App intuitiva'];
+                if (n.includes('super')) return ['Seguridad alta', 'Sin comisiones', 'Atención personalizada'];
+                if (n.includes('klar')) return ['Disponibilidad diaria', 'Tarjeta crédito', 'Cashback'];
+                if (n.includes('stori')) return ['Cuenta masiva', 'Gana diario', 'Sin anualidad'];
+                if (n.includes('uala')) return ['Rendimiento diario', 'Tarjeta débito', 'Sin comisiones'];
+                return ['Rendimiento fijo', 'Regulado CNBV', 'Ahorro seguro'];
+            };
+
+            const features = getFeatures(s.nombre);
+            const featuresHTML = features.map(f => `<span class="badge bg-light text-dark border fw-normal me-1 mb-1">${f}</span>`).join('');
+
+            // Simplified Safety Badge (Prosofipo)
+            const insuranceTooltip = "Tu dinero está protegido por el Fondo de Protección hasta por 25,000 UDIS (~$200,000 MXN).";
+
+            const cardHTML = `
+                <div class="${isGridView ? 'col-md-6 col-lg-4' : 'col-12'} fade-in card-item">
+                    <div class="glass-card p-4 h-100 d-flex flex-column hover-scale sofipo-card">
+                        
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="fw-bold mb-0 text-primary" style="font-size: 1.1rem;">${s.nombre}</h5>
+                            <i class="bi bi-shield-check-fill text-success fs-5" data-bs-toggle="tooltip" title="${insuranceTooltip}"></i>
+                        </div>
+
+                        <!-- Features Tags -->
+                        <div class="mb-3 d-flex flex-wrap">
+                            ${featuresHTML}
+                        </div>
+                        
+                        <div class="text-center my-2 p-3 bg-white bg-opacity-50 rounded-3 border border-white">
+                            <span class="display-5 fw-bold ${rateClass}">${s.tasa}%</span>
+                            <span class="d-block text-muted small fw-bold text-uppercase mt-1">Anual a ${s.plazo} días</span>
+                        </div>
+
+                        <!-- Simulator Result -->
+                        <div class="mt-3 mb-4 text-center">
+                            <div class="d-flex justify-content-between align-items-center mb-1 px-2">
+                                <small class="text-muted">Ganancia:</small>
+                                <span class="fw-bold text-success">+${formatCurrency(earning)}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center px-2">
+                                <small class="text-muted">Total final:</small>
+                                <span class="fw-bold text-dark">${formatCurrency(total)}</span>
+                            </div>
+                            <div class="progress mt-2" style="height: 4px;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: ${Math.min(s.tasa * 5, 100)}%"></div>
+                            </div>
+                        </div>
+
+                        <a href="${s.url}" target="_blank" class="btn btn-primary rounded-pill w-100 mt-auto fw-bold shadow-sm btn-sm">
+                            Visitar sitio oficial <i class="bi bi-box-arrow-up-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+            cardsContainer.insertAdjacentHTML('beforeend', cardHTML);
+        });
+    }
+
+    // --- Chart Logic ---
+    let myChart = null;
+    function updateChart(data) {
+        if (!chartCanvas) return;
+        const ctx = chartCanvas.getContext('2d');
+        const labels = data.map(d => d.nombre);
+        const values = data.map(d => d.tasa);
+
         const isDark = htmlElement.getAttribute('data-theme') === 'dark';
-        const textColor = isDark ? '#ffffff' : '#666666';
-        const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+        const textColor = isDark ? '#fff' : '#666';
 
-        new Chart(ctx, {
+        if (myChart) myChart.destroy();
+
+        myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: names,
+                labels: labels,
                 datasets: [{
                     label: 'Tasa Anual (%)',
-                    data: rates,
-                    backgroundColor: backgroundColors,
-                    borderColor: 'rgba(255, 255, 255, 0.5)',
-                    borderWidth: 1,
-                    borderRadius: 5
+                    data: values,
+                    backgroundColor: values.map(v => v >= 13 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(59, 130, 246, 0.7)'),
+                    borderRadius: 8,
+                    borderWidth: 0,
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: {
-                    duration: 2000,
-                    easing: 'easeOutQuart'
-                },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return `Tasa: ${context.raw}% anual`;
-                            }
-                        }
-                    }
-                },
+                plugins: { legend: { display: false } },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: { color: gridColor },
+                        grid: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' },
                         ticks: { color: textColor }
                     },
-                    x: {
-                        grid: { display: false },
-                        ticks: { color: textColor }
-                    }
+                    x: { display: false } // Hide X labels for cleaner look on small charts
                 }
             }
         });
     }
 
-    function renderCards(data) {
-        const container = document.getElementById('sofipos-cards-container');
-        container.innerHTML = '';
-
-        data.forEach(sofipo => {
-            const nicapClass = sofipo.nicap === 1 ? 'nicap-1' : 'nicap-2';
-            const nicapText = sofipo.nicap === 1 ? 'Nivel 1' : `Nivel ${sofipo.nicap}`;
-
-            const html = `
-                <div class="col-md-6 col-lg-4">
-                    <div class="glass-panel p-4 h-100 d-flex flex-column justify-content-between">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="fw-bold text-primary">${sofipo.nombre}</h5>
-                            <span class="badge ${nicapClass}">${nicapText}</span>
-                        </div>
-                        <div class="text-center mb-3">
-                            <h2 class="display-4 fw-bold text-success">${sofipo.tasa}%</h2>
-                            <p class="text-muted">Rendimiento anual a ${sofipo.plazo} días</p>
-                        </div>
-                        <a href="${sofipo.url}" target="_blank" class="btn btn-outline-primary w-100 mt-auto">
-                            <i class="bi bi-box-arrow-up-right me-2"></i> Visitar sitio
-                        </a>
-                    </div>
-                </div>
-            `;
-            container.insertAdjacentHTML('beforeend', html);
-        });
+    // --- Utils ---
+    function formatCurrency(val) {
+        return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
     }
 
-    loadSofiposData();
+    // --- Listeners ---
+    if (searchInput) searchInput.addEventListener('keyup', (e) => { currentSearch = e.target.value; renderApp(); });
+    if (investInput) investInput.addEventListener('input', (e) => { currentInvestment = parseFloat(e.target.value) || 0; renderApp(); });
+    if (sortSelect) sortSelect.addEventListener('change', (e) => { currentSort = e.target.value; renderApp(); });
+
+    if (gridViewBtn) gridViewBtn.addEventListener('change', () => { isGridView = true; renderApp(); });
+    if (listViewBtn) listViewBtn.addEventListener('change', () => { isGridView = false; renderApp(); });
+    if (clearSearchBtn) clearSearchBtn.addEventListener('click', () => {
+        currentSearch = '';
+        searchInput.value = '';
+        renderApp();
+    });
+
+    // --- Navbar Back Button ---
+    const browserBackBtn = document.getElementById('browserBackBtn');
+    if (browserBackBtn) browserBackBtn.addEventListener('click', () => window.history.back());
+
+    // --- Init ---
+    loadData();
 });

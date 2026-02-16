@@ -24,9 +24,9 @@ document.addEventListener('visibilitychange', () => {
 });
 
 if (logoBankario) {
-  logoBankario.addEventListener('click', function() {
-    window.location.href = 'index.html';
-  });
+    logoBankario.addEventListener('click', function () {
+        window.location.href = 'index.html';
+    });
 }
 
 /* ===============================================
@@ -110,6 +110,10 @@ function showAlert(message) {
     document.body.classList.add('blur-active');
 }
 
+// Exponer globalmente para que el script en HTML pueda usarlo
+window.showGlassmorphismError = showAlert;
+
+
 function hideAlert() {
     customAlertOverlay.classList.remove('show');
     document.body.classList.remove('blur-active');
@@ -166,7 +170,7 @@ if (termsModalOverlay) {
 /* ===============================================
    SECCIÓN: LÓGICA DE ENVÍO DE FORMULARIO
    =============================================== */
-document.getElementById('registroForm').addEventListener('submit', function(event) {
+document.getElementById('registroForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
     const nombresInput = this.querySelector('input[name="nombres"]');
@@ -174,7 +178,9 @@ document.getElementById('registroForm').addEventListener('submit', function(even
     const correoInput = document.getElementById('correo');
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirm-password');
-    const tycCheckbox = document.querySelector('input[type="checkbox"]');
+
+    // T&C se acepta implícitamente al enviar
+
 
     const nombres = nombresInput.value.trim();
     const apellidos = apellidosInput.value.trim();
@@ -210,10 +216,12 @@ document.getElementById('registroForm').addEventListener('submit', function(even
         confirmPasswordInput.focus();
         return;
     }
-    if (!tycCheckbox.checked) {
-        showAlert('Debes aceptar los términos y condiciones.');
+    if (password !== confirmPassword) {
+        showAlert('Las contraseñas no coinciden.');
+        confirmPasswordInput.focus();
         return;
     }
+
 
     loaderP.style.display = 'grid';
     document.body.classList.remove('loaded');

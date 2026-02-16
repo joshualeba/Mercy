@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // Sección: LOADER
     const loader = document.querySelector('.loader_p');
     if (loader) {
@@ -57,10 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mainContent) {
             if (isActive) {
                 mainContent.classList.add('blurred-content');
-                body.classList.add('overlay-active'); 
+                body.classList.add('overlay-active');
             } else {
                 mainContent.classList.remove('blurred-content');
-                body.classList.remove('overlay-active'); 
+                body.classList.remove('overlay-active');
             }
         }
     }
@@ -140,82 +140,187 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA ESPECÍFICA DEL SIMULADOR DE INVERSIÓN ---
 
     const investmentSimulationForm = document.getElementById('investmentSimulationForm');
-    const resultsModal = new bootstrap.Modal(document.getElementById('resultsModal'));
 
+    // Check if modal exists before init
+    const resultsModalEl = document.getElementById('resultsModal');
+    let resultsModal;
+    if (resultsModalEl) {
+        resultsModal = new bootstrap.Modal(resultsModalEl);
+    }
+
+    const initialAmountInput = document.getElementById('initialAmount');
+    const monthlyContributionInput = document.getElementById('monthlyContribution');
+    const annualReturnRateInput = document.getElementById('annualReturnRate');
+    const investmentTermInput = document.getElementById('investmentTerm');
+
+    // Wizard Logic (Step Navigation)
+    const stepSections = document.querySelectorAll('.step-section');
+    const nextBtns = document.querySelectorAll('.next-step-btn');
+    const prevBtns = document.querySelectorAll('.prev-step-btn');
+
+    function showStep(stepId) {
+        stepSections.forEach(section => {
+            section.classList.add('d-none');
+        });
+        const target = document.getElementById(stepId);
+        if (target) {
+            target.classList.remove('d-none');
+            // Auto-focus logic
+            const input = target.querySelector('input');
+            if (input) {
+                setTimeout(() => input.focus(), 100);
+            }
+        }
+    }
+
+    // Inicializar en paso 1
+    // showStep('step-initial'); // Ya está en HTML con d-none correctos, pero podemos forzar
+
+    nextBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const nextStepId = btn.dataset.next;
+            const currentSection = btn.closest('.step-section');
+            const input = currentSection.querySelector('input');
+
+            let isValid = true;
+            if (input && input.hasAttribute('required')) {
+                // If it's a money input with commas, replace them.
+                const valStr = input.value.replace(/,/g, '');
+                if (!valStr || parseFloat(valStr) < 0 || (input.type === 'number' && !input.checkValidity())) {
+                    input.classList.add('border-danger');
+                    input.focus();
+                    isValid = false;
+                } else {
+                    input.classList.remove('border-danger');
+                }
+            }
+
+            if (isValid) {
+                showStep(nextStepId);
+            }
+        });
+    });
+
+    prevBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const prevStepId = btn.dataset.prev;
+            showStep(prevStepId);
+        });
+    });
+
+    // Enter Key Navigation
+    document.querySelectorAll('.step-section input').forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const currentSection = input.closest('.step-section');
+                const nextBtn = currentSection.querySelector('.next-step-btn');
+                const submitBtn = currentSection.querySelector('button[type="submit"]');
+
+                if (nextBtn) nextBtn.click();
+                else if (submitBtn) submitBtn.click();
+            }
+        });
+    });
+
+    // Formatting Inputs (Currency with Commas)
+    const moneyInputs = ['initialAmount', 'monthlyContribution'];
+    moneyInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', function () {
+                let value = this.value.replace(/\D/g, '');
+                if (value === "") {
+                    this.value = "";
+                } else {
+                    this.value = new Intl.NumberFormat('en-US').format(value);
+                }
+            });
+        }
+    });
+
+    // Handle Form Submit
     investmentSimulationForm.addEventListener('submit', (event) => {
         event.preventDefault();
 
-        const initialAmountInput = document.getElementById('initialAmount');
-        const monthlyContributionInput = document.getElementById('monthlyContribution');
-        const annualReturnRateInput = document.getElementById('annualReturnRate');
-        const investmentTermInput = document.getElementById('investmentTerm');
+        // Parse values
+        const parseCurrency = (val) => parseFloat(val.replace(/,/g, '')) || 0;
 
-        const initialAmount = parseFloat(initialAmountInput.value);
-        const monthlyContribution = parseFloat(monthlyContributionInput.value);
-        const annualReturnRate = parseFloat(annualReturnRateInput.value);
-        const investmentTerm = parseInt(investmentTermInput.value);
+        const initialAmount = parseCurrency(initialAmountInput.value);
+        const monthlyContribution = parseCurrency(monthlyContributionInput.value);
+        const annualRate = parseFloat(annualReturnRateInput.value);
+        const years = parseInt(investmentTermInput.value);
 
-        let isValid = true;
-
-        if (isNaN(initialAmount) || initialAmount < 0) {
-            initialAmountInput.classList.add('is-invalid');
-            initialAmountInput.nextElementSibling.textContent = 'Ingresa un monto inicial válido (mayor o igual a 0).';
-            isValid = false;
-        } else {
-            initialAmountInput.classList.remove('is-invalid');
+        // Validation final
+        if (isNaN(annualRate) || isNaN(years) || years <= 0) {
+            return; // Should be handled by UI required
         }
 
-        if (isNaN(monthlyContribution) || monthlyContribution < 0) {
-            monthlyContributionInput.classList.add('is-invalid');
-            monthlyContributionInput.nextElementSibling.textContent = 'Ingresa un aporte mensual válido (mayor o igual a 0).';
-            isValid = false;
-        } else {
-            monthlyContributionInput.classList.remove('is-invalid');
-        }
-
-        if (isNaN(annualReturnRate) || annualReturnRate < 0) {
-            annualReturnRateInput.classList.add('is-invalid');
-            annualReturnRateInput.nextElementSibling.textContent = 'Ingresa una tasa de rendimiento válida (mayor o igual a 0).';
-            isValid = false;
-        } else {
-            annualReturnRateInput.classList.remove('is-invalid');
-        }
-
-        if (isNaN(investmentTerm) || investmentTerm <= 0) {
-            investmentTermInput.classList.add('is-invalid');
-            investmentTermInput.nextElementSibling.textContent = 'Ingresa un plazo válido (mayor a 0).';
-            isValid = false;
-        } else {
-            investmentTermInput.classList.remove('is-invalid');
-        }
-
-        if (!isValid) {
-            return;
-        }
-
-        const monthlyReturnRate = (annualReturnRate / 100) / 12;
-        const totalMonths = investmentTerm * 12;
+        // --- CALCULATIONS ---
+        const monthlyRate = (annualRate / 100) / 12;
+        const totalMonths = years * 12;
 
         let futureValue = initialAmount;
-        let totalContributions = initialAmount;
+        let totalInvested = initialAmount;
 
         for (let i = 0; i < totalMonths; i++) {
-            futureValue = futureValue * (1 + monthlyReturnRate) + monthlyContribution;
-            if (i < totalMonths -1) {
-                totalContributions += monthlyContribution;
-            }
+            futureValue = (futureValue + monthlyContribution) * (1 + monthlyRate);
+            totalInvested += monthlyContribution;
         }
 
-        const totalGain = futureValue - totalContributions;
-        
-        document.getElementById('modalInitialAmount').textContent = formatCurrency(initialAmount);
-        document.getElementById('modalMonthlyContribution').textContent = formatCurrency(monthlyContribution);
-        document.getElementById('modalAnnualReturnRate').textContent = `${annualReturnRate}% anual`;
-        document.getElementById('modalInvestmentTerm').textContent = `${investmentTerm} años`;
-        document.getElementById('modalFinalAmount').textContent = `Monto final: ${formatCurrency(futureValue)}`;
-        document.getElementById('modalTotalGain').textContent = `Ganancia total: ${formatCurrency(totalGain)}`;
+        // If monthlyRate is 0 loop works, if logic is correct.
+        if (annualRate === 0) {
+            futureValue = initialAmount + (monthlyContribution * totalMonths);
+        }
 
-        resultsModal.show();
+        const totalInterest = futureValue - totalInvested;
+
+        // --- UI UPDATES ---
+        document.getElementById('displayTotalInvested').textContent = formatCurrency(totalInvested);
+        document.getElementById('displayTotalInterest').textContent = `+${formatCurrency(totalInterest)}`;
+        document.getElementById('displayFinalAmount').textContent = formatCurrency(futureValue);
+
+        // Progress Bar Update
+        let percentInvested = 100;
+        let percentInterest = 0;
+        if (futureValue > 0) {
+            percentInvested = (totalInvested / futureValue) * 100;
+            percentInterest = (totalInterest / futureValue) * 100;
+        }
+
+        const barInvested = document.getElementById('barInvested');
+        const barInterest = document.getElementById('barInterest');
+
+        if (barInvested && barInterest) {
+            barInvested.style.width = `${percentInvested}%`;
+            barInterest.style.width = `${percentInterest}%`;
+            barInvested.textContent = percentInvested > 15 ? 'Tu capital' : '';
+            barInterest.textContent = percentInterest > 15 ? 'Intereses' : '';
+        }
+
+        // Recommendation Logic
+        const recElement = document.getElementById('investmentRecommendation');
+        let recommendation = "";
+
+        if (annualRate < 5) {
+            recommendation = "Tu tasa de rendimiento es conservadora. Es segura, pero podrías buscar instrumentos que, al menos, superen la inflación anual.";
+        } else if (annualRate >= 5 && annualRate <= 12) {
+            recommendation = "Utilizaste una tasa realista para instrumentos de renta fija como CETES o SOFIPOs. Es un excelente balance entre riesgo y seguridad.";
+        } else {
+            recommendation = "Una tasa superior al 12% sugiere renta variable (acciones, cripto). Recuerda que a mayor rendimiento posible, mayor es el riesgo de volatilidad.";
+        }
+
+        if (years >= 10) {
+            recommendation += " Al invertir a largo plazo, el interés compuesto tiene un efecto multiplicador masivo.";
+        }
+
+        recElement.textContent = recommendation;
+
+
+        // Show Modal
+        if (resultsModal) {
+            resultsModal.show();
+        }
     });
 
     function formatCurrency(amount) {

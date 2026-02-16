@@ -10,22 +10,22 @@
     --text-light: #ffffff;
     --text-muted: #000;
     --input-border-day: #1F2937;
-    
+
     /* Colores de estado */
     --success-color: #10B981;
     --warning-color: #F59E0B;
     --info-color: #0EA5E9;
     --danger-color: #EF4444;
-    
+
     /* Efectos glass - Modo día */
     --glass-bg: rgba(255, 255, 255, 0.85);
     --glass-border: rgba(255, 255, 255, 0.3);
     --card-header-bg: rgba(255, 255, 255, 0.9);
     --border-color: rgba(0, 0, 0, 0.1);
-    
+
     /* Dimensiones del layout */
     --navbar-height: 70px;
-    
+
     /* Efectos visuales */
     --backdrop-blur: 12px;
     --overlay-color: rgba(0, 0, 0, 0.15);
@@ -38,19 +38,22 @@
 /* Variables para modo oscuro */
 [data-theme="dark"] {
     --primary-color: #6366F1;
-    --secondary-color: #1F2937;
+    --secondary-color: #0f172a;
     --accent-color: rgba(99, 102, 241, 0.7);
-    --text-dark: #F9FAFB;
-    --text-muted: #fff;
-    
-    --glass-bg: rgba(0, 0, 0, 0.8);
+    --text-dark: #ffffff;
+    /* Pure white for main text */
+    --text-muted: #e2e8f0;
+    /* Very light gray for muted text, almost white */
+
+    --glass-bg: rgba(5, 5, 10, 0.85);
+    /* Deep black glass */
     --glass-border: rgba(255, 255, 255, 0.15);
-    --card-header-bg: rgba(0, 0, 0, 0.5);
+    --card-header-bg: rgba(0, 0, 0, 0.6);
     --border-color: rgba(255, 255, 255, 0.1);
-    
-    --overlay-color: rgba(255, 255, 255, 0.1);
-    --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.3);
-    --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+    --overlay-color: rgba(0, 0, 0, 0.8);
+    --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.6);
+    --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.8);
 
     --logo-filter: invert(0);
 }
@@ -66,7 +69,7 @@
 
 .glass-card .row a.d-block:hover {
     background-color: rgba(116, 147, 212, 0.7);
-    transform: translateY(-3px); 
+    transform: translateY(-3px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
@@ -125,7 +128,7 @@ body::-webkit-scrollbar-thumb {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #1A202C; 
+    background-color: #1A202C;
     z-index: 9999;
     opacity: 1;
     visibility: visible;
@@ -170,24 +173,75 @@ body::-webkit-scrollbar-thumb {
 }
 
 @keyframes text_713 {
-    0%, 100% { letter-spacing: 1px; transform: translateX(0px); }
-    40% { letter-spacing: 2px; transform: translateX(26px); }
-    80% { letter-spacing: 1px; transform: translateX(32px); }
-    90% { letter-spacing: 2px; transform: translateX(0px); }
+
+    0%,
+    100% {
+        letter-spacing: 1px;
+        transform: translateX(0px);
+    }
+
+    40% {
+        letter-spacing: 2px;
+        transform: translateX(26px);
+    }
+
+    80% {
+        letter-spacing: 1px;
+        transform: translateX(32px);
+    }
+
+    90% {
+        letter-spacing: 2px;
+        transform: translateX(0px);
+    }
 }
 
 @keyframes loading_713 {
-    0%, 100% { width: 16px; transform: translateX(0px); }
-    40% { width: 100%; transform: translateX(0px); }
-    80% { width: 16px; transform: translateX(64px); }
-    90% { width: 100%; transform: translateX(0px); }
+
+    0%,
+    100% {
+        width: 16px;
+        transform: translateX(0px);
+    }
+
+    40% {
+        width: 100%;
+        transform: translateX(0px);
+    }
+
+    80% {
+        width: 16px;
+        transform: translateX(64px);
+    }
+
+    90% {
+        width: 100%;
+        transform: translateX(0px);
+    }
 }
 
 @keyframes loading2_713 {
-    0%, 100% { transform: translateX(0px); width: 16px; }
-    40% { transform: translateX(0%); width: 80%; }
-    80% { width: 100%; transform: translateX(0px); }
-    90% { width: 80%; transform: translateX(15px); }
+
+    0%,
+    100% {
+        transform: translateX(0px);
+        width: 16px;
+    }
+
+    40% {
+        transform: translateX(0%);
+        width: 80%;
+    }
+
+    80% {
+        width: 100%;
+        transform: translateX(0px);
+    }
+
+    90% {
+        width: 80%;
+        transform: translateX(15px);
+    }
 }
 
 body.loaded .loader_p {
@@ -293,12 +347,12 @@ body.loaded .loader_p {
 
 .glass-panel h5,
 .glass-panel p {
-    color: #000000 !important; 
+    color: #000000 !important;
 }
 
 [data-theme="dark"] .glass-panel h5,
 [data-theme="dark"] .glass-panel p {
-    color: #FFFFFF !important; 
+    color: #FFFFFF !important;
 }
 
 /* ===============================================
@@ -474,7 +528,7 @@ body.loaded .loader_p {
 }
 
 [data-theme="dark"] #logoutModal .modal-content {
-    background: #000000; 
+    background: #000000;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     border: 1px solid #4b5563;
@@ -515,6 +569,7 @@ body.loaded .loader_p {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -524,12 +579,29 @@ body.loaded .loader_p {
 /* ===============================================
    CLASES DE UTILIDAD
    =============================================== */
-.text-primary { color: var(--primary-color) !important; }
-.text-success { color: var(--success-color) !important; }
-.text-warning { color: var(--warning-color) !important; }
-.text-info { color: var(--info-color) !important; }
-.text-muted { color: var(--text-muted) !important; }
-.badge.bg-danger {background-color: var(--danger-color) !important;}
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.text-success {
+    color: var(--success-color) !important;
+}
+
+.text-warning {
+    color: var(--warning-color) !important;
+}
+
+.text-info {
+    color: var(--info-color) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.badge.bg-danger {
+    background-color: var(--danger-color) !important;
+}
 
 /* ===============================================
    ESTILOS ESPECÍFICOS DEL SIMULADOR DE AHORRO
@@ -550,6 +622,24 @@ body.loaded .loader_p {
     border: 2px solid var(--primary-color);
     box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25);
     transform: translateY(-5px);
+}
+
+.cursor-pointer {
+    cursor: pointer !important;
+}
+
+.prev-step-btn {
+    font-weight: 600;
+    border-width: 2px;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.prev-step-btn:hover {
+    transform: translateX(-5px);
+    background-color: var(--secondary-color);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
 }
 
 .meta-details {
@@ -595,7 +685,7 @@ body.loaded .loader_p {
 
 body.overlay-active::after {
     content: '';
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -603,4 +693,224 @@ body.overlay-active::after {
     background-color: rgba(0, 0, 0, 0.3);
     z-index: 1040;
     transition: background-color 0.3s ease-out;
+}
+
+/* ===============================================
+   GLOBAL DARK MODE UTILITY OVERRIDES (UNIFIED BLACK GLASS STYLE)
+   =============================================== */
+
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .card {
+    background-color: var(--glass-bg) !important;
+    backdrop-filter: blur(var(--backdrop-blur));
+    -webkit-backdrop-filter: blur(var(--backdrop-blur));
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .bg-light {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .text-dark {
+    color: #ffffff !important;
+}
+
+/* Ensure ALL muted text is readable in dark mode */
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] small,
+[data-theme="dark"] .small,
+[data-theme="dark"] .form-text {
+    color: #cbd5e1 !important;
+    /* Blueish light gray for better readability */
+}
+
+[data-theme="dark"] .border-light {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .shadow-sm,
+[data-theme="dark"] .shadow,
+[data-theme="dark"] .shadow-lg {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Ensure inputs match the glass style */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .input-group-text {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .input-group-text.bg-white {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+    /* Override inline bg-white */
+    border: none !important;
+}
+
+[data-theme="dark"] .form-control.bg-white {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+    /* Override inline bg-white */
+}
+
+[data-theme="dark"] .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Fix specific Diagnostico elements */
+[data-theme="dark"] #reportHeader {
+    background: transparent !important;
+}
+
+[data-theme="dark"] .badge.bg-white {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* STRONG OVERRIDES FOR DASHBOARD & GLASS ELEMENTS */
+[data-theme="dark"] .glass-card,
+[data-theme="dark"] .glass-panel,
+[data-theme="dark"] .glass-modal .modal-content,
+[data-theme="dark"] .glass-nav {
+    background: rgba(5, 5, 10, 0.85) !important;
+    /* Deep black glass forced */
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .glass-card:hover,
+[data-theme="dark"] .glass-panel:hover {
+    background: rgba(10, 10, 20, 0.9) !important;
+}
+
+/* Fix text within glass components specifically */
+[data-theme="dark"] .glass-card h4,
+[data-theme="dark"] .glass-card h5,
+[data-theme="dark"] .glass-card p,
+[data-theme="dark"] .glass-panel h4,
+[data-theme="dark"] .glass-panel h5,
+[data-theme="dark"] .glass-panel p {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .glass-card .text-muted,
+[data-theme="dark"] .glass-panel .text-muted {
+    color: #cbd5e1 !important;
+}
+
+/* Ensure body background is dark gradient */
+[data-theme="dark"] body,
+[data-theme="dark"] .main-content {
+    background: radial-gradient(circle at top right, #1e1b4b 0%, #020617 100%) !important;
+    color: #ffffff !important;
+}
+
+/* ===============================================
+   PREMIUM GLASS INPUTS & LAYOUT IMPROVEMENTS
+   =============================================== */
+
+/* Wrapper para el input group glassmorphism */
+.input-glass-wrapper {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 0.5rem;
+}
+
+.input-glass-wrapper:hover {
+    background: rgba(255, 255, 255, 0.6);
+    transform: translateY(-1px);
+}
+
+.input-glass-wrapper:focus-within {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Interior del input group */
+.input-glass-wrapper .input-group-text {
+    background: transparent !important;
+    border: none !important;
+    color: var(--primary-color) !important;
+    padding-left: 1rem;
+    font-size: 1.5rem;
+}
+
+.input-glass-wrapper .form-control {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: var(--text-dark) !important;
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 1rem;
+    height: auto;
+}
+
+.input-glass-wrapper .form-control::placeholder {
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+/* Dark Mode Overrides for Inputs */
+[data-theme="dark"] .input-glass-wrapper {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .input-glass-wrapper:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .input-glass-wrapper:focus-within {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.2);
+}
+
+[data-theme="dark"] .input-glass-wrapper .form-control {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .input-glass-wrapper .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Espaciado y Layout */
+.step-container {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 1rem 0;
+}
+
+.form-label-premium {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+    display: block;
+}
+
+[data-theme="dark"] .form-label-premium {
+    color: #ffffff !important;
+}
+
+.helper-text-premium {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
 }

@@ -16,96 +16,298 @@
 {% block content %}
 <main class="main-content">
     <section id="simulacion-presupuesto-section" class="content-section">
-        <div class="glass-card p-4 fade-in">
-            <h2 class="mb-4 titulo-dashboard text-center">¡Simulador de presupuesto personal!</h2>
-            <p class="lead text-muted text-center mb-5">Visualiza cómo tus ingresos y gastos impactan tu capacidad de
-                ahorro y cumplimiento de objetivos.</p>
+        <div class="fade-in">
+            <!-- Header Section -->
+            <div class="text-center mb-5">
+                <span class="badge bg-success bg-opacity-10 text-success rounded-pill mb-3 px-3 py-2">Salud
+                    financiera</span>
+                <h2 class="fw-bold mb-3 display-6">Simulador de presupuesto</h2>
+                <p class="lead text-muted mx-auto" style="max-width: 700px;">
+                    Analiza tus finanzas con la regla 50/30/20. Descubre a dónde va tu dinero y optimiza tus gastos.
+                </p>
+            </div>
 
-            <div id="budget-simulation-form-section" class="mt-5">
-                <h3 class="mb-4 titulo-dashboard text-center">Define tu presupuesto mensual</h3>
-                <form id="personalBudgetForm" class="row g-4 justify-content-center">
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="monthlyIncome" class="form-label mb-2"><i
-                                    class="bi bi-graph-up me-2"></i>Ingresos mensuales:</label>
-                            <input type="number" class="form-control glass-input" id="monthlyIncome"
-                                placeholder="Ej: 15000" min="0" required>
-                            <div class="invalid-feedback">Ingresa tus ingresos mensuales (mayor o igual a 0).</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="fixedExpenses" class="form-label mb-2"><i
-                                    class="bi bi-cash-coin me-2"></i>Gastos fijos mensuales:</label>
-                            <input type="number" class="form-control glass-input" id="fixedExpenses"
-                                placeholder="Ej: 8000" min="0" required>
-                            <div class="invalid-feedback">Ingresa tus gastos fijos (mayor o igual a 0).</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="variableExpenses" class="form-label mb-2"><i class="bi bi-bag me-2"></i>Gastos
-                                variables mensuales:</label>
-                            <input type="number" class="form-control glass-input" id="variableExpenses"
-                                placeholder="Ej: 3000" min="0" required>
-                            <div class="invalid-feedback">Ingresa tus gastos variables (mayor o igual a 0).</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="desiredSavings" class="form-label mb-2"><i
-                                    class="bi bi-piggy-bank me-2"></i>Ahorro deseado mensual:</label>
-                            <input type="number" class="form-control glass-input" id="desiredSavings"
-                                placeholder="Ej: 1000" min="0" required>
-                            <div class="invalid-feedback">Ingresa tu ahorro deseado (mayor o igual a 0).</div>
-                        </div>
-                    </div>
+            <div id="simulation-form-section" class="mt-5 fade-in">
+                <div class="col-lg-7 mx-auto">
+                    <div class="glass-card p-4 p-md-5 border-0 shadow-lg position-relative overflow-hidden">
 
-                    <div class="col-12 text-center">
-                        <button type="submit" class="btn btn-primary btn-lg mt-4">
-                            <i class="bi bi-pie-chart-fill me-2"></i> Generar presupuesto
-                        </button>
-                    </div>
-                </form>
+                        <form id="budgetWizardForm">
+                            <!-- Step 1: Income -->
+                            <div id="step-income" class="step-section fade-in">
+                                <div class="step-container">
+                                    <label class="form-label-premium">
+                                        <i class="bi bi-wallet2 text-success me-2"></i>¿Cuáles son tus ingresos
+                                        mensuales?
+                                    </label>
 
-                <div id="budget-results-section" class="d-none mt-5 glass-card p-4">
-                    <h3 class="mb-4 titulo-dashboard text-center">Resumen de tu presupuesto</h3>
-                    <div class="row text-center mb-4">
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 glass-panel h-100">
-                                <i class="bi bi-arrow-up-circle-fill text-success fs-3 mb-2"></i>
-                                <h5 class="text-muted">Ingresos totales</h5>
-                                <p class="fs-4 fw-bold text-dark" id="totalIncomeResult"></p>
+                                    <div class="input-glass-wrapper">
+                                        <span class="input-group-text text-success">$</span>
+                                        <input type="text" class="form-control" id="monthlyIncome" placeholder="0"
+                                            required autocomplete="off">
+                                    </div>
+
+                                    <div class="helper-text-premium">
+                                        <i class="bi bi-info-circle me-1"></i>Considera sueldo neto (lo que recibes en
+                                        tu cuenta) y otros ingresos fijos.
+                                    </div>
+
+                                    <div class="mt-5">
+                                        <button type="button"
+                                            class="btn btn-primary btn-lg rounded-pill py-3 shadow-lg hover-scale fw-bold fs-5 w-100 next-step-btn"
+                                            data-next="step-fixed">
+                                            Siguiente <i class="bi bi-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 glass-panel h-100">
-                                <i class="bi bi-arrow-down-circle-fill text-danger fs-3 mb-2"></i>
-                                <h5 class="text-muted">Gastos totales</h5>
-                                <p class="fs-4 fw-bold text-dark" id="totalExpensesResult"></p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 glass-panel h-100">
-                                <i class="bi bi-piggy-bank-fill text-primary fs-3 mb-2"></i>
-                                <h5 class="text-muted">Ahorro disponible</h5>
-                                <p class="fs-4 fw-bold text-dark" id="availableSavingsResult"></p>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div id="budget-summary-message" class="alert alert-info text-center mt-4"></div>
+                            <!-- Step 2: Fixed Expenses -->
+                            <div id="step-fixed" class="step-section d-none fade-in">
+                                <div class="step-container">
+                                    <label class="form-label-premium">
+                                        <i class="bi bi-house-door text-primary me-2"></i>¿A cuánto ascienden tus gastos
+                                        fijos?
+                                    </label>
 
-                    <div class="d-flex justify-content-center mt-4">
-                        <button type="button" class="btn btn-outline-secondary btn-lg" id="resetBudgetForm">
-                            <i class="bi bi-arrow-repeat me-2"></i> Hacer otro presupuesto
-                        </button>
+                                    <div class="input-glass-wrapper">
+                                        <span class="input-group-text text-primary">$</span>
+                                        <input type="text" class="form-control" id="fixedExpenses" placeholder="0"
+                                            required autocomplete="off">
+                                    </div>
+
+                                    <div class="helper-text-premium">
+                                        Renta/Hipoteca, servicios, internet, despensa básica, deudas fijas.
+                                    </div>
+
+                                    <div class="d-flex gap-4 mt-5">
+                                        <button type="button"
+                                            class="btn btn-outline-secondary btn-lg rounded-pill py-3 w-50 prev-step-btn"
+                                            data-prev="step-income">
+                                            <i class="bi bi-arrow-left me-2"></i> Atrás
+                                        </button>
+                                        <button type="button"
+                                            class="btn btn-primary btn-lg rounded-pill py-3 w-50 next-step-btn"
+                                            data-next="step-variable">
+                                            Siguiente <i class="bi bi-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Variable Expenses -->
+                            <div id="step-variable" class="step-section d-none fade-in">
+                                <div class="step-container">
+                                    <label class="form-label-premium">
+                                        <i class="bi bi-cart3 text-warning me-2"></i>¿Y tus gastos variables?
+                                    </label>
+
+                                    <div class="input-glass-wrapper">
+                                        <span class="input-group-text text-warning">$</span>
+                                        <input type="text" class="form-control" id="variableExpenses" placeholder="0"
+                                            required autocomplete="off">
+                                    </div>
+
+                                    <div class="helper-text-premium">
+                                        Salidas, comidas fuera, entretenimiento, ropa, caprichos.
+                                    </div>
+
+                                    <div class="d-flex gap-4 mt-5">
+                                        <button type="button"
+                                            class="btn btn-outline-secondary btn-lg rounded-pill py-3 w-50 prev-step-btn"
+                                            data-prev="step-fixed">
+                                            <i class="bi bi-arrow-left me-2"></i> Atrás
+                                        </button>
+                                        <button type="button"
+                                            class="btn btn-primary btn-lg rounded-pill py-3 w-50 next-step-btn"
+                                            data-next="step-savings">
+                                            Siguiente <i class="bi bi-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Desired Savings -->
+                            <div id="step-savings" class="step-section d-none fade-in">
+                                <div class="step-container">
+                                    <label class="form-label-premium">
+                                        <i class="bi bi-piggy-bank text-info me-2"></i>¿Cuánto te gustaría ahorrar?
+                                    </label>
+
+                                    <div class="input-glass-wrapper">
+                                        <span class="input-group-text text-info">$</span>
+                                        <input type="text" class="form-control" id="desiredSavings" placeholder="0"
+                                            required autocomplete="off">
+                                    </div>
+
+                                    <div class="helper-text-premium">
+                                        Tu meta mensual para fondo de emergencia o inversiones.
+                                    </div>
+
+                                    <div class="d-flex gap-4 mt-5">
+                                        <button type="button"
+                                            class="btn btn-outline-secondary btn-lg rounded-pill py-3 w-50 prev-step-btn"
+                                            data-prev="step-variable">
+                                            <i class="bi bi-arrow-left me-2"></i> Atrás
+                                        </button>
+                                        <button type="submit"
+                                            class="btn btn-success btn-lg rounded-pill py-3 w-50 shadow-lg hover-scale fw-bold fs-5">
+                                            Analizar <i class="bi bi-pie-chart-fill ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 </main>
+{% endblock %}
+
+{% block extra_modals %}
+<div class="modal fade" id="resultsModal" tabindex="-1" aria-labelledby="resultsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content glass-modal border-0 shadow-lg">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold" id="resultsModalLabel">Análisis de presupuesto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4 p-lg-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold display-6 mb-3">Tu salud financiera</h2>
+                    <p class="text-muted">Desglose basado en la regla 50/30/20.</p>
+                </div>
+
+                <div class="row g-4 justify-content-center">
+                    <!-- Resumen Numérico -->
+                    <div class="col-lg-4">
+                        <div class="glass-card p-4 h-100 border-0 shadow-sm text-center card-summary">
+                            <h5 class="fw-bold mb-4 text-muted">Balance Mensual</h5>
+
+                            <div class="mb-3">
+                                <small class="text-uppercase text-muted fw-bold">Ingresos</small>
+                                <h3 class="fw-bold text-success" id="resIncome">$0.00</h3>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-uppercase text-muted fw-bold">Gastos Totales</small>
+                                <h3 class="fw-bold text-danger" id="resExpenses">$0.00</h3>
+                            </div>
+                            <hr>
+                            <div class="mb-0">
+                                <small class="text-uppercase text-muted fw-bold">Flujo Libre</small>
+                                <h2 class="fw-bold text-primary display-5" id="resBalance">$0.00</h2>
+                                <p class="small text-muted mt-2" id="resBalanceText">Dinero disponible real</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico / Análisis 50/30/20 -->
+                    <div class="col-lg-8">
+                        <div class="glass-card p-4 h-100 border-0 shadow-sm rule-analysis-card">
+                            <h5 class="fw-bold mb-4"><i class="bi bi-clipboard-data text-info me-2"></i> Análisis Regla
+                                50/30/20</h5>
+
+                            <!-- 50% Necesidades -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="fw-bold text-secondary-emphasis"><i
+                                            class="bi bi-house-door me-1"></i>Necesidades (Gastos Fijos)</span>
+                                    <span class="fw-bold" id="valNeeds">0%</span>
+                                </div>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-primary" id="barNeeds" role="progressbar"
+                                        style="width: 0%"></div>
+                                </div>
+                                <small class="text-muted">Ideal: 50% | Tú: <span id="txtNeeds"></span></small>
+                            </div>
+
+                            <!-- 30% Deseos -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="fw-bold text-secondary-emphasis"><i class="bi bi-cart3 me-1"></i>Deseos
+                                        (Variables)</span>
+                                    <span class="fw-bold" id="valWants">0%</span>
+                                </div>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-warning" id="barWants" role="progressbar"
+                                        style="width: 0%"></div>
+                                </div>
+                                <small class="text-muted">Ideal: 30% | Tú: <span id="txtWants"></span></small>
+                            </div>
+
+                            <!-- 20% Ahorro -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="fw-bold text-secondary-emphasis"><i
+                                            class="bi bi-piggy-bank me-1"></i>Ahorro / Deuda</span>
+                                    <span class="fw-bold" id="valSavings">0%</span>
+                                </div>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-success" id="barSavings" role="progressbar"
+                                        style="width: 0%"></div>
+                                </div>
+                                <small class="text-muted">Ideal: 20% | Meta: <span id="txtSavingsGoal"></span></small>
+                            </div>
+
+                            <!-- Recommendation Box -->
+                            <div
+                                class="glass-panel p-3 border shadow-sm rounded-4 mb-0 d-flex align-items-center bg-opacity-10 recommendation-box mt-4">
+                                <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3 text-info flex-shrink-0">
+                                    <i class="bi bi-robot fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Diagnóstico</h6>
+                                    <p class="small text-muted mb-0" id="budgetDiagnosis">
+                                        <!-- Dinámico -->
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 pb-4 justify-content-center">
+                <div class="row w-100 align-items-center">
+                    <div class="col-md-8 text-center text-md-start mb-3 mb-md-0">
+                        <p class="mb-0 text-muted small">
+                            Aprende más sobre <a href="glosario.html?q=presupuesto"
+                                class="text-primary fw-bold text-decoration-none hover-underline">Presupuestos</a> en el
+                            Glosario.
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-center text-md-end">
+                        <button type="button"
+                            class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm hover-scale"
+                            data-bs-dismiss="modal">Entendido</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Dark Mode Overrides for this Simulator */
+    [data-theme="dark"] .card-summary h5,
+    [data-theme="dark"] .card-summary small,
+    [data-theme="dark"] .rule-analysis-card h5,
+    [data-theme="dark"] .rule-analysis-card span.fw-bold {
+        color: #ffffff !important;
+    }
+
+    [data-theme="dark"] .recommendation-box {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    [data-theme="dark"] .text-secondary-emphasis {
+        color: #e2e8f0 !important;
+    }
+</style>
+
 {% endblock %}
 
 {% block extra_js %}

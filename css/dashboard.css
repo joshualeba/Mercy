@@ -1030,3 +1030,646 @@ body.overlay-active::after {
 .modal.fade .modal-dialog {
     z-index: 1060;
 }
+/* ===============================================
+   ANIMACIONES Y ESTILOS EXTRA PARA INTRO TEST
+   =============================================== */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.bg-soft-primary { background-color: rgba(37, 99, 235, 0.1); }
+.bg-soft-success { background-color: rgba(16, 185, 129, 0.1); }
+.bg-soft-warning { background-color: rgba(245, 158, 11, 0.1); }
+.bg-soft-info { background-color: rgba(14, 165, 233, 0.1); }
+
+/* Efecto Brillo Botón */
+.btn-shine {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-shine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { left: -100%; }
+    20% { left: 200%; }
+    100% { left: 200%; }
+}
+
+
+/* ===============================================
+   MEJORAS VISUALES - PREGUNTAS (V2)
+   =============================================== */
+
+/* Badge del Timer */
+.timer-badge {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+}
+
+[data-theme='dark'] .timer-badge {
+    background: rgba(30, 41, 59, 0.9);
+    color: var(--text-light);
+}
+
+.timer-badge.warning {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+    animation: pulse-red 1s infinite;
+}
+
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* Tarjeta de Pregunta */
+.question-card-enhanced {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.question-text-enhanced {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.4;
+    position: relative;
+    z-index: 2;
+}
+
+/* Opciones Mejoradas */
+.option-card-enhanced {
+    background: rgba(255,255,255, 0.6);
+    border: 1px solid transparent; /* var(--border-color); */
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+
+[data-theme='dark'] .option-card-enhanced {
+    background: rgba(30, 41, 59, 0.6);
+    border-color: rgba(255,255,255,0.05);
+}
+
+/* Hover state */
+.option-card-enhanced:hover {
+    transform: translateY(-2px) scale(1.01);
+    background: rgba(255,255,255, 0.9);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    border-color: var(--primary-color);
+}
+
+[data-theme='dark'] .option-card-enhanced:hover {
+    background: rgba(45, 55, 72, 0.9);
+}
+
+/* Selected state */
+.option-card-enhanced.selected {
+    background: #EBF5FF; /* Soft primary color */
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+[data-theme='dark'] .option-card-enhanced.selected {
+    background: rgba(37, 99, 235, 0.2);
+}
+
+/* Marker (Letter A, B, C or Circle) */
+.option-marker {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.option-card-enhanced.selected .option-marker {
+    background: var(--primary-color);
+    color: white;
+}
+
+.option-text-content {
+    flex-grow: 1;
+    font-size: 1.05rem;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+/* Feedback messages styles override */
+#feedbackMessage {
+    transition: all 0.3s ease;
+    padding: 10px;
+    border-radius: 8px;
+}
+#feedbackMessage.text-success {
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid var(--success-color);
+}
+#feedbackMessage.text-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--danger-color);
+}
+
+
+/* ===============================================
+   DISEÑO PREMIUM - PREGUNTAS (V3)
+   =============================================== */
+
+.question-card-premium {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+    padding: 3rem !important;
+}
+
+/* Borde superior con gradiente */
+.question-card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, var(--primary-color), var(--info-color));
+}
+
+.question-text-premium {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    line-height: 1.3;
+    margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme='dark'] .question-text-premium {
+    color: #fff;
+}
+
+/* Input para rellenar huecos */
+.fancy-input-container {
+    position: relative;
+    margin: 2rem 0;
+}
+
+.fancy-input {
+    width: 100%;
+    padding: 1.2rem 1.5rem;
+    font-size: 1.2rem;
+    border: 2px solid rgba(0,0,0,0.1);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.8);
+    transition: all 0.3s ease;
+    outline: none;
+    color: var(--text-dark);
+}
+
+[data-theme='dark'] .fancy-input {
+    background: rgba(0,0,0,0.3);
+    border-color: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+.fancy-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    background: #fff;
+    transform: translateY(-2px);
+}
+
+[data-theme='dark'] .fancy-input:focus {
+    background: rgba(0,0,0,0.5);
+}
+
+/* Decoración de fondo sutil */
+.bg-decoration-circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    z-index: 0;
+    opacity: 0.4;
+}
+
+.circle-1 {
+    width: 300px;
+    height: 300px;
+    background: var(--primary-color);
+    top: -100px;
+    right: -100px;
+}
+
+.circle-2 {
+    width: 200px;
+    height: 200px;
+    background: var(--info-color);
+    bottom: -50px;
+    left: -50px;
+}
+
+
+/* ===============================================
+   AJUSTES COMPACTOS (Override)
+   =============================================== */
+.question-card-premium {
+    padding: 1.5rem 2rem !important;
+    border-radius: 20px;
+}
+
+.question-text-premium {
+    font-size: 1.35rem; /* Reducido de 1.75rem */
+    margin-bottom: 1.5rem; /* Reducido de 2.5rem */
+}
+
+/* Reducir espacio en las opciones */
+.option-card-enhanced {
+    padding: 0.75rem 1rem; /* Reducido de 1rem 1.5rem */
+    margin-bottom: 0 !important; 
+}
+
+#optionsContainer {
+    gap: 0.75rem !important; /* Reducido de 1rem */
+}
+
+.fancy-input-container {
+    margin: 1.5rem 0; /* Reducido de 2rem */
+}
+
+.fancy-input {
+    padding: 0.8rem 1rem;
+    font-size: 1.1rem;
+}
+
+
+/* ===============================================
+   ANIMACIONES DE TRANSICION - PREGUNTAS
+   =============================================== */
+
+/* Animación de Entrada (Nueva Pregunta) */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Animación de Salida (Pregunta Anterior) */
+@keyframes slideOutLeft {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+}
+
+.question-slide-in {
+    animation: slideInRight 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.question-slide-out {
+    animation: slideOutLeft 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+
+/* ===============================================
+   CORRECCIONES MODO NOCHE Y MODAL PREMIUM
+   =============================================== */
+
+/* Timer en modo noche */
+[data-theme='dark'] #timerDisplayInternal,
+[data-theme='dark'] #timerDisplayInternal span,
+[data-theme='dark'] #timerDisplayInternal i {
+    color: #ffffff !important;
+}
+
+/* Modal Premium (Reutilizando estilos) */
+.modal-premium-content {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+    overflow: hidden;
+    position: relative;
+}
+
+.modal-premium-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+}
+
+[data-theme='dark'] .modal-premium-content .text-muted {
+    color: rgba(255,255,255,0.7) !important;
+}
+
+
+/* ===============================================
+   EFECTO BLUR EN MODALES ACTIVOS
+   =============================================== */
+.modal-backdrop.show {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background-color: rgba(0, 0, 0, 0.5); /* Opacidad ajustada para el blur */
+}
+
+
+/* ===============================================
+   DISEÑO PROFESIONAL & BLUR PERSISTENTE
+   =============================================== */
+
+/* Blur del contenido trasero cuando hay modal activo */
+body.modal-open > *:not(.modal):not(.script-mon):not(.modal-backdrop) {
+    filter: blur(8px);
+    transition: filter 0.2s ease;
+}
+
+/* Corrections for Dark & Professional Mode */
+.modal-premium-content {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.2);
+}
+
+[data-theme='dark'] .modal-premium-content {
+    background: rgba(30, 41, 59, 0.95); /* Slate 800 */
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #f8fafc;
+}
+
+/* Remove colored backgrounds for icons - Go Monochrome/Gradient */
+.premium-icon-box {
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+.premium-icon-box i {
+    font-size: 2.5rem;
+    background: -webkit-linear-gradient(45deg, var(--primary-color), var(--info-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Headers Cleaner */
+.modal-premium-header {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding-bottom: 1.5rem;
+}
+
+[data-theme='dark'] .modal-premium-header {
+    border-bottom-color: rgba(255,255,255,0.05);
+}
+
+/* Table Professional Styling */
+.table-premium {
+    width: 100%;
+    border-collapse: separate; 
+    border-spacing: 0;
+}
+
+.table-premium thead th {
+    background: rgba(0,0,0,0.03);
+    color: var(--text-dark);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    border: none;
+    padding: 1rem;
+}
+
+[data-theme='dark'] .table-premium thead th {
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.8);
+}
+
+.table-premium tbody td {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 1rem;
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+
+[data-theme='dark'] .table-premium tbody td {
+    border-bottom-color: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.9);
+}
+
+/* Highlight User Row */
+.table-premium .user-row {
+    background: rgba(37, 99, 235, 0.05);
+    position: relative;
+}
+
+[data-theme='dark'] .table-premium .user-row {
+    background: rgba(37, 99, 235, 0.15);
+}
+
+.table-premium .user-row td:first-child {
+    border-left: 3px solid var(--primary-color);
+}
+
+
+/* ===============================================
+   TARJETA FINALIZADA PREMIUM
+   =============================================== */
+.result-card-premium {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.result-card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, var(--success-color), var(--primary-color));
+}
+
+.stat-box {
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+[data-theme='dark'] .stat-box {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.05);
+}
+
+.stat-box:hover {
+    transform: translateY(-5px);
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+[data-theme='dark'] .stat-box:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: -webkit-linear-gradient(45deg, var(--primary-color), var(--info-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+
+/* ===============================================
+   FIX MODO NOCHE - RESULTADOS FINALES
+   =============================================== */
+
+/* Asegurar legibilidad en tarjetas de estadísticas */
+[data-theme='dark'] .result-card-premium .bg-white.bg-opacity-50 {
+    background: rgba(30, 41, 59, 0.6) !important; /* Slate oscuro semi-transparente */
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Textos en modo noche */
+[data-theme='dark'] .result-card-premium .text-dark {
+    color: #f8fafc !important; /* Blanco hueso */
+}
+
+[data-theme='dark'] .result-card-premium .text-secondary {
+    color: #94a3b8 !important; /* Gris claro */
+}
+
+[data-theme='dark'] .result-card-premium .text-muted {
+    color: #64748b !important; /* Gris medio */
+}
+
+[data-theme='dark'] .result-card-premium .display-6 {
+    color: #ffffff !important;
+}
+
+/* Ajuste específico para el contenedor de la frase final */
+[data-theme='dark'] .result-card-premium .bg-primary.bg-opacity-10 {
+    background: rgba(59, 130, 246, 0.15) !important;
+}
+
+[data-theme='dark'] .result-card-premium .text-primary {
+    color: #60a5fa !important; /* Azul más claro para contraste oscuro */
+}
+
+
+/* ===============================================
+   FIX FINAL - STATS CARDS MODO NOCHE
+   =============================================== */
+
+.stats-card-premium {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+/* Modo Noche: Fondo oscuro translúcido para contraste */
+[data-theme='dark'] .stats-card-premium {
+    background: rgba(15, 23, 42, 0.6) !important; /* Dark Slate Blue */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Textos específicos dentro de las cards en modo noche */
+[data-theme='dark'] .stats-card-premium .text-secondary {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+[data-theme='dark'] .stats-card-premium .text-muted {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+[data-theme='dark'] #completedCorrectAnswers,
+[data-theme='dark'] #completedTotalPoints {
+    color: #ffffff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+[data-theme='dark'] .stats-card-premium .display-6 {
+    color: #ffffff !important;
+}
+

@@ -65,16 +65,21 @@
                     <div class="input-container">
                         <input type="password" id="confirm-password" placeholder="Confirmar contraseña"
                             oninput="checkPasswords()">
-                        <span id="eye-icon-confirm" class="fa fa-eye"
+                        <span id="eye-icon-confirm-password" class="fa fa-eye"
                             onclick="togglePasswordVisibility('confirm-password')"></span>
                     </div>
                     <p id="password-message" style="color: rgb(209, 34, 34); font-size: 12px; margin-top: 4px;"></p>
-                    <div class="checkbox">
-                        <input type="checkbox" required><span class="chkbx_tyc">Acepto los <a href="#" id="termsLink"
-                                style="color: #6a5d92;">términos y condiciones</a></span>
+                    <div class="tyc-text text-center mt-3">
+                        <p style="font-size: 0.8rem; opacity: 0.8;">Al registrarse, aceptas nuestros <a href="#"
+                                id="termsLink" style="color: #6a5d92; font-weight: bold;">Términos y Condiciones</a></p>
                     </div>
                     <button type="submit" class="boton-principal">Crear cuenta</button>
                 </form>
+                <div class="divisor-o">o</div>
+                <a href="/login/google" class="boton-google">
+                    <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google Logo"> Registrarse con
+                    Google
+                </a>
             </div>
         </div>
     </div>
@@ -177,7 +182,54 @@
     </div>
 
     <script src="js/registro.js"></script>
+    <script>
+        // Sección para mostrar errores de Flash (Flask) con el modal Glassmorphism
+        document.addEventListener('DOMContentLoaded', function () {
+            // Obtenemos los mensajes flash enviados desde Flask como JSON
+            const flashMessages = JSON.parse('{{ get_flashed_messages(with_categories=true) | tojson }}');
 
+            if (flashMessages && flashMessages.length > 0) {
+                // Buscamos si hay algún mensaje de error para mostrar el Glassmorphism
+                // Filtramos por categoría 'error' o si el mensaje contiene texto específico
+                const errorMsg = flashMessages.find(msg => msg[0] === 'error' || msg[1].toLowerCase().includes('registrado') || msg[1].toLowerCase().includes('error'));
+
+                if (errorMsg) {
+                    // Llamamos a la función showGlassmorphismError definida en registro.js
+                    // timeout ligero para asegurar que js cargó
+                    setTimeout(() => {
+                        if (typeof showGlassmorphismError === 'function') {
+                            showGlassmorphismError(errorMsg[1]);
+                        } else {
+                            console.error("showGlassmorphismError no encontrada");
+                            alert(errorMsg[1]);
+                        }
+                    }, 300);
+                }
+            }
+        });
+
+        // Función corregida para el toggle de contraseña que sirve para ambos campos
+        // SOBREESCRIBE la de registro.js si existe conflicto o se usa directamente esta si no está en registro.js correctamente
+        function togglePasswordVisibility(id) {
+            const input = document.getElementById(id);
+            // El ID del icono debe coincidir: eye-icon-password o eye-icon-confirm-password
+            const eyeIcon = document.getElementById(`eye-icon-${id}`);
+
+            if (input.type === "password") {
+                input.type = "text";
+                if (eyeIcon) {
+                    eyeIcon.classList.remove('fa-eye');
+                    eyeIcon.classList.add('fa-eye-slash');
+                }
+            } else {
+                input.type = "password";
+                if (eyeIcon) {
+                    eyeIcon.classList.remove('fa-eye-slash');
+                    eyeIcon.classList.add('fa-eye');
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

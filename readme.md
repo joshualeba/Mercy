@@ -7,12 +7,13 @@
 </h1>
 
 <p align="center">
-  <strong>Una plataforma web de simulación financiera desarrollada con Flask y SQL Server.</strong>
+<p align="center">
+  <strong>Una plataforma web de simulación financiera desarrollada con Flask y SQLite.</strong>
   <br>
   <br>
   <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python" alt="Python Version">
   <img src="https://img.shields.io/badge/Flask-2.x-000000?style=for-the-badge&logo=flask" alt="Flask Version">
-  <img src="https://img.shields.io/badge/Database-SQL_Server-CC2927?style=for-the-badge&logo=microsoft-sql-server" alt="Database">
+  <img src="https://img.shields.io/badge/Database-SQLite-07405E?style=for-the-badge&logo=sqlite" alt="Database">
 </p>
 
 ---
@@ -49,9 +50,6 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu entorno de desarr
 Asegúrate de tener instalado lo siguiente en tu sistema:
 * [Python](https://www.python.org/downloads/) (versión 3.10 o superior)
 * [Git](https://git-scm.com/downloads/)
-* [Microsoft SQL Server](https://www.microsoft.com/es-es/sql-server/sql-server-downloads) (Edición Express o Developer)
-* [SQL Server Management Studio (SSMS)](https://learn.microsoft.com/es-es/sql/ssms/download-sql-server-management-studio-ssms)
-* [Microsoft ODBC Driver 18 for SQL Server](https://learn.microsoft.com/es-es/sql/connect/odbc/download-odbc-driver-for-sql-server) (¡**Importante**! El driver es necesario para la conexión).
 
 ### **2. Pasos de instalación**
 
@@ -83,11 +81,12 @@ Asegúrate de tener instalado lo siguiente en tu sistema:
     ```
     Flask
     Flask-SQLAlchemy
-    pyodbc
     werkzeug
     email_validator
     urllib3
     re
+    Authlib
+    requests
     ```
 
 5.  **Instala las dependencias de Python**
@@ -95,32 +94,13 @@ Asegúrate de tener instalado lo siguiente en tu sistema:
     pip install -r requirements.txt
     ```
 
-6.  **Configura la base de datos**
-    * Abre **SSMS** (SQL Server Management Studio) y conéctate a tu servidor SQL local (debéras nombrarlo '.').
-    * En el "Explorador de objetos", haz clic derecho en **"Bases de datos"** > **"Nueva base de datos..."**.
-    * Nombra la base de datos `mercy_db_v2` (este es el nombre esperado en `app.py`).
-    * Abre el archivo `mercy_db_1.sql` en SSMS o tu editor de texto.
-    * Copia todo el contenido del script.
-    * Pégalo en una "Nueva consulta" en SSMS (asegúrate de que la base de datos `mercy_db_v2` esté seleccionada) y **ejecútalo**.
-    * Esto creará todas las tablas, procedimientos y datos iniciales del test.
-
-7.  **Verifica la configuración de `app.py`**
-    Abre `app.py` y asegúrate de que estas líneas (cerca de la línea 20) coincidan con tu configuración. La configuración por defecto ya está lista para una conexión local estándar:
-    ```python
-    DB_SERVER = '.'
-    DB_DATABASE = 'mercy_db_v2'
-    DB_DRIVER = '{ODBC Driver 18 for SQL Server}'
-    
-    params = urllib.parse.quote_plus(
-        f"DRIVER={DB_DRIVER};"
-        f"SERVER={DB_SERVER};"
-        f"DATABASE={DB_DATABASE};"
-        f"trusted_connection=yes;"
-        f"TrustServerCertificate=yes;"  # <-- Esta línea es vital
-    )
+6.  **Inicializa la base de datos**
+    Ejecuta el script de semilla para crear las tablas y cargar los datos iniciales:
+    ```sh
+    python semilla.py
     ```
 
-8.  **Inicia el servidor de desarrollo**
+7.  **Inicia el servidor de desarrollo**
     ```sh
     flask run --debug
     ```

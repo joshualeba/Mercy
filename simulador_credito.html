@@ -1,6 +1,6 @@
 {% extends "templates/base.html" %}
 
-{% block title %}Mercy - Simulador de Crédito{% endblock %}
+{% block title %}Mercy - Simulador de crédito{% endblock %}
 
 {% block extra_css %}
 <link href="css/simulador_comun.css" rel="stylesheet">
@@ -14,174 +14,226 @@
 {% endblock %}
 
 {% block content %}
+<!-- CONTENIDO PRINCIPAL -->
 <main class="main-content">
     <section id="simulacion-credito-section" class="content-section">
-        <div class="glass-card p-4 fade-in">
-            <h2 class="mb-4 titulo-dashboard text-center">¡Simulador de crédito!</h2>
-            <p class="lead text-muted text-center mb-5">Calcula la cuota mensual de tu crédito y el interés total
-                pagado.</p>
+        <div class="fade-in">
+            <!-- Header Section -->
+            <div class="text-center mb-5">
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill mb-3 px-3 py-2">Planeación
+                    financiera</span>
+                <h2 class="fw-bold mb-3 display-6">Simulador de crédito inteligente</h2>
+                <p class="lead text-muted mx-auto" style="max-width: 700px;">
+                    Calcula la cuota mensual de tu crédito y el interés total pagado.
+                </p>
+            </div>
 
-            <div id="credit-type-selection-section" class="text-center">
-                <h3 class="mb-4 titulo-dashboard">Elige tu tipo de crédito</h3>
+            <!-- Paso 1: Selección de Tipo de Crédito -->
+            <div id="credit-type-section" class="fade-in">
+                <h4 class="fw-bold text-muted mb-4 ps-3 border-start border-4 border-primary">Paso 1: Elige tu tipo de
+                    crédito</h4>
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 justify-content-center">
+                    <!-- Personal -->
                     <div class="col">
-                        <div class="credit-card glass-card p-4 h-100 d-flex flex-column align-items-center justify-content-center"
+                        <div class="glass-card p-4 h-100 text-center cursor-pointer hover-scale border-0 shadow-sm transition-all credit-card position-relative"
                             data-credittype="personal">
-                            <i class="bi bi-person-badge-fill text-primary fs-1 mb-3"></i>
-                            <h5>Crédito personal</h5>
-                            <p class="text-muted">Para tus necesidades individuales.</p>
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-4 d-inline-flex mb-3">
+                                <i class="bi bi-person-badge-fill text-primary fs-2"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Crédito personal</h5>
+                            <p class="text-muted small mb-0">Para tus necesidades individuales.</p>
+                            <div class="position-absolute top-0 end-0 p-3 opacity-0 check-indicator transition-all">
+                                <i class="bi bi-check-circle-fill text-primary fs-4"></i>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Hipotecario -->
                     <div class="col">
-                        <div class="credit-card glass-card p-4 h-100 d-flex flex-column align-items-center justify-content-center"
+                        <div class="glass-card p-4 h-100 text-center cursor-pointer hover-scale border-0 shadow-sm transition-all credit-card position-relative"
                             data-credittype="hipotecario">
-                            <i class="bi bi-house-door-fill text-success fs-1 mb-3"></i>
-                            <h5>Crédito hipotecario</h5>
-                            <p class="text-muted">La casa de tus sueños más cerca.</p>
+                            <div class="rounded-circle bg-success bg-opacity-10 p-4 d-inline-flex mb-3">
+                                <i class="bi bi-house-check-fill text-success fs-2"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Crédito hipotecario</h5>
+                            <p class="text-muted small mb-0">La casa de tus sueños más cerca.</p>
+                            <div class="position-absolute top-0 end-0 p-3 opacity-0 check-indicator transition-all">
+                                <i class="bi bi-check-circle-fill text-primary fs-4"></i>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Automotriz -->
                     <div class="col">
-                        <div class="credit-card glass-card p-4 h-100 d-flex flex-column align-items-center justify-content-center"
+                        <div class="glass-card p-4 h-100 text-center cursor-pointer hover-scale border-0 shadow-sm transition-all credit-card position-relative"
                             data-credittype="automotriz">
-                            <i class="bi bi-car-fill text-info fs-1 mb-3"></i>
-                            <h5>Crédito automotriz</h5>
-                            <p class="text-muted">Financia tu próximo vehículo.</p>
+                            <div class="rounded-circle bg-info bg-opacity-10 p-4 d-inline-flex mb-3">
+                                <i class="bi bi-car-front-fill text-info fs-2"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Crédito automotriz</h5>
+                            <p class="text-muted small mb-0">Financia tu próximo vehículo.</p>
+                            <div class="position-absolute top-0 end-0 p-3 opacity-0 check-indicator transition-all">
+                                <i class="bi bi-check-circle-fill text-primary fs-4"></i>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Educativo -->
                     <div class="col">
-                        <div class="credit-card glass-card p-4 h-100 d-flex flex-column align-items-center justify-content-center"
+                        <div class="glass-card p-4 h-100 text-center cursor-pointer hover-scale border-0 shadow-sm transition-all credit-card position-relative"
                             data-credittype="educativo">
-                            <i class="bi bi-mortarboard-fill text-warning fs-1 mb-3"></i>
-                            <h5>Crédito educativo</h5>
-                            <p class="text-muted">Invierte en tu formación académica.</p>
+                            <div class="rounded-circle bg-warning bg-opacity-10 p-4 d-inline-flex mb-3">
+                                <i class="bi bi-mortarboard-fill text-warning fs-2"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Crédito educativo</h5>
+                            <p class="text-muted small mb-0">Invierte en tu formación académica.</p>
+                            <div class="position-absolute top-0 end-0 p-3 opacity-0 check-indicator transition-all">
+                                <i class="bi bi-check-circle-fill text-primary fs-4"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="simulation-form-section" class="d-none mt-5">
-                <h3 class="mb-4 titulo-dashboard text-center" id="form-title">Simulación de crédito para [Tipo de
-                    crédito]</h3>
-                <form id="creditSimulationForm" class="row g-4 justify-content-center">
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="loanAmount" class="form-label mb-2"><i class="bi bi-cash-coin me-2"></i>Monto
-                                del crédito:</label>
-                            <input type="number" class="form-control glass-input" id="loanAmount"
-                                placeholder="Ej: 100000" min="1" required>
-                            <div class="invalid-feedback">Ingresa un monto de crédito válido (mayor a 0).</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="interestRate" class="form-label mb-2"><i class="bi bi-percent me-2"></i>Tasa de
-                                interés anual (%):</label>
-                            <input type="number" class="form-control glass-input" id="interestRate" placeholder="Ej: 12"
-                                min="0.01" step="0.01" required>
-                            <div class="invalid-feedback">Ingresa una tasa de interés válida (mayor a 0).</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="loanTerm" class="form-label mb-2"><i
-                                    class="bi bi-calendar-check-fill me-2"></i>Plazo del crédito (meses):</label>
-                            <input type="number" class="form-control glass-input" id="loanTerm" placeholder="Ej: 60"
-                                min="1" required>
-                            <div class="invalid-feedback">Ingresa un plazo válido (mayor a 0).</div>
-                        </div>
-                    </div>
+            <!-- Paso 2: Formulario de Simulación (Wizard) -->
+            <div id="simulation-form-section" class="d-none mt-5 fade-in">
+                <div class="d-flex align-items-center justify-content-center mb-4 ps-3">
+                    <button class="btn btn-sm btn-light rounded-pill shadow-sm me-3" id="backToCreditType"
+                        type="button">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                    <h4 class="fw-bold text-muted mb-0" id="form-title">Calculadora de crédito</h4>
+                </div>
 
-                    <div id="personal-details" class="credit-details d-none mt-5 glass-card p-4 col-12">
-                        <h4 class="text-primary mb-3 text-center">Detalles para tu crédito personal</h4>
-                        <p class="text-muted text-center">Indica el propósito de tu crédito personal.</p>
-                        <div class="row g-3 justify-content-center">
-                            <div class="col-md-6">
-                                <label for="personalPurpose" class="form-label">Propósito:</label>
-                                <select class="form-select glass-input" id="personalPurpose">
-                                    <option value="gastos_personales">Gastos personales</option>
-                                    <option value="consolidacion_deudas">Consolidación de deudas</option>
-                                    <option value="emergencia">Emergencia</option>
-                                    <option value="otro">Otro</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="personalCreditScore" class="form-label">Historial crediticio:</label>
-                                <select class="form-select glass-input" id="personalCreditScore">
-                                    <option value="excelente">Excelente</option>
-                                    <option value="bueno">Bueno</option>
-                                    <option value="regular">Regular</option>
-                                    <option value="malo">Malo</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-lg-7 mx-auto">
+                    <div class="glass-card p-4 p-md-5 border-0 shadow-lg position-relative overflow-hidden">
 
-                    <div id="hipotecario-details" class="credit-details d-none mt-5 glass-card p-4 col-12">
-                        <h4 class="text-success mb-3 text-center">Detalles para tu crédito hipotecario</h4>
-                        <p class="text-muted text-center">Información adicional para tu crédito de vivienda.</p>
-                        <div class="row g-3 justify-content-center">
-                            <div class="col-md-6">
-                                <label for="propertyValue" class="form-label">Valor de la propiedad:</label>
-                                <input type="number" class="form-control glass-input" id="propertyValue"
-                                    placeholder="Ej: 2000000" min="1">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="downPayment" class="form-label">Enganche/Pie (%):</label>
-                                <input type="number" class="form-control glass-input" id="downPayment"
-                                    placeholder="Ej: 20" min="0" max="100">
-                            </div>
-                        </div>
-                    </div>
+                        <form id="creditSimulationForm">
+                            <!-- Step 1: Loan Amount -->
+                            <div id="step-amount" class="step-section fade-in">
+                                <div class="step-container">
+                                    <label class="form-label-premium" id="label-amount">
+                                        <i class="bi bi-cash-coin text-primary me-2"></i>¿Cuánto dinero necesitas?
+                                    </label>
 
-                    <div id="automotriz-details" class="credit-details d-none mt-5 glass-card p-4 col-12">
-                        <h4 class="text-info mb-3 text-center">Detalles para tu crédito automotriz</h4>
-                        <p class="text-muted text-center">Especifica el vehículo que deseas adquirir.</p>
-                        <div class="row g-3 justify-content-center">
-                            <div class="col-md-6">
-                                <label for="carMake" class="form-label">Marca del auto:</label>
-                                <input type="text" class="form-control glass-input" id="carMake"
-                                    placeholder="Ej: Toyota, Nissan">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="carModel" class="form-label">Modelo del auto:</label>
-                                <input type="text" class="form-control glass-input" id="carModel"
-                                    placeholder="Ej: Corolla, Sentra">
-                            </div>
-                        </div>
-                    </div>
+                                    <div class="input-glass-wrapper">
+                                        <span class="input-group-text text-primary" id="icon-amount">$</span>
+                                        <input type="text" class="form-control" id="loanAmount" placeholder="0" required
+                                            autocomplete="off">
+                                    </div>
 
-                    <div id="educativo-details" class="credit-details d-none mt-5 glass-card p-4 col-12">
-                        <h4 class="text-warning mb-3 text-center">Detalles para tu crédito educativo</h4>
-                        <p class="text-muted text-center">Información sobre tus estudios o los de un familiar.</p>
-                        <div class="row g-3 justify-content-center">
-                            <div class="col-md-6">
-                                <label for="educationalLevel" class="form-label">Nivel de estudios:</label>
-                                <select class="form-select glass-input" id="educationalLevel">
-                                    <option value="licenciatura">Licenciatura</option>
-                                    <option value="maestria">Maestría</option>
-                                    <option value="doctorado">Doctorado</option>
-                                    <option value="diplomado">Diplomado/Curso</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="universityName" class="form-label">Nombre de la institución
-                                    (opcional):</label>
-                                <input type="text" class="form-control glass-input" id="universityName"
-                                    placeholder="Ej: UNAM, ITESM">
-                            </div>
-                        </div>
-                    </div>
+                                    <div class="helper-text-premium" id="helper-amount">
+                                        <i class="bi bi-info-circle me-1"></i>El monto total que deseas solicitar.
+                                    </div>
 
-                    <div class="col-12 text-center">
-                        <button type="submit" class="btn btn-primary btn-lg mt-4">
-                            <i class="bi bi-calculator-fill me-2"></i> Calcular
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary btn-lg mt-4 ms-3"
-                            id="backToCreditTypeSelection">
-                            <i class="bi bi-arrow-left me-2"></i> Volver a elegir tipo
-                        </button>
+                                    <div class="mt-5">
+                                        <button type="button"
+                                            class="btn btn-primary btn-lg rounded-pill py-3 shadow-lg hover-scale fw-bold fs-5 w-100 next-step-btn"
+                                            data-next="step-term">
+                                            Siguiente <i class="bi bi-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Loan Term -->
+                            <div id="step-term" class="step-section d-none fade-in">
+                                <div class="step-container">
+                                    <label class="form-label-premium" id="label-term">
+                                        <i class="bi bi-calendar-check text-success me-2"></i>¿En cuánto tiempo quieres
+                                        pagarlo?
+                                    </label>
+
+                                    <div class="input-glass-wrapper">
+                                        <span class="input-group-text text-success" id="icon-term"><i
+                                                class="bi bi-calendar-event"></i></span>
+                                        <input type="number" class="form-control" id="loanTerm"
+                                            placeholder="Ej: 12, 24, 60" min="1" required autocomplete="off">
+                                    </div>
+
+                                    <div class="helper-text-premium" id="helper-term">
+                                        Ingresa el plazo en <strong>meses</strong> (1 año = 12 meses).
+                                    </div>
+
+                                    <div class="d-flex gap-4 mt-5">
+                                        <button type="button"
+                                            class="btn btn-outline-primary btn-lg rounded-pill py-3 w-50 prev-step-btn"
+                                            data-prev="step-amount">
+                                            <i class="bi bi-arrow-left me-2"></i> Atrás
+                                        </button>
+                                        <button type="button"
+                                            class="btn btn-primary btn-lg rounded-pill py-3 w-50 next-step-btn"
+                                            data-next="step-interest">
+                                            Siguiente <i class="bi bi-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Interest Rate -->
+                            <div id="step-interest" class="step-section d-none fade-in">
+                                <div class="step-container">
+                                    <label class="form-label-premium" id="label-interest">
+                                        <i class="bi bi-percent text-warning me-2"></i>¿Cuál es la tasa de interés
+                                        anual?
+                                    </label>
+
+                                    <div class="input-glass-wrapper">
+                                        <span class="input-group-text text-warning" id="icon-interest">%</span>
+                                        <input type="number" class="form-control" id="interestRate"
+                                            placeholder="Ej: 12.5" min="0.01" step="0.01" required autocomplete="off">
+                                    </div>
+
+                                    <div class="helper-text-premium" id="helper-interest">
+                                        Consulta la tasa anual (CAT o Tasa Ordinaria) con tu banco.
+                                    </div>
+
+                                    <div class="d-flex gap-4 mt-5">
+                                        <button type="button"
+                                            class="btn btn-outline-primary btn-lg rounded-pill py-3 w-50 prev-step-btn"
+                                            data-prev="step-term">
+                                            <i class="bi bi-arrow-left me-2"></i> Atrás
+                                        </button>
+                                        <button type="button"
+                                            class="btn btn-primary btn-lg rounded-pill py-3 w-50 next-step-btn"
+                                            data-next="step-details">
+                                            Siguiente <i class="bi bi-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Additional Details (Optional) -->
+                            <div id="step-details" class="step-section d-none fade-in">
+                                <div class="step-container">
+                                    <label class="form-label-premium" id="label-details">
+                                        <i class="bi bi-card-text text-info me-2"></i>Detalles adicionales
+                                    </label>
+
+                                    <div class="mt-3" id="dynamic-details-container">
+                                        <!-- Dynamic inputs based on credit type will be inserted here via JS -->
+                                        <label class="form-label text-muted">Descripción (opcional)</label>
+                                        <input type="text" class="form-control glass-input" id="additionalDetails"
+                                            placeholder="Ej: Pago de colegiatura, Compra de auto..." autocomplete="off">
+                                    </div>
+
+                                    <div class="d-flex gap-4 mt-5">
+                                        <button type="button"
+                                            class="btn btn-outline-primary btn-lg rounded-pill py-3 w-50 prev-step-btn"
+                                            data-prev="step-interest">
+                                            <i class="bi bi-arrow-left me-2"></i> Atrás
+                                        </button>
+                                        <button type="submit"
+                                            class="btn btn-success btn-lg rounded-pill py-3 w-50 shadow-lg hover-scale fw-bold fs-5">
+                                            Calcular <i class="bi bi-calculator-fill ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </section>
@@ -190,27 +242,111 @@
 
 {% block extra_modals %}
 <div class="modal fade" id="resultsModal" tabindex="-1" aria-labelledby="resultsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content glass-modal">
-            <div class="modal-header border-0">
-                <h5 class="modal-title" id="resultsModalLabel">Resultados de tu simulación de crédito</h5>
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content glass-modal border-0 shadow-lg">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold" id="resultsModalLabel">Resultados de tu simulación</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="modal-body text-center">
-                <i class="bi bi-bar-chart-fill text-primary fs-1 mb-3"></i>
-                <p class="lead text-muted mb-4">Aquí tienes una estimación de tu crédito:</p>
-                <div class="glass-card p-3 mb-3 text-start">
-                    <p class="mb-1 text-muted">Monto del crédito: <strong id="modalLoanAmount"></strong></p>
-                    <p class="mb-1 text-muted">Tasa de interés anual: <strong id="modalInterestRate"></strong></p>
-                    <p class="mb-0 text-muted">Plazo: <strong id="modalLoanTerm"></strong></p>
+            <div class="modal-body p-4 p-lg-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold display-6 mb-3">Tu plan de pagos</h2>
+                    <p class="text-muted">Desglose estimado de tu crédito.</p>
                 </div>
-                <p class="fs-4 fw-bold text-success" id="modalMonthlyPayment"></p>
-                <p class="fs-5 fw-bold text-danger" id="modalTotalInterest"></p>
-                <p class="text-muted"><small>Estos resultados son una estimación. Las condiciones reales del crédito
-                        pueden variar.</small></p>
+
+                <div class="row g-4">
+                    <!-- Columna 1: Resumen de Pago -->
+                    <div class="col-lg-5">
+                        <div class="glass-card p-4 h-100 border-0 shadow-sm bg-white bg-opacity-50 text-center">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-4 d-inline-flex mb-3">
+                                <i class="bi bi-cash-stack text-primary fs-1"></i>
+                            </div>
+                            <h5 class="fw-bold mb-4">Pago mensual estimado</h5>
+
+                            <h1 class="display-3 fw-bold text-primary mb-2" id="modalMonthlyPayment">$0.00</h1>
+                            <p class="text-muted small">Durante <span id="modalTermDisplay">0</span> meses</p>
+
+                            <hr class="my-4 opacity-10">
+
+                            <div class="text-start">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Monto solicitado:</span>
+                                    <span class="fw-bold" id="modalLoanAmount">$0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Tasa anual:</span>
+                                    <span class="fw-bold" id="modalInterestRate">0%</span>
+                                </div>
+                                <div class="d-flex justify-content-between total-row mt-3 pt-2 border-top">
+                                    <span class="fw-bold text-dark">Total a pagar:</span>
+                                    <span class="fw-bold text-danger fs-5" id="modalTotalPayment">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna 2: Visualización -->
+                    <div class="col-lg-7">
+                        <div class="glass-card p-4 h-100 border-0 shadow-sm bg-white bg-opacity-50">
+                            <h5 class="fw-bold mb-4"><i class="bi bi-pie-chart-fill me-2 text-info"></i> Composición del
+                                pago</h5>
+
+                            <div class="p-4 rounded-4 bg-light border border-light mb-4 shadow-inner">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted small fw-bold text-uppercase">Capital (Lo que
+                                            pediste)</span>
+                                        <span class="fw-bold text-dark" id="modalPrincipalBarText">$0.00</span>
+                                    </div>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-primary rounded-pill" role="progressbar"
+                                            style="width: 70%" id="barPrincipal"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted small fw-bold text-uppercase">Intereses (Costo
+                                            extra)</span>
+                                        <span class="fw-bold text-danger" id="modalInterestBarText">$0.00</span>
+                                    </div>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-danger rounded-pill" role="progressbar"
+                                            style="width: 30%" id="barInterest"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div
+                                class="alert alert-warning border-0 bg-warning bg-opacity-10 d-flex align-items-start rounded-4">
+                                <i class="bi bi-lightbulb-fill text-warning mt-1 me-3 fs-5"></i>
+                                <div class="text-start">
+                                    <h6 class="fw-bold text-warning-emphasis mb-1">Consejo financiero</h6>
+                                    <p class="small text-muted mb-0 lh-sm">
+                                        Si puedes realizar pagos anticipados a capital, reducirás significativamente el
+                                        monto total de intereses y terminarás de pagar antes.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer border-0">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">¡Entendido!</button>
+            <div class="modal-footer border-top-0 pt-0 pb-4 justify-content-center">
+                <div class="row w-100 align-items-center">
+                    <div class="col-md-8 text-center text-md-start mb-3 mb-md-0">
+                        <p class="mb-0 text-muted small">
+                            ¿Necesitas ayuda con los términos? Consulta nuestro <a href="{{ url_for('glosario') }}"
+                                class="text-primary fw-bold text-decoration-none hover-underline">Glosario
+                                Financiero</a>.
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-center text-md-end">
+                        <button type="button"
+                            class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm hover-scale"
+                            data-bs-dismiss="modal">Entendido</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

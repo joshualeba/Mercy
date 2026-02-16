@@ -34,6 +34,11 @@
                     </div>
                     <button type="submit" class="boton-principal">Iniciar sesión</button>
                 </form>
+                <div class="divisor-o">o</div>
+                <a href="/login/google" class="boton-google">
+                    <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google Logo"> Continuar con
+                    Google
+                </a>
             </div>
         </div>
 
@@ -193,13 +198,21 @@
         });
 
         // revisa si hay mensajes flash de flask al cargar la página
+        // Sección para mostrar errores de Flash (Flask) con el modal Glassmorphism
         document.addEventListener('DOMContentLoaded', function () {
-            const flashMessages = JSON.parse('{{ get_flashed_messages() | tojson }}');
+            // Obtenemos los mensajes flash enviados desde Flask como JSON
+            const flashMessages = JSON.parse('{{ get_flashed_messages(with_categories=true) | tojson }}');
+
             if (flashMessages && flashMessages.length > 0) {
-                // asumiendo que solo quieres mostrar el último mensaje de error flash en el glassmorphism
-                const errorMessage = flashMessages.find(msg => msg.includes('incorrect') || msg.includes('registrado'));
-                if (errorMessage) {
-                    showGlassmorphismError(errorMessage);
+                // Buscamos si hay algún mensaje de error para mostrar el Glassmorphism
+                // Filtramos por categoría 'error' o si el mensaje contiene texto específico
+                const errorMsg = flashMessages.find(msg => msg[0] === 'error' || msg[1].toLowerCase().includes('registrado') || msg[1].toLowerCase().includes('error'));
+
+                if (errorMsg) {
+                    // Timeout ligero para asegurar que js cargó
+                    setTimeout(() => {
+                        showGlassmorphismError(errorMsg[1]);
+                    }, 300);
                 }
             }
         });

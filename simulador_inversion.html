@@ -16,58 +16,156 @@
 {% block content %}
 <main class="main-content">
     <section id="simulacion-inversion-section" class="content-section">
-        <div class="glass-card p-4 fade-in">
-            <h2 class="mb-4 titulo-dashboard text-center">¡Simulador de inversión!</h2>
-            <p class="lead text-muted text-center mb-5">Estima el crecimiento de tu dinero con el poder del interés
-                compuesto.</p>
+        <div class="fade-in">
+            <!-- Header Section -->
+            <div class="text-center mb-5">
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill mb-3 px-3 py-2">Crecimiento
+                    patrimonial</span>
+                <h2 class="fw-bold mb-3 display-6">Simulador de inversión</h2>
+                <p class="lead text-muted mx-auto" style="max-width: 700px;">
+                    Descubre el poder del interés compuesto. Visualiza cómo tu dinero puede crecer exponencialmente con
+                    el
+                    tiempo.
+                </p>
+            </div>
 
-            <div id="simulation-form-section" class="mt-5">
-                <h3 class="mb-4 titulo-dashboard text-center">Calcula tu inversión</h3>
-                <form id="investmentSimulationForm" class="row g-4 justify-content-center">
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="initialAmount" class="form-label mb-2"><i
-                                    class="bi bi-cash-stack me-2"></i>Monto inicial:</label>
-                            <input type="number" class="form-control glass-input" id="initialAmount"
-                                placeholder="Ej: 1000" min="0" required>
-                            <div class="invalid-feedback">Ingresa un monto inicial válido (mayor o igual a 0).</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="monthlyContribution" class="form-label mb-2"><i
-                                    class="bi bi-currency-dollar me-2"></i>Aporte mensual:</label>
-                            <input type="number" class="form-control glass-input" id="monthlyContribution"
-                                placeholder="Ej: 100" min="0" required>
-                            <div class="invalid-feedback">Ingresa un aporte mensual válido (mayor o igual a 0).</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="annualReturnRate" class="form-label mb-2"><i
-                                    class="bi bi-graph-up-arrow me-2"></i>Tasa de rendimiento anual (%):</label>
-                            <input type="number" class="form-control glass-input" id="annualReturnRate"
-                                placeholder="Ej: 8" min="0" step="0.01" required>
-                            <div class="invalid-feedback">Ingresa una tasa de rendimiento válida (mayor o igual a 0).
+            <!-- Paso 1: Selección de Perfil (Opcional, pero da contexto como en ahorro) -->
+            <!-- Para simplificar y seguir la petición de "parecido a ahorro", usaremos un flujo directo pero paso a paso -->
+
+            <div id="simulation-form-section" class="mt-5 fade-in">
+                <div class="col-lg-7 mx-auto">
+                    <div class="glass-card p-4 p-md-5 border-0 shadow-lg position-relative overflow-hidden">
+
+                        <form id="investmentSimulationForm">
+                            <!-- Step 1: Initial Amount -->
+                            <div id="step-initial" class="step-section fade-in">
+                                <div class="step-container">
+                                    <label class="form-label-premium">
+                                        <i class="bi bi-cash-stack text-success me-2"></i>¿Con cuánto dinero iniciarás?
+                                    </label>
+
+                                    <div class="input-glass-wrapper">
+                                        <span class="input-group-text text-success">$</span>
+                                        <input type="text" class="form-control" id="initialAmount" placeholder="0"
+                                            required autocomplete="off">
+                                    </div>
+
+                                    <div class="helper-text-premium">
+                                        <i class="bi bi-info-circle me-1"></i>Tu capital semilla para comenzar a
+                                        invertir.
+                                    </div>
+
+                                    <div class="mt-5">
+                                        <button type="button"
+                                            class="btn btn-primary btn-lg rounded-pill py-3 shadow-lg hover-scale fw-bold fs-5 w-100 next-step-btn"
+                                            data-next="step-monthly">
+                                            Siguiente <i class="bi bi-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="investmentTerm" class="form-label mb-2"><i
-                                    class="bi bi-calendar-range-fill me-2"></i>Plazo de inversión (años):</label>
-                            <input type="number" class="form-control glass-input" id="investmentTerm"
-                                placeholder="Ej: 5" min="1" required>
-                            <div class="invalid-feedback">Ingresa un plazo de inversión válido (mayor a 0).</div>
-                        </div>
-                    </div>
 
-                    <div class="col-12 text-center">
-                        <button type="submit" class="btn btn-primary btn-lg mt-4">
-                            <i class="bi bi-calculator-fill me-2"></i> Calcular Inversión
-                        </button>
+                            <!-- Step 2: Monthly Contribution -->
+                            <div id="step-monthly" class="step-section d-none fade-in">
+                                <div class="step-container">
+                                    <label class="form-label-premium">
+                                        <i class="bi bi-piggy-bank text-primary me-2"></i>¿Cuánto aportarás cada mes?
+                                    </label>
+
+                                    <div class="input-glass-wrapper">
+                                        <span class="input-group-text text-primary">$</span>
+                                        <input type="text" class="form-control" id="monthlyContribution" placeholder="0"
+                                            autocomplete="off">
+                                    </div>
+
+                                    <div class="helper-text-premium">
+                                        La constancia es clave. (Opcional, puedes dejarlo en 0).
+                                    </div>
+
+                                    <div class="d-flex gap-4 mt-5">
+                                        <button type="button"
+                                            class="btn btn-outline-secondary btn-lg rounded-pill py-3 w-50 prev-step-btn"
+                                            data-prev="step-initial">
+                                            <i class="bi bi-arrow-left me-2"></i> Atrás
+                                        </button>
+                                        <button type="button"
+                                            class="btn btn-primary btn-lg rounded-pill py-3 w-50 next-step-btn"
+                                            data-next="step-rate">
+                                            Siguiente <i class="bi bi-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Interest Rate -->
+                            <div id="step-rate" class="step-section d-none fade-in">
+                                <div class="step-container">
+                                    <label class="form-label-premium">
+                                        <i class="bi bi-graph-up-arrow text-warning me-2"></i>¿Qué rendimiento anual
+                                        esperas?
+                                    </label>
+
+                                    <div class="input-glass-wrapper">
+                                        <input type="number" class="form-control" id="annualReturnRate"
+                                            placeholder="Ej: 10" required autocomplete="off" step="0.1" min="0"
+                                            max="100">
+                                        <span class="input-group-text text-warning">%</span>
+                                    </div>
+
+                                    <div class="helper-text-premium">
+                                        CETES ~10%, SOFIPOs ~12%, Bolsa ~8-15% (variable).
+                                    </div>
+
+
+
+                                    <div class="d-flex gap-4 mt-5">
+                                        <button type="button"
+                                            class="btn btn-outline-secondary btn-lg rounded-pill py-3 w-50 prev-step-btn"
+                                            data-prev="step-monthly">
+                                            <i class="bi bi-arrow-left me-2"></i> Atrás
+                                        </button>
+                                        <button type="button"
+                                            class="btn btn-primary btn-lg rounded-pill py-3 w-50 next-step-btn"
+                                            data-next="step-term">
+                                            Siguiente <i class="bi bi-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Term -->
+                            <div id="step-term" class="step-section d-none fade-in">
+                                <div class="step-container">
+                                    <label class="form-label-premium">
+                                        <i class="bi bi-calendar-check text-info me-2"></i>¿Por cuántos años invertirás?
+                                    </label>
+
+                                    <div class="input-glass-wrapper">
+                                        <input type="number" class="form-control" id="investmentTerm"
+                                            placeholder="Ej: 5" required autocomplete="off" min="1" max="50">
+                                        <span class="input-group-text text-info">Años</span>
+                                    </div>
+
+                                    <div class="helper-text-premium">
+                                        El tiempo es el mejor amigo del interés compuesto.
+                                    </div>
+
+                                    <div class="d-flex gap-4 mt-5">
+                                        <button type="button"
+                                            class="btn btn-outline-secondary btn-lg rounded-pill py-3 w-50 prev-step-btn"
+                                            data-prev="step-rate">
+                                            <i class="bi bi-arrow-left me-2"></i> Atrás
+                                        </button>
+                                        <button type="submit"
+                                            class="btn btn-success btn-lg rounded-pill py-3 w-50 shadow-lg hover-scale fw-bold fs-5">
+                                            Proyectar <i class="bi bi-rocket-takeoff-fill ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </section>
@@ -76,34 +174,117 @@
 
 {% block extra_modals %}
 <div class="modal fade" id="resultsModal" tabindex="-1" aria-labelledby="resultsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content glass-modal">
-            <div class="modal-header border-0">
-                <h5 class="modal-title" id="resultsModalLabel">Resultados de tu simulación de inversión</h5>
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content glass-modal border-0 shadow-lg">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold" id="resultsModalLabel">Proyección de inversión</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="modal-body text-center">
-                <i class="bi bi-cash-coin text-success fs-1 mb-3"></i>
-                <p class="lead text-muted mb-4">Aquí tienes una estimación del crecimiento de tu inversión:</p>
-                <div class="glass-card p-3 mb-3 text-start">
-                    <p class="mb-1 text-muted">Monto inicial: <strong id="modalInitialAmount"></strong></p>
-                    <p class="mb-1 text-muted">Aporte mensual: <strong id="modalMonthlyContribution"></strong></p>
-                    <p class="mb-1 text-muted">Tasa de rendimiento anual: <strong id="modalAnnualReturnRate"></strong>
-                    </p>
-                    <p class="mb-0 text-muted">Plazo de inversión: <strong id="modalInvestmentTerm"></strong></p>
+            <div class="modal-body p-4 p-lg-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold display-6 mb-3">Tu futuro financiero</h2>
+                    <p class="text-muted">Así crecerá tu dinero gracias al interés compuesto.</p>
                 </div>
-                <p class="fs-4 fw-bold text-success" id="modalFinalAmount"></p>
-                <p class="fs-5 fw-bold text-primary" id="modalTotalGain"></p>
-                <p class="text-muted"><small>Estos resultados son una estimación. El rendimiento real puede
-                        variar.</small></p>
+
+                <div class="row g-4 justify-content-center">
+                    <!-- Resumen -->
+                    <div class="col-lg-8">
+                        <div
+                            class="glass-card p-4 border-0 shadow-sm position-relative overflow-hidden result-summary-card">
+
+                            <div class="row g-4 text-center">
+                                <div class="col-md-4">
+                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">Monto total
+                                        invertido</small>
+                                    <h4 class="fw-bold text-dark" id="displayTotalInvested">$0.00</h4>
+                                    <small class="text-muted">(Tu dinero)</small>
+                                </div>
+                                <div class="col-md-4 border-start border-end">
+                                    <small class="text-success text-uppercase fw-bold d-block mb-1">Ganancia por
+                                        intereses</small>
+                                    <h4 class="fw-bold text-success" id="displayTotalInterest">+$0.00</h4>
+                                    <div class="badge bg-success bg-opacity-10 text-success rounded-pill px-2">
+                                        <i class="bi bi-graph-up-arrow me-1"></i>interés compuesto
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <small class="text-primary text-uppercase fw-bold d-block mb-1">Monto final
+                                        estimado</small>
+                                    <h3 class="fw-bold text-primary" id="displayFinalAmount">$0.00</h3>
+                                </div>
+                            </div>
+
+                            <!-- Barra visual de composición -->
+                            <div class="mt-5 px-3">
+                                <div class="progress" style="height: 25px; border-radius: 12px;">
+                                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 50%"
+                                        id="barInvested" title="Tu Capital">Tu capital</div>
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 50%"
+                                        id="barInterest" title="Intereses">Intereses</div>
+                                </div>
+                                <div class="d-flex justify-content-between text-muted small mt-2">
+                                    <span>Lo que aportaste</span>
+                                    <span>Lo que generó tu dinero</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Recomendación -->
+                    <div class="col-lg-8">
+                        <div
+                            class="glass-panel p-3 border shadow-sm rounded-4 mb-0 d-flex align-items-center bg-opacity-10 recommendation-box">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3 text-primary flex-shrink-0">
+                                <i class="bi bi-lightbulb-fill fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Análisis inteligente</h6>
+                                <p class="small text-muted mb-0" id="investmentRecommendation">
+                                    <!-- Dinámico -->
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer border-0">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">¡Entendido!</button>
+            <div class="modal-footer border-top-0 pt-0 pb-4 justify-content-center">
+                <div class="row w-100 align-items-center">
+                    <div class="col-md-8 text-center text-md-start mb-3 mb-md-0">
+                        <p class="mb-0 text-muted small">
+                            ¿No sabes qué es el <span class="fw-bold">Rendimiento Anual</span>? Consulta el <a
+                                href="glosario.html?q=rendimiento"
+                                class="text-primary fw-bold text-decoration-none hover-underline">Glosario</a>.
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-center text-md-end">
+                        <button type="button"
+                            class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm hover-scale"
+                            data-bs-dismiss="modal">Entendido</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
+<style>
+    /* Estilos específicos para modo oscuro en el simulador de inversión */
+    [data-theme="dark"] .result-summary-card h4.text-dark {
+        color: #ffffff !important;
+    }
+
+    [data-theme="dark"] .result-summary-card h4 {
+        color: #ffffff !important;
+    }
+
+    /* Ajuste específico para la caja de recomendación en modo oscuro */
+    [data-theme="dark"] .recommendation-box {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+</style>
 
 {% block extra_js %}
 <script src="js/simulador_inversion.js"></script>

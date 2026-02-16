@@ -4,6 +4,7 @@
 
 {% block extra_css %}
 <link href="css/dashboard.css" rel="stylesheet">
+<link href="css/simulador_comun.css" rel="stylesheet">
 {% endblock %}
 
 {% block navbar_left %}
@@ -46,6 +47,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="/sofipos">
+                    <i class="bi bi-graph-up"></i>
+                    <span>Ranking SOFIPOs</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="#" data-section="glosario">
                     <i class="bi bi-book"></i>
                     <span>Glosario de términos y consejos de gestión</span>
@@ -55,12 +62,6 @@
                 <a class="nav-link" href="#" data-section="perfil">
                     <i class="bi bi-person"></i>
                     <span>Mi perfil</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/sofipos">
-                    <i class="bi bi-graph-up"></i>
-                    <span>Ranking SOFIPOs</span>
                 </a>
             </li>
         </ul>
@@ -76,168 +77,301 @@
 
 <!-- Sección: Contenido principal -->
 <main class="main-content">
-    <!-- Sección: Inicio -->
+    <!-- Sección: Inicio (Diseño Limpio y Profesional) -->
     <section id="inicio-section" class="content-section">
-        <div class="glass-card p-4 fade-in">
-            <div class="row align-items-center mb-5">
-                <div class="col-lg-7 col-md-12 order-md-2 order-lg-1 text-center text-lg-start mb-4 mb-lg-0">
-                    <h1 class="display-5 fw-bold mb-3 titulo-dashboard">¡Bienvenido/a {{ session.get('nombres',
-                        '').split(' ')[0] }}!</h1>
-                    <p class="lead text-muted mb-4">Tu plataforma financiera integral que te da el control para
-                        gestionar tus cuentas, realizar transferencias de forma sencilla y segura mediante simulaciones
-                        ¡Sin arriesgar nada!</p>
-                    <a href="#" class="btn btn-primary btn-lg" data-section="simulaciones">
-                        <i class="bi bi-calculator-fill me-2"></i> Comienza a simular
-                    </a>
+        <div class="fade-in">
+            <!-- Hero de Bienvenida Minimalista -->
+            <div class="glass-card p-5 mb-5 border-0 shadow-lg position-relative overflow-hidden">
+                <!-- Fondo sutil decorativo -->
+                <div class="position-absolute top-0 end-0 h-100 w-50 bg-gradient-primary opacity-05"
+                    style="background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.1), transparent 70%);">
                 </div>
-                <div class="col-lg-5 col-md-12 order-md-1 order-lg-2 text-center">
-                    <img src="https://res.cloudinary.com/dpvm2gro2/image/upload/v1769626139/home_img_jdphq5.png"
-                        alt="Imagen de bienvenida a Mercy" class="img-fluid rounded shadow-lg"
-                        style="max-height: 400px; object-fit: cover;">
+
+                <div class="row align-items-center position-relative z-1">
+                    <div class="col-lg-8 text-center text-lg-start">
+                        <span class="text-uppercase tracking-wide text-primary fw-bold small mb-2 d-block">Panel de
+                            Control</span>
+                        <h1 class="display-6 fw-bold mb-3">¡Hola de nuevo, {{ session.get('nombres', 'Usuario').split('
+                            ')[0] }}!</h1>
+                        <p class="lead text-muted mb-4" style="max-width: 600px;">
+                            Estás a un paso de tomar mejores decisiones financieras. ¿Por dónde quieres empezar hoy?
+                        </p>
+                        <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
+                            <a href="#" data-section="simulaciones"
+                                class="btn btn-primary rounded-pill px-4 py-2 shadow-sm transition-all mb-2">
+                                <i class="bi bi-calculator me-2"></i>Nueva simulación
+                            </a>
+                            <a href="{{ url_for('diagnostico') }}"
+                                class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm transition-all mb-2">
+                                <i class="bi bi-heart-pulse me-2"></i>Ver mi diagnóstico
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 d-none d-lg-block text-center opacity-75">
+                        <!-- Icono ilustrativo limpio -->
+                        <i class="bi bi-wallet2 text-primary" style="font-size: 8rem; opacity: 0.2;"></i>
+                    </div>
                 </div>
             </div>
 
-            <hr class="my-5">
+            <!-- Grid de Herramientas -->
+            <div class="mb-5">
+                <h5 class="fw-bold text-muted mb-4 ps-3 border-start border-4 border-primary">Herramientas principales
+                </h5>
+                <div class="row g-4">
+                    <!-- Card: Simuladores -->
+                    <div class="col-md-4">
+                        <a href="#" data-section="simulaciones"
+                            class="text-decoration-none text-reset d-block h-100 user-select-none">
+                            <div class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all">
+                                <div class="d-flex align-items-start mb-3">
+                                    <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success me-3">
+                                        <i class="bi bi-calculator-fill fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold mb-1">Simuladores</h5>
+                                        <span
+                                            class="badge bg-success bg-opacity-10 text-success rounded-pill small">Finanzas</span>
+                                    </div>
+                                </div>
+                                <p class="text-muted small mb-0">Calcula ahorros, créditos, inversiones y planes de
+                                    retiro con precisión.</p>
+                            </div>
+                        </a>
+                    </div>
 
-            <h3 class="text-center mb-4 titulo-dashboard">Explora nuestras herramientas clave</h3>
-            <div class="row text-center mt-4">
-                <!-- Tarjeta: Simulaciones inteligentes -->
-                <div class="col-lg-6 col-md-6 mb-4">
-                    <a href="#" class="text-decoration-none text-reset d-block glass-card p-3 h-100"
-                        data-section="simulaciones">
-                        <i class="bi bi-calculator-fill text-success fs-1 mb-3"></i>
-                        <h5>Simulaciones inteligentes</h5>
-                        <p class="card-text text-muted">Planifica tu futuro financiero con nuestras herramientas de
-                            proyección avanzadas.</p>
-                    </a>
-                </div>
-                <!-- Tarjeta: Test de conocimientos -->
-                <div class="col-lg-6 col-md-6 mb-4">
-                    <a href="#" class="text-decoration-none text-reset d-block glass-card p-3 h-100"
-                        data-section="test-conocimientos">
-                        <i class="bi bi-journal-check text-primary fs-1 mb-3"></i>
-                        <h5>Test de conocimientos</h5>
-                        <p class="card-text text-muted">Pon a prueba tus habilidades financieras y aprende de forma
-                            interactiva.</p>
-                    </a>
-                </div>
-                <!-- Tarjeta: Glosario de términos -->
-                <div class="col-lg-6 col-md-6 mb-4">
-                    <a href="#" class="text-decoration-none text-reset d-block glass-card p-3 h-100"
-                        data-section="glosario">
-                        <i class="bi bi-book text-info fs-1 mb-3"></i>
-                        <h5>Glosario de términos</h5>
-                        <p class="card-text text-muted">Descubre el significado de los conceptos financieros clave de
-                            manera sencilla.</p>
-                    </a>
-                </div>
-                <!-- Tarjeta: Perfil personalizado -->
-                <div class="col-lg-6 col-md-6 mb-4">
-                    <a href="#" class="text-decoration-none text-reset d-block glass-card p-3 h-100"
-                        data-section="perfil">
-                        <i class="bi bi-person-fill text-danger fs-1 mb-3"></i>
-                        <h5>Perfil personalizado</h5>
-                        <p class="card-text text-muted">Administra tus datos, preferencias y ajustes de seguridad
-                            fácilmente.</p>
-                    </a>
-                </div>
-                <div class="col-lg-6 col-md-6 mb-4">
-                    <a href="{{ url_for('diagnostico') }}"
-                        class="text-decoration-none text-reset d-block glass-card p-3 h-100">
-                        <i class="bi bi-heart-pulse-fill text-danger fs-1 mb-3"></i>
-                        <h5>Diagnóstico 360°</h5>
-                        <p class="card-text text-muted">Recibe un análisis completo de tu salud financiera y consejos
-                            personalizados.</p>
-                    </a>
+                    <!-- Card: Diagnóstico -->
+                    <div class="col-md-4">
+                        <a href="{{ url_for('diagnostico') }}"
+                            class="text-decoration-none text-reset d-block h-100 user-select-none">
+                            <div class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all">
+                                <div class="d-flex align-items-start mb-3">
+                                    <div class="rounded-circle bg-danger bg-opacity-10 p-3 text-danger me-3">
+                                        <i class="bi bi-activity fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold mb-1">Diagnóstico 360°</h5>
+                                        <span
+                                            class="badge bg-danger bg-opacity-10 text-danger-emphasis rounded-pill small">Salud</span>
+                                    </div>
+                                </div>
+                                <p class="text-muted small mb-0">Evalúa tu estado financiero actual y recibe consejos
+                                    personalizados.</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Card: SOFIPOs -->
+                    <div class="col-md-4">
+                        <a href="/sofipos" class="text-decoration-none text-reset d-block h-100 user-select-none">
+                            <div class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all">
+                                <div class="d-flex align-items-start mb-3">
+                                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning me-3">
+                                        <i class="bi bi-graph-up-arrow fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold mb-1">Ranking SOFIPOs</h5>
+                                        <span
+                                            class="badge bg-warning bg-opacity-10 text-warning rounded-pill small">Inversión</span>
+                                    </div>
+                                </div>
+                                <p class="text-muted small mb-0">Descubre las mejores tasas de rendimiento actualizadas
+                                    del mercado.</p>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
+
+            <!-- Grid de Aprendizaje -->
+            <div>
+                <h5 class="fw-bold text-muted mb-4 ps-3 border-start border-4 border-info">Aprendizaje y recursos</h5>
+                <div class="row g-4">
+                    <!-- Card: Test -->
+                    <div class="col-md-6">
+                        <a href="#" data-section="test-conocimientos"
+                            class="text-decoration-none text-reset d-block h-100 user-select-none">
+                            <div
+                                class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all d-flex align-items-center">
+                                <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary me-4">
+                                    <i class="bi bi-trophy-fill fs-3"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold mb-1">Desafío de conocimientos</h5>
+                                    <p class="text-muted small mb-0">Demuestra tus habilidades financieras.</p>
+                                </div>
+                                <div class="ms-3">
+                                    {% if session.get('test_completado') %}
+                                    <i class="bi bi-check-circle-fill text-success fs-4" title="Completado"></i>
+                                    {% else %}
+                                    <i class="bi bi-arrow-right-circle text-primary fs-4 opacity-50"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Card: Glosario -->
+                    <div class="col-md-6">
+                        <a href="#" data-section="glosario"
+                            class="text-decoration-none text-reset d-block h-100 user-select-none">
+                            <div
+                                class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all d-flex align-items-center">
+                                <div class="rounded-circle bg-info bg-opacity-10 p-3 text-info me-4">
+                                    <i class="bi bi-book-half fs-3"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold mb-1">Diccionario financiero</h5>
+                                    <p class="text-muted small mb-0">Conceptos clave explicados de forma sencilla.</p>
+                                </div>
+                                <div class="ms-3">
+                                    <i class="bi bi-search text-info fs-4 opacity-50"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
         </div>
     </section>
 
     <!-- Sección: Simulaciones -->
+    <!-- Sección: Simulaciones -->
     <section id="simulaciones-section" class="content-section d-none">
-        <div class="glass-card p-4 fade-in">
-            <h2 class="mb-4 titulo-dashboard text-center">¡Prepara tu futuro financiero con nuestras simulaciones!</h2>
-            <p class="lead text-muted text-center mb-5">Explora diferentes escenarios financieros y toma decisiones
-                informadas sin riesgo. Nuestras herramientas interactivas te ayudarán a entender el impacto de tus
-                elecciones.</p>
+        <div class="fade-in">
+            <div class="text-center mb-5">
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill mb-3 px-3 py-2">Herramientas
+                    Pro</span>
+                <h2 class="fw-bold mb-3 display-6">Centro de simulación</h2>
+                <p class="lead text-muted mx-auto" style="max-width: 700px;">
+                    Proyecta tu futuro con datos reales. Sin riesgos, toma el control de tus decisiones financieras hoy
+                    mismo.
+                </p>
+            </div>
 
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                <div class="col">
-                    <div class="glass-card h-100 p-4 d-flex flex-column">
-                        <i class="bi bi-wallet-fill text-success fs-1 mb-3 text-center"></i>
-                        <h5 class="card-title text-center mb-3">Simulador de ahorro</h5>
-                        <p class="card-text text-muted text-center flex-grow-1">Calcula cuánto necesitas ahorrar y por
-                            cuánto tiempo para alcanzar tus metas financieras, como comprar una casa o jubilarte
-                            cómodamente.</p>
-                        <a href="{{ url_for('simulador_ahorro') }}" class="btn btn-outline-success w-100 mt-auto">
-                            <i class="bi bi-play-circle me-2"></i> Iniciar simulación
+            <!-- Principales -->
+            <div class="row g-4 mb-4">
+                <!-- Ahorro -->
+                <div class="col-lg-6">
+                    <div
+                        class="glass-card p-4 h-100 border-0 shadow-sm hover-scale transition-all d-flex align-items-center position-relative overflow-hidden">
+                        <div class="position-absolute top-0 end-0 p-3 opacity-10">
+                            <i class="bi bi-wallet2 display-1 text-success"></i>
+                        </div>
+                        <div class="row align-items-center w-100 g-0 position-relative z-1">
+                            <div class="col-sm-3 text-center text-sm-start mb-3 mb-sm-0">
+                                <div class="rounded-circle bg-success bg-opacity-10 p-4 d-inline-flex">
+                                    <i class="bi bi-piggy-bank text-success fs-1"></i>
+                                </div>
+                            </div>
+                            <div class="col-sm-9 ps-sm-3">
+                                <h4 class="fw-bold mb-2">Simulador de ahorro</h4>
+                                <p class="text-muted small mb-3">Define una meta (casa, auto, viaje) y calcula cuánto
+                                    necesitas guardar mensualmente para lograrla.</p>
+                                <a href="{{ url_for('simulador_ahorro') }}"
+                                    class="btn btn-sm btn-outline-success rounded-pill stretched-link px-4">
+                                    Comenzar ahora
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Crédito -->
+                <div class="col-lg-6">
+                    <div
+                        class="glass-card p-4 h-100 border-0 shadow-sm hover-scale transition-all d-flex align-items-center position-relative overflow-hidden">
+
+                        <div class="row align-items-center w-100 g-0 position-relative z-1">
+                            <div class="col-sm-3 text-center text-sm-start mb-3 mb-sm-0">
+                                <div class="rounded-circle bg-primary bg-opacity-10 p-4 d-inline-flex">
+                                    <i class="bi bi-bank text-primary fs-1"></i>
+                                </div>
+                            </div>
+                            <div class="col-sm-9 ps-sm-3">
+                                <h4 class="fw-bold mb-2">Simulador de crédito</h4>
+                                <p class="text-muted small mb-3">Antes de pedir un préstamo, visualiza tu tabla de
+                                    amortización, intereses y pago total real.</p>
+                                <a href="{{ url_for('simulador_credito') }}"
+                                    class="btn btn-sm btn-outline-primary rounded-pill stretched-link px-4">
+                                    Simular préstamo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Herramientas Especializadas -->
+            <h5 class="fw-bold text-muted mb-4 ps-3 border-start border-4 border-info mt-5">Herramientas especializadas
+            </h5>
+            <div class="row g-4">
+                <!-- Inversión -->
+                <div class="col-md-6 col-lg-3">
+                    <div
+                        class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all position-relative text-center text-lg-start">
+                        <div class="rounded-circle bg-indigo bg-opacity-10 text-indigo p-3 d-inline-flex mb-3"
+                            style="color: #6610f2; background-color: rgba(102, 16, 242, 0.1);">
+                            <i class="bi bi-graph-up-arrow fs-4"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Inversión</h5>
+                        <p class="text-muted small mb-3 line-clamp-2">Proyecta el interés compuesto de tu dinero en el
+                            tiempo.</p>
+                        <a href="{{ url_for('simulador_inversion') }}"
+                            class="stretched-link text-decoration-none text-primary fw-bold small">
+                            Proyectar <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
                 </div>
 
-                <div class="col">
-                    <div class="glass-card h-100 p-4 d-flex flex-column">
-                        <i class="bi bi-currency-dollar text-primary fs-1 mb-3 text-center"></i>
-                        <h5 class="card-title text-center mb-3">Simulador de crédito</h5>
-                        <p class="card-text text-muted text-center flex-grow-1">Estima las cuotas mensuales, intereses y
-                            el costo total de un préstamo. Juega con diferentes plazos y tasas de interés para encontrar
-                            la mejor opción.</p>
-                        <a href="{{ url_for('simulador_credito') }}" class="btn btn-outline-info w-100 mt-auto">
-                            <i class="bi bi-cash-stack me-2"></i>Iniciar simulación
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="glass-card h-100 p-4 d-flex flex-column">
-                        <i class="bi bi-graph-up-arrow text-warning fs-1 mb-3 text-center"></i>
-                        <h5 class="card-title text-center mb-3">Simulador de inversión</h5>
-                        <p class="card-text text-muted text-center flex-grow-1">Proyecta el crecimiento de tus
-                            inversiones a lo largo del tiempo, considerando aportaciones regulares y diferentes
-                            rendimientos esperados.</p>
-                        <a href="{{ url_for('simulador_inversion') }}" class="btn btn-outline-warning w-100 mt-auto">
-                            <i class="bi bi-play-circle me-2"></i>Iniciar simulación
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="glass-card h-100 p-4 d-flex flex-column">
-                        <i class="bi bi-pie-chart-fill text-info fs-1 mb-3 text-center"></i>
-                        <h5 class="card-title text-center mb-3">Simulador de presupuesto personal</h5>
-                        <p class="card-text text-muted text-center flex-grow-1">Crea un presupuesto interactivo para
-                            visualizar cómo tus ingresos y gastos impactan tu capacidad de ahorro y cumplimiento de
-                            objetivos.</p>
+                <!-- Presupuesto -->
+                <div class="col-md-6 col-lg-3">
+                    <div
+                        class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all position-relative text-center text-lg-start">
+                        <div class="rounded-circle bg-info bg-opacity-10 text-info p-3 d-inline-flex mb-3">
+                            <i class="bi bi-pie-chart fs-4"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Presupuesto</h5>
+                        <p class="text-muted small mb-3 line-clamp-2">Distribuye tus ingresos y encuentra fugas de
+                            dinero.</p>
                         <a href="{{ url_for('simulador_presupuesto_personal') }}"
-                            class="btn btn-outline-info w-100 mt-auto">
-                            <i class="bi bi-play-circle me-2"></i>Iniciar simulación
+                            class="stretched-link text-decoration-none text-primary fw-bold small">
+                            Crear plan <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
                 </div>
 
-                <div class="col">
-                    <div class="glass-card h-100 p-4 d-flex flex-column">
-                        <i class="bi bi-person-lines-fill text-secondary fs-1 mb-3 text-center"></i>
-                        <h5 class="card-title text-center mb-3">Simulador de retiro/jubilación</h5>
-                        <p class="card-text text-muted text-center flex-grow-1">Planifica tu jubilación. Determina
-                            cuánto necesitas ahorrar para mantener tu estilo de vida deseado después de dejar de
-                            trabajar.</p>
+                <!-- Retiro -->
+                <div class="col-md-6 col-lg-3">
+                    <div
+                        class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all position-relative text-center text-lg-start">
+                        <div class="rounded-circle bg-warning bg-opacity-10 text-warning p-3 d-inline-flex mb-3">
+                            <i class="bi bi-umbrella fs-4"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Retiro</h5>
+                        <p class="text-muted small mb-3 line-clamp-2">Calcula cuánto necesitas para tu libertad
+                            financiera.</p>
                         <a href="{{ url_for('simulador_retiro_jubilacion') }}"
-                            class="btn btn-outline-secondary w-100 mt-auto">
-                            <i class="bi bi-play-circle me-2"></i>Iniciar simulación
+                            class="stretched-link text-decoration-none text-primary fw-bold small">
+                            Planificar <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
                 </div>
 
-                <div class="col">
-                    <div class="glass-card h-100 p-4 d-flex flex-column">
-                        <i class="bi bi-cash-stack text-danger fs-1 mb-3 text-center"></i>
-                        <h5 class="card-title text-center mb-3">Calculadora de deuda</h5>
-                        <p class="card-text text-muted text-center flex-grow-1">Visualiza cuánto tiempo y dinero te
-                            tomará saldar una deuda con diferentes estrategias de pago.</p>
-                        <a href="{{ url_for('calculadora_deuda') }}" class="btn btn-outline-danger w-100 mt-auto">
-                            <i class="bi bi-play-circle me-2"></i>Iniciar simulación
+                <!-- Deuda -->
+                <div class="col-md-6 col-lg-3">
+                    <div
+                        class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all position-relative text-center text-lg-start">
+                        <div class="rounded-circle bg-danger bg-opacity-10 text-danger p-3 d-inline-flex mb-3">
+                            <i class="bi bi-calculator fs-4"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Deuda</h5>
+                        <p class="text-muted small mb-3 line-clamp-2">Estrategias para salir de deudas más rápido.</p>
+                        <a href="{{ url_for('calculadora_deuda') }}"
+                            class="stretched-link text-decoration-none text-primary fw-bold small">
+                            Calcular <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -248,36 +382,153 @@
     <!-- Sección: Test de conocimientos -->
     <section id="test-conocimientos-section" class="content-section d-none">
         <div class="glass-card p-4 fade-in">
-            <h2 class="mb-4 titulo-dashboard text-center">Test de conocimientos financieros</h2>
-            <p class="lead text-muted text-center mb-5">Pon a prueba tus conocimientos financieros con nuestras
-                preguntas interactivas. ¡Aprende y diviértete!</p>
+            <div id="testHeader">
+                <h2 class="mb-4 titulo-dashboard text-center">Test de conocimientos financieros</h2>
+                <p class="lead text-muted text-center mb-5">Pon a prueba tus conocimientos financieros con nuestras
+                    preguntas interactivas. ¡Aprende y diviértete!</p>
+            </div>
+
+            <!-- Pantalla de introducción al test -->
+            <div id="testIntro" class="glass-panel p-0 overflow-hidden mb-4 border-0">
+                <div class="row g-0">
+                    <!-- Lateral decorativo / Hero -->
+                    <div class="col-lg-5 bg-primary text-white p-5 d-flex flex-column justify-content-center align-items-center text-center position-relative overflow-hidden"
+                        style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);">
+                        <!-- Patrón de fondo -->
+                        <div class="position-absolute"
+                            style="top: -20px; left: -20px; font-size: 15rem; opacity: 0.1; transform: rotate(-15deg);">
+                            <i class="bi bi-currency-exchange"></i>
+                        </div>
+                        <div class="position-absolute"
+                            style="bottom: -50px; right: -50px; font-size: 12rem; opacity: 0.1; transform: rotate(15deg);">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+
+                        <div class="position-relative z-1" style="animation: float 6s ease-in-out infinite;">
+                            <div class="mb-4">
+                                <span
+                                    class="d-inline-flex align-items-center justify-content-center bg-white text-primary rounded-circle shadow-lg"
+                                    style="width: 100px; height: 100px;">
+                                    <i class="bi bi-trophy-fill fs-1"></i>
+                                </span>
+                            </div>
+                            <h2 class="fw-bold mb-2">¡Desafíate a ti mismo!</h2>
+                            <p class="mb-0 px-3 opacity-75 text-white" style="color: #fff !important;">Compite, aprende
+                                y domina tus finanzas
+                                personales.</p>
+                        </div>
+                    </div>
+
+                    <!-- Contenido Informativo -->
+                    <div class="col-lg-7 p-4 p-md-5 d-flex flex-column justify-content-center">
+                        <div class="mb-2 text-uppercase fw-bold text-primary small tracking-wide">Test de conocimientos
+                        </div>
+                        <h3 class="mb-3 fw-bold display-6">¿Cuánto sabes realmente sobre dinero?</h3>
+                        <p class="text-muted mb-4 lead" style="font-size: 1.1rem;">
+                            Responde preguntas dinámicas sobre ahorro, inversión y crédito. Escala en el ranking y
+                            demuestra que eres un experto.
+                        </p>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-sm-4">
+                                <div
+                                    class="p-3 rounded-4 bg-soft-primary border border-light h-100 text-center hover-lift transition-all">
+                                    <i class="bi bi-stopwatch fs-3 text-danger mb-2"></i>
+                                    <h6 class="fw-bold mb-1">30s</h6>
+                                    <p class="small text-muted mb-0">Por pregunta</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div
+                                    class="p-3 rounded-4 bg-soft-success border border-light h-100 text-center hover-lift transition-all">
+                                    <i class="bi bi-star-fill fs-3 text-warning mb-2"></i>
+                                    <h6 class="fw-bold mb-1">+ Puntos</h6>
+                                    <p class="small text-muted mb-0">Por aciertos</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div
+                                    class="p-3 rounded-4 bg-soft-warning border border-light h-100 text-center hover-lift transition-all">
+                                    <i class="bi bi-lightning-charge-fill fs-3 text-info mb-2"></i>
+                                    <h6 class="fw-bold mb-1">Bonos</h6>
+                                    <p class="small text-muted mb-0">Por velocidad</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-block text-center text-md-start">
+                            <button id="startTestBtn"
+                                class="btn btn-primary btn-lg rounded-pill px-5 shadow-lg btn-shine">
+                                Comenzar ahora <i class="bi bi-arrow-right-circle-fill ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Contenedor del test (visible si no se ha completado) -->
-            <div id="testContainer">
-                <div class="progress mb-4" role="progressbar" aria-label="Progreso del test" aria-valuenow="0"
-                    aria-valuemin="0" aria-valuemax="100" style="height: 20px;">
-                    <div class="progress-bar" style="width: 0%"></div>
-                </div>
-                <div class="question-display text-center glass-panel p-4 mb-4">
-                    <p id="questionText" class="fs-4 fw-bold"></p>
-                    <div id="optionsContainer" class="d-flex flex-column align-items-center gap-3 mt-4">
-                        <!-- Las opciones de respuesta se renderizarán aquí -->
+            <div id="testContainer" class="d-none">
+                <!-- Header con Progreso y Timer -->
+                <div class="d-flex justify-content-between align-items-center mb-2 gap-3">
+                    <div class="d-flex align-items-center gap-3 flex-grow-1">
+                        <div class="glass-panel px-3 py-2 d-flex align-items-center gap-2" style="border-radius: 50px;">
+                            <span class="text-muted small fw-bold text-uppercase">Pregunta</span>
+                            <span class="fw-bold text-primary"><span id="currentQuestionNum">1</span><span
+                                    class="text-muted mx-1">/</span><span id="totalQuestionsNum">10</span></span>
+                        </div>
+                        <div class="progress flex-grow-1"
+                            style="height: 8px; border-radius: 10px; background-color: rgba(0,0,0,0.1);">
+                            <div class="progress-bar bg-primary position-relative overflow-visible" role="progressbar"
+                                style="width: 0%; border-radius: 10px;">
+                                <div class="position-absolute top-50 start-100 translate-middle bg-primary rounded-circle shadow"
+                                    style="width: 12px; height: 12px; border: 2px solid white;"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div id="feedbackMessage" class="mt-3 fs-5 fw-bold" style="min-height: 30px;"></div>
-                    <div id="timerDisplay" class="mt-2 fs-5 fw-bold text-primary">Tiempo restante: <span
-                            id="timeRemaining"></span>s</div>
+                    <div class="timer-badge px-3 py-1 d-flex align-items-center gap-2">
+                        <i class="bi bi-stopwatch text-primary fs-6"></i>
+                        <span id="timerDisplayInternal" class="fw-bold fs-6 text-dark"><span
+                                id="timeRemaining">30</span>s</span>
+                    </div>
+                    <!-- Elemento oculto para mantener compatibilidad con JS antiguo si es necesario -->
+                    <div id="timerDisplay" class="d-none"></div>
                 </div>
 
-                <div class="d-flex justify-content-between mt-4">
-                    <button class="btn btn-outline-secondary" id="prevQuestionBtn" style="visibility: hidden;">
-                        <i class="bi bi-arrow-left me-2"></i> Anterior
-                    </button>
-                    <button class="btn btn-primary" id="checkAnswerBtn">Comprobar <i
-                            class="bi bi-check-circle ms-2"></i></button>
-                    <button class="btn btn-primary d-none" id="nextQuestionBtn">Siguiente <i
-                            class="bi bi-arrow-right ms-2"></i></button>
-                    <button class="btn btn-success d-none" id="submitTestBtn">Finalizar test <i
-                            class="bi bi-send ms-2"></i></button>
+                <div class="question-card-premium mb-3">
+                    <!-- Decoración fondo -->
+                    <div class="bg-decoration-circle circle-1"></div>
+                    <div class="bg-decoration-circle circle-2"></div>
+
+                    <div class="row position-relative z-index-1">
+                        <div class="col-12 text-center mb-2">
+                            <h3 id="questionText" class="question-text-premium display-6">
+                                <!-- La pregunta se renderiza aquí -->
+                            </h3>
+                        </div>
+                        <div class="col-lg-10 mx-auto">
+                            <div id="optionsContainer" class="d-flex flex-column gap-3">
+                                <!-- Las opciones de respuesta se renderizarán aquí -->
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div id="feedbackMessage" class="mt-4 text-center fs-5 fw-bold" style="min-height: 20px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center align-items-center mt-4 px-2">
+                    <div>
+                        <button class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm" id="checkAnswerBtn">
+                            Comprobar <i class="bi bi-check-circle-fill ms-2"></i>
+                        </button>
+                        <button class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm d-none" id="nextQuestionBtn">
+                            Siguiente <i class="bi bi-arrow-right-circle-fill ms-2"></i>
+                        </button>
+                        <button class="btn btn-success btn-lg rounded-pill px-5 shadow-sm d-none" id="submitTestBtn">
+                            Finalizar test <i class="bi bi-send-fill ms-2"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -294,15 +545,66 @@
             </div>
 
             <!-- Sección para cuando el test ya ha sido completado (se carga al iniciar la sección del test) -->
-            <div id="testCompletedSection" class="glass-panel p-4 mt-5 d-none text-center">
-                <h3 class="titulo-dashboard mb-3">Test de conocimientos completado</h3>
-                <p class="fs-4">Has respondido <span id="completedCorrectAnswers" class="fw-bold text-primary"></span>
-                    de <span id="completedTotalQuestions" class="fw-bold"></span> preguntas correctamente.</p>
-                <p class="fs-4">Tu puntuación final fue: <span id="completedTotalPoints"
-                        class="fw-bold text-success"></span> puntos.</p>
-                <p class="lead" id="completedResultMessage"></p>
-                <button class="btn btn-info mt-3" id="viewRankingBtnCompleted">Ver ranking <i
-                        class="bi bi-trophy ms-2"></i></button>
+            <div id="testCompletedSection" class="d-none animate-fade-in py-2">
+                <div class="result-card-premium mx-auto p-4 p-md-5" style="max-width: 900px;">
+                    <!-- Decoración de Fondo -->
+                    <div
+                        class="position-absolute top-0 start-0 translate-middle p-5 rounded-circle bg-success opacity-10 blur-xl">
+                    </div>
+                    <div
+                        class="position-absolute bottom-0 end-0 translate-middle p-5 rounded-circle bg-primary opacity-10 blur-xl">
+                    </div>
+
+                    <div class="row align-items-center g-5 position-relative z-1">
+                        <!-- Columna Izquierda: Título e Icono -->
+                        <div class="col-md-5 text-center text-md-start">
+                            <div
+                                class="d-inline-flex p-3 rounded-circle bg-success bg-opacity-10 mb-3 animate-bounce-slow">
+                                <i class="bi bi-trophy-fill text-success" style="font-size: 3.5rem;"></i>
+                            </div>
+                            <h2 class="fw-bold mb-2 text-gradient">¡Test completado!</h2>
+                            <p class="text-muted mb-0">Has demostrado tus habilidades financieras con éxito.</p>
+                        </div>
+
+                        <!-- Columna Derecha: Estadísticas y Acción -->
+                        <div class="col-md-7">
+                            <div class="row g-3 mb-4">
+                                <!-- Aciertos -->
+                                <div class="col-6">
+                                    <div
+                                        class="p-3 rounded-4 h-100 text-center shadow-sm d-flex flex-column justify-content-center stats-card-premium">
+                                        <div class="text-secondary small fw-bold text-uppercase mb-1 tracking-wide">
+                                            Respuestas correctas</div>
+                                        <div class="display-6 fw-bold mb-0">
+                                            <span id="completedCorrectAnswers">0</span><span
+                                                class="fs-4 text-muted opacity-75">/</span><span
+                                                id="completedTotalQuestions" class="fs-4 text-muted opacity-75">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Puntos -->
+                                <div class="col-6">
+                                    <div
+                                        class="p-3 rounded-4 h-100 text-center shadow-sm d-flex flex-column justify-content-center stats-card-premium">
+                                        <div class="text-primary small fw-bold text-uppercase mb-1 tracking-wide">
+                                            Puntuación total</div>
+                                        <div class="display-6 fw-bold text-primary mb-0" id="completedTotalPoints">0
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center bg-primary bg-opacity-10 rounded-3 p-3 mb-4">
+                                <p id="completedResultMessage" class="mb-0 fw-medium fst-italic text-primary"></p>
+                            </div>
+
+                            <button id="viewRankingBtnCompleted"
+                                class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm transform-hover">
+                                Ver ranking financiero <i class="bi bi-trophy-fill ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -368,10 +670,19 @@
                             <div class="col-md-8 fw-bold">{{ session.get('ultima_sesion', '') }}</div>
                         </div>
                         <div class="d-grid gap-2 mt-4">
+                            {% if usuario.auth_method == 'google' %}
+                            <div class="alert alert-info d-flex align-items-center mb-0" role="alert">
+                                <i class="bi bi-google me-2"></i>
+                                <div>
+                                    Iniciaste sesión con Google Account
+                                </div>
+                            </div>
+                            {% else %}
                             <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
                                 data-bs-target="#cambiarContrasenaModal">
                                 <i class="bi bi-key me-2"></i> Cambiar contraseña
                             </button>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -476,24 +787,33 @@
 </div>
 
 <!-- Modal: Resultados del test (se mantiene, pero su contenido será dinámico) -->
+<!-- Modal: Resultados del test -->
 <div class="modal fade" id="testResultModal" tabindex="-1" aria-labelledby="testResultModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content glass-modal">
-            <div class="modal-header border-0">
-                <h5 class="modal-title" id="testResultModalLabel">Resultados del test</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <div class="modal-content modal-premium-content border-0">
+            <div class="modal-header border-0 flex-column align-items-center justify-content-center pt-4 pb-0">
+                <div class="mb-3 p-3 rounded-circle bg-success bg-opacity-10 text-success">
+                    <i class="bi bi-trophy-fill fs-2"></i>
+                </div>
+                <h4 class="modal-title fw-bold" id="testResultModalLabel">Resultados del Test</h4>
             </div>
-            <div class="modal-body text-center">
-                <p class="fs-4">Has respondido <span id="finalScoreModal" class="fw-bold text-primary"></span> de <span
-                        id="totalQuestionsModal" class="fw-bold"></span> preguntas correctamente.</p>
-                <p class="fs-4">Tu puntuación total: <span id="finalTotalPointsModal"
-                        class="fw-bold text-success"></span> puntos.</p>
-                <p class="lead" id="resultMessageModal"></p>
+            <div class="modal-body text-center py-3 px-4">
+                <p class="fs-5 mb-3">Has respondido <span id="finalScoreModal" class="fw-bold text-primary"></span> de
+                    <span id="totalQuestionsModal" class="fw-bold"></span> preguntas correctamente.
+                </p>
+
+                <div class="p-3 my-3 rounded-3" style="background: rgba(var(--bs-primary-rgb), 0.05);">
+                    <p class="fs-4 mb-0">Puntuación Total: <span id="finalTotalPointsModal"
+                            class="fw-bold text-success display-6 d-block mt-2"></span></p>
+                </div>
+
+                <p class="lead fst-italic mt-3" id="resultMessageModal"></p>
             </div>
-            <div class="modal-footer border-0 justify-content-center">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
-                <button type="button" class="btn btn-info" id="viewRankingBtnModal">Ver ranking <i
-                        class="bi bi-trophy ms-2"></i></button>
+            <div class="modal-footer border-0 justify-content-center gap-3 pb-4">
+                <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm"
+                    data-bs-dismiss="modal">Aceptar</button>
+                <button type="button" class="btn btn-outline-info rounded-pill px-4 shadow-sm"
+                    id="viewRankingBtnModal">Ver Ranking <i class="bi bi-trophy ms-2"></i></button>
             </div>
         </div>
     </div>
@@ -502,21 +822,22 @@
 <!-- Modal: Ranking -->
 <div class="modal fade" id="rankingModal" tabindex="-1" aria-labelledby="rankingModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content glass-modal">
-            <div class="modal-header border-0">
-                <h5 class="modal-title" id="rankingModalLabel">Ranking de conocimientos financieros</h5>
+        <div class="modal-content modal-premium-content border-0">
+            <div class="modal-header border-0 align-items-center justify-content-between pt-4 px-4 pb-2">
+                <h4 class="modal-title fw-bold mb-0" id="rankingModalLabel">Ranking financiero</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="modal-body">
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped">
+            <div class="modal-body px-4">
+                <!-- Removed overflow-hidden to allow table-responsive to work -->
+                <div class="table-responsive rounded-3 border custom-ranking-scroll">
+                    <table class="table table-hover table-premium mb-0 align-middle text-nowrap">
                         <thead>
                             <tr>
-                                <th scope="col">Posición</th>
-                                <th scope="col">Usuario</th>
-                                <th scope="col">Puntuación</th>
-                                <th scope="col">Tiempo</th>
-                                <th scope="col">Correctas</th>
+                                <th scope="col" class="py-3 ps-3">Pos.</th>
+                                <th scope="col" class="py-3">Usuario</th>
+                                <th scope="col" class="py-3">Puntos</th>
+                                <th scope="col" class="py-3">Tiempo</th>
+                                <th scope="col" class="py-3 pe-3 text-center">Aciertos</th>
                             </tr>
                         </thead>
                         <tbody id="rankingTableBody">
@@ -524,20 +845,50 @@
                         </tbody>
                     </table>
                 </div>
-                <div id="userRankingInfo" class="mt-4 p-3 glass-panel d-none">
-                    <h6 class="text-center">Tu posición: <span id="userPositionDisplay"
-                            class="fw-bold text-primary"></span></h6>
-                    <p class="text-center mb-0">Puntuación: <span id="userScoreRanking" class="fw-bold"></span> |
-                        Tiempo: <span id="userTimeRanking" class="fw-bold"></span>s | Correctas: <span
-                            id="userCorrectRanking" class="fw-bold"></span></p>
+                <div id="userRankingInfo"
+                    class="mt-4 p-3 rounded-3 glass-panel d-none border border-primary border-opacity-25 bg-primary bg-opacity-10">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <h6 class="mb-0 fw-bold text-primary">Tu posición: #<span id="userPositionDisplay"></span></h6>
+                        <div class="d-flex gap-3 text-muted small">
+                            <span>Puntos: <strong id="userScoreRanking" class="text-dark"></strong></span>
+                            <span>Tiempo: <strong id="userTimeRanking" class="text-dark"></strong>s</span>
+                            <span>Acier.: <strong id="userCorrectRanking" class="text-dark"></strong></span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer border-0 justify-content-center">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-primary rounded-pill px-5" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
 </div>
+<style>
+    /* Mobile optimization for Ranking Table */
+    @media (max-width: 576px) {
+        #rankingModal .table-premium thead th {
+            font-size: 0.85rem;
+            padding: 0.5rem 0.25rem;
+        }
+
+        #rankingModal .table-premium tbody td {
+            font-size: 0.85rem;
+            padding: 0.5rem 0.25rem;
+        }
+
+        #rankingModal .modal-body {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+
+        /* Make the user name truncated if too long on very small screens */
+        #rankingTableBody td:nth-child(2) {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+</style>
 {% endblock %}
 
 {% block extra_js %}

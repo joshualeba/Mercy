@@ -134,6 +134,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // NEW: Close sidebar on mobile when any link is clicked
+    const allSidebarLinks = document.querySelectorAll('.sidebar a');
+    allSidebarLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth < 992 && sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+                body.classList.remove('sidebar-open');
+                applyBlurEffect(false);
+            }
+        });
+    });
+
     // Sección: Lógica de navegación de secciones
     const navLinks = document.querySelectorAll('.sidebar .nav-link');
     const contentSections = document.querySelectorAll('.content-section');
@@ -420,14 +432,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const questionTextElement = document.getElementById('questionText');
     const optionsContainer = document.getElementById('optionsContainer');
     const feedbackMessage = document.getElementById('feedbackMessage');
-    const prevQuestionBtn = document.getElementById('prevQuestionBtn');
     const checkAnswerBtn = document.getElementById('checkAnswerBtn');
     const nextQuestionBtn = document.getElementById('nextQuestionBtn');
     const submitTestBtn = document.getElementById('submitTestBtn');
     const progressBar = document.querySelector('.progress-bar');
     const testContainer = document.getElementById('testContainer');
+    const testIntro = document.getElementById('testIntro');
+    const testHeader = document.getElementById('testHeader');
+    const startTestBtn = document.getElementById('startTestBtn');
     const testResult = document.getElementById('testResult');
     const testCompletedSection = document.getElementById('testCompletedSection');
+
+    let isTestInProgress = false;
 
     const scoreDisplay = document.getElementById('scoreDisplay');
     const totalQuestionsDisplay = document.getElementById('totalQuestionsDisplay');
@@ -470,7 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function fetchQuestions() {
+    async function checkAndLoadTest() {
         try {
             const response = await fetch('/api/preguntas_test');
             if (!response.ok) {
@@ -480,6 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.test_completado) {
                 testContainer.classList.add('d-none');
+                testIntro.classList.add('d-none');
                 testResult.classList.add('d-none');
                 testCompletedSection.classList.remove('d-none');
 
@@ -492,32 +509,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 questions = data.preguntas;
                 if (questions.length === 0) {
                     questionTextElement.textContent = 'no hay preguntas disponibles.';
-                    checkAnswerBtn.disabled = true;
-                    nextQuestionBtn.disabled = true;
-                    submitTestBtn.disabled = true;
                     return;
                 }
-                shuffleArray(questions);
-                currentQuestionIndex = 0;
-                userAnswers = {};
-                correctAnswersCount = 0;
-                totalPoints = 0;
-                testStartTime = Date.now();
-
+                // Mostrar intro, ocultar otros secciones
                 testCompletedSection.classList.add('d-none');
                 testResult.classList.add('d-none');
-                testContainer.classList.remove('d-none');
-                renderQuestion();
-                updateProgressBar();
+                testContainer.classList.add('d-none');
+                testIntro.classList.remove('d-none');
+                isTestInProgress = false;
             }
         } catch (error) {
             console.error('error al cargar las preguntas:', error);
             questionTextElement.textContent = 'error al cargar las preguntas.';
             testContainer.classList.add('d-none');
             testResult.classList.add('d-none');
+            testIntro.classList.add('d-none');
             testCompletedSection.classList.remove('d-none');
             completedResultMessage.textContent = 'error al cargar el test. por favor, inténtalo de nuevo más tarde.';
         }
+    }
+
+    if (startTestBtn) {
+        startTestBtn.addEventListener('click', () => {
+            if (questions.length === 0) return;
+
+            testIntro.classList.add('d-none');
+            testContainer.classList.remove('d-none');
+
+            shuffleArray(questions);
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            correctAnswersCount = 0;
+            totalPoints = 0;
+            testStartTime = Date.now();
+            isTestInProgress = true;
+
+            renderQuestion();
+            updateProgressBar();
+        });
     }
 
     function shuffleArray(array) {
@@ -534,9 +563,19 @@ document.addEventListener('DOMContentLoaded', () => {
         timeRemainingSpan.textContent = timeLeft;
         timerDisplay.classList.remove('d-none');
 
+        // Update Enhanced timer style
+        const timerBadge = document.querySelector('.timer-badge');
+        if (timerBadge) timerBadge.classList.remove('warning');
+
         timerInterval = setInterval(() => {
             timeLeft--;
             timeRemainingSpan.textContent = timeLeft;
+
+            // Visual warning when time is low
+            if (timeLeft <= 10 && timerBadge) {
+                timerBadge.classList.add('warning');
+            }
+
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 feedbackMessage.textContent = '¡tiempo agotado! la respuesta es: ' + getCorrectAnswerText(questions[currentQuestionIndex]);
@@ -568,16 +607,22 @@ document.addEventListener('DOMContentLoaded', () => {
         feedbackMessage.textContent = '';
         feedbackMessage.classList.remove('text-success', 'text-danger');
 
+        // Remove animation classes if present to reset
+        const premiumCard = document.querySelector('.question-card-premium');
+        if (premiumCard) {
+            premiumCard.classList.remove('question-slide-in', 'question-slide-out');
+            void premiumCard.offsetWidth; // Trigger reflow
+            premiumCard.classList.add('question-slide-in');
+        }
+
         checkAnswerBtn.classList.remove('d-none');
         nextQuestionBtn.classList.add('d-none');
         submitTestBtn.classList.add('d-none');
 
-        prevQuestionBtn.style.visibility = currentQuestionIndex > 0 ? 'visible' : 'hidden';
-
         if (currentQuestion.tipo_pregunta === 'multiple_choice' || currentQuestion.tipo_pregunta === 'true_false') {
             currentQuestion.opciones.forEach(opcion => {
                 const optionCard = document.createElement('div');
-                optionCard.classList.add('option-card');
+                optionCard.classList.add('option-card-enhanced');
                 optionCard.dataset.optionId = opcion.id;
 
                 const input = document.createElement('input');
@@ -585,13 +630,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 input.name = `question_${currentQuestion.id}`;
                 input.id = `option_${opcion.id}`;
                 input.value = opcion.id;
+                input.classList.add('d-none'); // Hide actual radio
 
-                const label = document.createElement('label');
-                label.htmlFor = `option_${opcion.id}`;
-                label.classList.add('option-text');
+                // Create marker (A, B, C...)
+                const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                const index = currentQuestion.opciones.indexOf(opcion);
+                const marker = document.createElement('div');
+                marker.classList.add('option-marker');
+                marker.textContent = alphabet[index] || (index + 1);
+
+                const label = document.createElement('div');
+                label.classList.add('option-text-content');
                 label.textContent = opcion.texto;
 
                 optionCard.appendChild(input);
+                optionCard.appendChild(marker);
                 optionCard.appendChild(label);
                 optionsContainer.appendChild(optionCard);
 
@@ -601,21 +654,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 optionCard.addEventListener('click', () => {
-                    optionsContainer.querySelectorAll('.option-card').forEach(card => {
+                    optionsContainer.querySelectorAll('.option-card-enhanced').forEach(card => {
                         card.classList.remove('selected');
-                        card.querySelector('input[type="radio"]').checked = false;
+                        const radio = card.querySelector('input[type="radio"]');
+                        if (radio) radio.checked = false;
                     });
                     optionCard.classList.add('selected');
                     input.checked = true;
                 });
             });
         } else if (currentQuestion.tipo_pregunta === 'fill_in_the_blank') {
+            const inputContainer = document.createElement('div');
+            inputContainer.classList.add('fancy-input-container');
+
             const input = document.createElement('input');
             input.type = 'text';
             input.id = `input_${currentQuestion.id}`;
-            input.classList.add('form-control', 'glass-input', 'w-75');
-            input.placeholder = 'escribe tu respuesta aquí';
-            optionsContainer.appendChild(input);
+            input.classList.add('fancy-input');
+            input.placeholder = 'Escribe tu respuesta aquí...';
+
+            inputContainer.appendChild(input);
+            optionsContainer.appendChild(inputContainer);
 
             if (userAnswers[currentQuestion.id]) {
                 input.value = userAnswers[currentQuestion.id].answer;
@@ -625,17 +684,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateProgressBar() {
+        if (!questions.length) return;
         const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-        progressBar.style.width = `${progress}%`;
-        progressBar.setAttribute('aria-valuenow', progress);
-        progressBar.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
+
+        if (progressBar) {
+            progressBar.style.width = `${progress}%`;
+            progressBar.setAttribute('aria-valuenow', progress);
+        }
+
+        const currentQNum = document.getElementById('currentQuestionNum');
+        const totalQNum = document.getElementById('totalQuestionsNum');
+
+        if (currentQNum) currentQNum.textContent = currentQuestionIndex + 1;
+        if (totalQNum) totalQNum.textContent = questions.length;
     }
 
     function disableQuestionInteraction() {
         if (questions[currentQuestionIndex].tipo_pregunta === 'multiple_choice' || questions[currentQuestionIndex].tipo_pregunta === 'true_false') {
-            optionsContainer.querySelectorAll('.option-card').forEach(card => {
+            optionsContainer.querySelectorAll('.option-card-enhanced').forEach(card => {
                 card.style.pointerEvents = 'none';
-                card.querySelector('input[type="radio"]').disabled = true;
+                card.style.opacity = '0.8';
+                // card.querySelector('input[type="radio"]').disabled = true; 
             });
         } else if (questions[currentQuestionIndex].tipo_pregunta === 'fill_in_the_blank') {
             const inputField = document.getElementById(`input_${questions[currentQuestionIndex].id}`);
@@ -650,7 +719,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let timeTakenForQuestion = (Date.now() - questionStartTime) / 1000;
 
         if (currentQuestion.tipo_pregunta === 'multiple_choice' || currentQuestion.tipo_pregunta === 'true_false') {
-            const selectedOptionCard = optionsContainer.querySelector('.option-card.selected');
+            const selectedOptionCard = optionsContainer.querySelector('.option-card-enhanced.selected');
             if (!selectedOptionCard) {
                 feedbackMessage.textContent = 'por favor, selecciona una opción.';
                 feedbackMessage.classList.add('text-danger');
@@ -713,7 +782,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const correctAnswerOption = question.opciones.find(opt => opt.es_correcta);
             return correctAnswerOption && String(userAnswer) === String(correctAnswerOption.id);
         } else if (question.tipo_pregunta === 'fill_in_the_blank') {
-            return userAnswer.toLowerCase() === question.respuesta_texto_correcta.toLowerCase();
+            return normalizeString(userAnswer) === normalizeString(question.respuesta_texto_correcta);
         }
         return false;
     }
@@ -730,17 +799,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     nextQuestionBtn.addEventListener('click', () => {
         if (currentQuestionIndex < questions.length - 1) {
-            currentQuestionIndex++;
-            renderQuestion();
-            updateProgressBar();
-        }
-    });
-
-    prevQuestionBtn.addEventListener('click', () => {
-        if (currentQuestionIndex > 0) {
-            currentQuestionIndex--;
-            renderQuestion();
-            updateProgressBar();
+            const premiumCard = document.querySelector('.question-card-premium');
+            if (premiumCard) {
+                premiumCard.classList.add('question-slide-out');
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    renderQuestion();
+                    updateProgressBar();
+                }, 300); // Wait for animation duration
+            } else {
+                currentQuestionIndex++;
+                renderQuestion();
+                updateProgressBar();
+            }
         }
     });
 
@@ -748,7 +819,7 @@ document.addEventListener('DOMContentLoaded', () => {
         stopQuestionTimer();
 
         const confirmModal = new bootstrap.Modal(document.getElementById('confirmSubmitModal'));
-        document.getElementById('confirmSubmitModalBody').textContent = '¿estás seguro de que quieres finalizar el test?';
+        document.getElementById('confirmSubmitModalBody').textContent = '¿Estás seguro de que quieres finalizar el test?';
         document.getElementById('confirmSubmitBtn').onclick = async () => {
             confirmModal.hide();
             try {
@@ -775,13 +846,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     setResultMessage(result.puntuacion_total, result.total, resultMessage);
 
                     testContainer.classList.add('d-none');
+                    testIntro.classList.add('d-none');
+                    if (testHeader) testHeader.classList.add('d-none');
                     testResult.classList.remove('d-none');
 
                     finalScoreModal.textContent = result.score;
                     totalQuestionsModal.textContent = result.total;
                     finalTotalPointsModal.textContent = result.puntuacion_total;
                     setResultMessage(result.puntuacion_total, result.total, resultMessageModal);
-                    testResultModal.show();
+
+                    // Wait for any previous transitions
+                    setTimeout(() => testResultModal.show(), 100);
 
                     testContainer.classList.add('d-none');
                     testResult.classList.add('d-none');
@@ -821,17 +896,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmSubmitModalHtml = `
             <div class="modal fade" id="confirmSubmitModal" tabindex="-1" aria-labelledby="confirmSubmitModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content glass-modal">
-                        <div class="modal-header border-0">
-                            <h5 class="modal-title" id="confirmSubmitModalLabel">confirmar finalización</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <div class="modal-content modal-premium-content border-0">
+                        <div class="modal-header border-0 flex-column align-items-center justify-content-center pt-4 pb-0">
+                            <div class="mb-3 p-3 rounded-circle bg-primary bg-opacity-10 text-primary">
+                                <i class="bi bi-question-lg fs-2"></i>
+                            </div>
+                            <h4 class="modal-title fw-bold" id="confirmSubmitModalLabel">¿Finalizar el Test?</h4>
                         </div>
-                        <div class="modal-body">
-                            <p id="confirmSubmitModalBody"></p>
+                        <div class="modal-body text-center py-3 px-4">
+                            <p id="confirmSubmitModalBody" class="fs-5 text-muted mb-0">¿Estás seguro de que quieres terminar?</p>
                         </div>
-                        <div class="modal-footer border-0">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cancelar</button>
-                            <button type="button" class="btn btn-primary" id="confirmSubmitBtn">finalizar</button>
+                        <div class="modal-footer border-0 justify-content-center gap-3 pb-4">
+                            <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary rounded-pill px-5 shadow-sm" id="confirmSubmitBtn">Finalizar</button>
                         </div>
                     </div>
                 </div>
@@ -880,16 +957,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         row.classList.add('user-row');
                     }
                     row.innerHTML = `
-                        <td>${entry.posicion}</td>
-                        <td>${entry.nombres} ${entry.apellidos}</td>
-                        <td>${entry.puntuacion_total}</td>
-                        <td>${entry.tiempo_resolucion_segundos.toFixed(2)}s</td>
-                        <td>${entry.respuestas_correctas}</td>
+                        <td class="fw-bold text-muted">#${entry.posicion}</td>
+                        <td class="fw-bold" title="${entry.nombres} ${entry.apellidos}">${entry.nombres} ${entry.apellidos}</td>
+                        <td class="text-primary fw-bold">${entry.puntuacion_total}</td>
+                        <td class="text-muted"><small>${entry.tiempo_resolucion_segundos.toFixed(2)}s</small></td>
+                        <td class="text-center"><span class="badge bg-light text-dark border">${entry.respuestas_correctas}</span></td>
                     `;
                 });
             } else {
                 const row = rankingTableBody.insertRow();
-                row.innerHTML = `<td colspan="5" class="text-center">no hay datos en el ranking todavía.</td>`;
+                row.innerHTML = `<td colspan="5" class="text-center py-4 text-muted">Aún no hay datos en el ranking.</td>`;
             }
 
             if (data.user_result && data.user_position !== -1) {
@@ -900,7 +977,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 userCorrectRanking.textContent = data.user_result.respuestas_correctas;
             }
 
+            // Important: Show new modal BEFORE hiding the old one to maintain 'modal-open' class on body
             rankingModal.show();
+
+            const resultModalEl = document.getElementById('testResultModal');
+            if (resultModalEl && resultModalEl.classList.contains('show')) {
+                testResultModal.hide();
+            }
+
         } catch (error) {
             console.error('error al cargar el ranking:', error);
             const errorModal = new bootstrap.Modal(document.getElementById('errorMessageModal'));
@@ -910,11 +994,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Sección: Carga inicial del test
+    // Sección: Carga inicial del test
     function loadTest() {
-        fetchQuestions();
-        prevQuestionBtn.style.visibility = 'hidden';
+        if (isTestInProgress) return;
+        checkAndLoadTest();
         nextQuestionBtn.classList.add('d-none');
         submitTestBtn.classList.add('d-none');
         checkAnswerBtn.classList.remove('d-none');
     }
+    // Global keyboard shortcuts
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            const isTestVisible = testContainer && !testContainer.classList.contains('d-none');
+            const isIntroVisible = testIntro && !testIntro.classList.contains('d-none');
+            const isAnyModalOpen = document.querySelector('.modal.show');
+
+            if (isAnyModalOpen) {
+                const confirmModal = document.getElementById('confirmSubmitModal');
+                if (confirmModal && confirmModal.classList.contains('show')) {
+                    event.preventDefault();
+                    const confirmBtn = document.getElementById('confirmSubmitBtn');
+                    if (confirmBtn) confirmBtn.click();
+                }
+                return;
+            }
+
+            if (isIntroVisible && startTestBtn && !startTestBtn.disabled) {
+                event.preventDefault();
+                startTestBtn.click();
+            } else if (isTestVisible) {
+                event.preventDefault();
+                if (checkAnswerBtn && !checkAnswerBtn.classList.contains('d-none')) {
+                    checkAnswerBtn.click();
+                } else if (nextQuestionBtn && !nextQuestionBtn.classList.contains('d-none')) {
+                    nextQuestionBtn.click();
+                } else if (submitTestBtn && !submitTestBtn.classList.contains('d-none')) {
+                    submitTestBtn.click();
+                }
+            }
+        }
+    });
+
 });
+function normalizeString(str) {
+    if (!str) return '';
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}

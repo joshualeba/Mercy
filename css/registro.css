@@ -352,14 +352,16 @@ input::placeholder {
 }
 
 #eye-icon-password,
-#eye-icon-confirm {
+#eye-icon-confirm,
+#eye-icon-confirm-password {
     position: absolute;
-    right: 10px;
+    right: 15px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
     color: #fff;
-    font-size: 18px;
+    font-size: 16px;
+    z-index: 10;
 }
 
 #password-requisitos {
@@ -427,6 +429,61 @@ input.match {
     text-align: center;
     font-size: 14px;
     color: #cfcfcf;
+}
+
+/* Google Button Styles */
+.divisor-o {
+    text-align: center;
+    margin: 15px 0;
+    color: #e0d6f5;
+    position: relative;
+    font-size: 0.9rem;
+}
+
+.divisor-o::before,
+.divisor-o::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.divisor-o::before {
+    left: 0;
+}
+
+.divisor-o::after {
+    right: 0;
+}
+
+.boton-google {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    color: #555;
+    padding: 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    gap: 10px;
+    transition: all 0.3s;
+    width: 100%;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+}
+
+.boton-google:hover {
+    background: #f1f1f1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.boton-google img {
+    height: 18px;
+    width: 18px;
 }
 
 .botones-sociales {

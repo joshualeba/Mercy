@@ -1,6 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Sección: LOADER
+    // --- UTILITY: Currency Formatters ---
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(amount);
+    };
+
+    const parseCurrency = (val) => {
+        if (!val) return 0;
+        return parseFloat(val.toString().replace(/[^0-9.]/g, '')) || 0;
+    };
+
+    // --- LOADER & THEME (Standard) ---
     const loader = document.querySelector('.loader_p');
     if (loader) {
         setTimeout(() => {
@@ -12,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    // Sección: TOGGLE PARA MODO OSCURO
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
     const htmlElement = document.documentElement;
@@ -34,20 +48,202 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         themeToggle.addEventListener('click', () => {
-            if (htmlElement.getAttribute('data-theme') === 'dark') {
-                htmlElement.setAttribute('data-theme', 'light');
-                themeIcon.classList.remove('bi-moon-fill');
-                themeIcon.classList.add('bi-sun-fill');
-            } else {
-                htmlElement.setAttribute('data-theme', 'dark');
-                themeIcon.classList.remove('bi-sun-fill');
-                themeIcon.classList.add('bi-moon-fill');
-            }
-            localStorage.setItem('theme', htmlElement.getAttribute('data-theme'));
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            htmlElement.setAttribute('data-theme', newTheme);
+            themeIcon.classList.toggle('bi-moon-fill');
+            themeIcon.classList.toggle('bi-sun-fill');
+            localStorage.setItem('theme', newTheme);
         });
     }
 
-    // Sección: LÓGICA PARA DROPDOWNS Y EFECTO BORROSO
+    // --- WIZARD LOGIC ---
+    const form = document.getElementById('retirementWizardForm');
+
+    if (form) {
+        // Handle Currency Inputs (comma separation)
+        document.querySelectorAll('.currency-input').forEach(input => {
+            input.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/[^0-9.]/g, '');
+                if (value) {
+                    const number = parseFloat(value);
+                    // Prevent multiple dots
+                    const parts = value.split('.');
+                    if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
+
+                    // Just format visualization?
+                    // Simple approach: unformat -> format
+                    e.target.value = new Intl.NumberFormat('en-US').format(number);
+                }
+            });
+            input.addEventListener('blur', (e) => {
+                // On blur maybe standard format?
+            });
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    // Try to go next
+                    const btn = input.closest('.step-section').querySelector('.next-step-btn');
+                    if (btn) btn.click();
+                    else if (input.id === 'desiredMonthlyIncome') form.dispatchEvent(new Event('submit'));
+                }
+            });
+        });
+
+        // Step Navigation
+        function showStep(stepId) {
+            document.querySelectorAll('.step-section').forEach(el => {
+                el.classList.add('d-none');
+                el.classList.remove('fade-in');
+            });
+            const target = document.getElementById(stepId);
+            if (target) {
+                target.classList.remove('d-none');
+                setTimeout(() => target.classList.add('fade-in'), 10);
+                const input = target.querySelector('input');
+                if (input) input.focus();
+            }
+        }
+
+        document.querySelectorAll('.next-step-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const currentStep = btn.closest('.step-section');
+                const inputs = currentStep.querySelectorAll('input[required]');
+                let valid = true;
+                inputs.forEach(inp => {
+                    if (!inp.value) {
+                        inp.classList.add('is-invalid');
+                        setTimeout(() => inp.classList.remove('is-invalid'), 2000);
+                        valid = false;
+                    } else if (inp.type === 'number' && (inp.min && parseFloat(inp.value) < parseFloat(inp.min))) {
+                        inp.classList.add('is-invalid');
+                        setTimeout(() => inp.classList.remove('is-invalid'), 2000);
+                        valid = false;
+                    }
+                });
+
+                if (valid) {
+                    // Check logic: Retirement Age > Current Age
+                    if (currentStep.id === 'step-ages') {
+                        const currentAge = parseFloat(document.getElementById('currentAge').value);
+                        const retAge = parseFloat(document.getElementById('retirementAge').value);
+                        if (retAge <= currentAge) {
+                            alert("La edad de retiro debe ser mayor a tu edad actual.");
+                            return;
+                        }
+                    }
+                    showStep(btn.dataset.next);
+                }
+            });
+        });
+
+        document.querySelectorAll('.prev-step-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                showStep(btn.dataset.prev);
+            });
+        });
+
+        // --- CALCULATION LOGIC ---
+        const resultsModalElement = document.getElementById('resultsModal');
+        let resultsModal;
+        if (resultsModalElement) resultsModal = new bootstrap.Modal(resultsModalElement);
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Inputs
+            const currentAge = parseFloat(document.getElementById('currentAge').value);
+            const retirementAge = parseFloat(document.getElementById('retirementAge').value);
+            const currentSavings = parseCurrency(document.getElementById('currentSavings').value);
+            const monthlyContribution = parseCurrency(document.getElementById('monthlyContribution').value);
+            const annualReturnRate = parseFloat(document.getElementById('annualReturnRate').value) || 0;
+            const desiredIncome = parseCurrency(document.getElementById('desiredMonthlyIncome').value);
+
+            // Time horizon
+            const yearsToGrow = retirementAge - currentAge;
+            const monthsToGrow = yearsToGrow * 12;
+            const monthlyRate = (annualReturnRate / 100) / 12;
+
+            // Future Value Calculation (Compound Interest)
+            // FV = PV * (1+r)^n + PMT * [ ((1+r)^n - 1) / r ]
+
+            let fvSavings = 0;
+            let fvContributions = 0;
+
+            if (monthlyRate > 0) {
+                fvSavings = currentSavings * Math.pow(1 + monthlyRate, monthsToGrow);
+                fvContributions = monthlyContribution * ((Math.pow(1 + monthlyRate, monthsToGrow) - 1) / monthlyRate);
+            } else {
+                fvSavings = currentSavings;
+                fvContributions = monthlyContribution * monthsToGrow;
+            }
+
+            const totalAccumulated = fvSavings + fvContributions;
+
+            // Sustainable Withdrawal Rule (4% Rule)
+            // Annual Safe Withdrawal = Total * 0.04
+            // Monthly Safe Withdrawal = Total * 0.04 / 12
+            const monthlySafeWithdrawal = (totalAccumulated * 0.04) / 12;
+
+            // Coverage Percentage
+            let coveragePct = 0;
+            if (desiredIncome > 0) {
+                coveragePct = (monthlySafeWithdrawal / desiredIncome) * 100;
+            }
+
+            // --- DISPLAY RESULTS ---
+            document.getElementById('resRetirementAge').textContent = retirementAge;
+            document.getElementById('resTotalAccumulated').textContent = formatCurrency(totalAccumulated);
+            document.getElementById('resMonthlyIncome').textContent = formatCurrency(monthlySafeWithdrawal);
+            document.getElementById('resDesiredIncome').textContent = formatCurrency(desiredIncome);
+
+            document.getElementById('resCoveragePct').textContent = coveragePct.toFixed(1) + '%';
+            document.getElementById('resProgressBar').style.width = Math.min(coveragePct, 100) + '%';
+
+            // Progress Bar Color
+            const progBar = document.getElementById('resProgressBar');
+            if (coveragePct < 50) progBar.className = 'progress-bar bg-danger';
+            else if (coveragePct < 80) progBar.className = 'progress-bar bg-warning';
+            else progBar.className = 'progress-bar bg-success';
+
+            // Diagnosis Text
+            const diagEl = document.getElementById('resDiagnosis');
+            const progressText = document.getElementById('resProgressText');
+
+            progressText.textContent = `Con tu plan actual, cubrirías el ${coveragePct.toFixed(1)}% de tu meta mensual deseada.`;
+
+            let diagnosis = "";
+            const yearsText = yearsToGrow + " años";
+
+            if (coveragePct >= 100) {
+                diagnosis = `¡Excelente! Estás en camino a un retiro dorado. Tu ahorro proyectado te permitirá vivir con más de lo que planeas (${formatCurrency(monthlySafeWithdrawal)}/mes). Sigue así.`;
+            } else if (coveragePct >= 80) {
+                diagnosis = `¡Muy bien! Estás cerca de tu meta. Con algunos ajustes pequeños (ahorrar un poco más o mejorar tu rendimiento) podrás cubrir el 100% de tus necesidades.`;
+            } else if (coveragePct >= 50) {
+                diagnosis = `Vas a medio camino. Tienes ${yearsText} para mejorar. Considera aumentar tu aportación mensual o buscar instrumentos de inversión con mejor rendimiento.`;
+            } else {
+                diagnosis = `Atención requerida. Tu plan actual solo cubriría una pequeña parte de tus gastos. Necesitas aumentar drásticamente tu ahorro mensual o reducir tus expectativas de gasto al retiro.`;
+                // Add calculation of needed Monthly Contribution? (Optional complex feature)
+                // diagnosis += " Para llegar a tu meta, deberías ahorrar...";
+            }
+
+            diagEl.textContent = diagnosis;
+
+            if (resultsModal) resultsModal.show();
+        });
+
+        // Initial Focus
+        const firstInput = document.getElementById('currentAge');
+        if (firstInput) firstInput.focus();
+    }
+
+    // Browser Back
+    const backBtn = document.getElementById('browserBackBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', () => window.history.back());
+    }
+
+    // UI Standard (Navbar user dropdown) - Keeping consistent with other files
     const userBtn = document.getElementById('userBtn');
     const userDropdown = document.getElementById('userDropdown');
     const mainContent = document.querySelector('.main-content');
@@ -55,25 +251,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function applyBlurEffect(isActive) {
         if (mainContent) {
-            if (isActive) {
-                mainContent.classList.add('blurred-content');
-                body.classList.add('overlay-active'); 
-            } else {
-                mainContent.classList.remove('blurred-content');
-                body.classList.remove('overlay-active'); 
-            }
-        }
-    }
-
-    function toggleModalBlurEffect(show) {
-        if (mainContent) {
-            if (show) {
-                mainContent.classList.add('blurred-content');
-                body.classList.add('overlay-active');
-            } else {
-                mainContent.classList.remove('blurred-content');
-                body.classList.remove('overlay-active');
-            }
+            isActive ? mainContent.classList.add('blurred-content') : mainContent.classList.remove('blurred-content');
+            isActive ? body.classList.add('overlay-active') : body.classList.remove('overlay-active');
         }
     }
 
@@ -100,24 +279,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 dropdownOpen = true;
             }
         }
-        if (!dropdownOpen) {
-            applyBlurEffect(false);
-        }
+        if (!dropdownOpen) applyBlurEffect(false);
     });
 
-    // Sección: LÓGICA DEL MODAL DE CERRAR SESIÓN
+    // Logout logic if present in base template
     const logoutBtn = document.getElementById('logoutBtn');
     const confirmLogoutBtn = document.getElementById('confirmLogout');
-    let logoutModal;
-    if (document.getElementById('logoutModal')) {
-        logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
-        document.getElementById('logoutModal').addEventListener('show.bs.modal', () => {
-            toggleModalBlurEffect(true);
-        });
-        document.getElementById('logoutModal').addEventListener('hide.bs.modal', () => {
-            toggleModalBlurEffect(false);
-        });
-    }
+    let logoutModal = document.getElementById('logoutModal') ? new bootstrap.Modal(document.getElementById('logoutModal')) : null;
 
     if (logoutBtn && logoutModal) {
         logoutBtn.addEventListener('click', () => {
@@ -130,156 +298,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (confirmLogoutBtn) {
+    if (confirmLogoutBtn && logoutModal) {
         confirmLogoutBtn.addEventListener('click', () => {
             window.location.href = "/logout";
             logoutModal.hide();
-        });
-    }
-
-    // --- LÓGICA ESPECÍFICA DEL SIMULADOR DE RETIRO Y JUBILACIÓN ---
-
-    const retirementPlanForm = document.getElementById('retirementPlanForm');
-    const retirementResultsSection = document.getElementById('retirement-results-section');
-    const yearsToRetirementResult = document.getElementById('yearsToRetirementResult');
-    const projectedSavingsResult = document.getElementById('projectedSavingsResult');
-    const estimatedMonthlyIncomeResult = document.getElementById('estimatedMonthlyIncomeResult');
-    const retirementSummaryMessage = document.getElementById('retirement-summary-message');
-    const resetRetirementFormBtn = document.getElementById('resetRetirementForm');
-
-    retirementPlanForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-
-        const currentAgeInput = document.getElementById('currentAge');
-        const retirementAgeInput = document.getElementById('retirementAge');
-        const currentSavingsInput = document.getElementById('currentSavings');
-        const monthlyContributionInput = document.getElementById('monthlyContribution');
-        const annualReturnRateInput = document.getElementById('annualReturnRate');
-        const desiredMonthlyExpensesInput = document.getElementById('desiredMonthlyExpenses');
-
-        const currentAge = parseInt(currentAgeInput.value);
-        const retirementAge = parseInt(retirementAgeInput.value);
-        const currentSavings = parseFloat(currentSavingsInput.value);
-        const monthlyContribution = parseFloat(monthlyContributionInput.value);
-        const annualReturnRate = parseFloat(annualReturnRateInput.value) / 100;
-        const desiredMonthlyExpenses = parseFloat(desiredMonthlyExpensesInput.value);
-
-        let isValid = true;
-
-        if (isNaN(currentAge) || currentAge < 18 || currentAge > 99) {
-            currentAgeInput.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            currentAgeInput.classList.remove('is-invalid');
-        }
-
-        if (isNaN(retirementAge) || retirementAge <= currentAge || retirementAge > 100) {
-            retirementAgeInput.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            retirementAgeInput.classList.remove('is-invalid');
-        }
-
-        if (isNaN(currentSavings) || currentSavings < 0) {
-            currentSavingsInput.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            currentSavingsInput.classList.remove('is-invalid');
-        }
-
-        if (isNaN(monthlyContribution) || monthlyContribution < 0) {
-            monthlyContributionInput.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            monthlyContributionInput.classList.remove('is-invalid');
-        }
-
-        if (isNaN(annualReturnRate) || annualReturnRate < 0) {
-            annualReturnRateInput.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            annualReturnRateInput.classList.remove('is-invalid');
-        }
-
-        if (isNaN(desiredMonthlyExpenses) || desiredMonthlyExpenses < 0) {
-            desiredMonthlyExpensesInput.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            desiredMonthlyExpensesInput.classList.remove('is-invalid');
-        }
-
-        if (!isValid) {
-            return;
-        }
-
-        const yearsToRetirement = retirementAge - currentAge;
-        const totalMonths = yearsToRetirement * 12;
-
-        let projectedSavings = 0;
-        let estimatedMonthlyIncome = 0;
-
-        if (yearsToRetirement > 0) {
-            const fvCurrentSavings = currentSavings * Math.pow(1 + annualReturnRate, yearsToRetirement);
-
-            let fvMonthlyContributions = 0;
-            if (monthlyContribution > 0 && annualReturnRate > 0) {
-                const monthlyRate = Math.pow(1 + annualReturnRate, 1/12) - 1;
-                fvMonthlyContributions = monthlyContribution * ((Math.pow(1 + monthlyRate, totalMonths) - 1) / monthlyRate);
-            } else if (monthlyContribution > 0 && annualReturnRate === 0) {
-                fvMonthlyContributions = monthlyContribution * totalMonths;
-            }
-            
-            projectedSavings = fvCurrentSavings + fvMonthlyContributions;
-            estimatedMonthlyIncome = (projectedSavings * 0.04) / 12;
-
-        } else {
-            projectedSavings = currentSavings;
-            estimatedMonthlyIncome = (projectedSavings * 0.04) / 12;
-        }
-
-        yearsToRetirementResult.textContent = `${yearsToRetirement} año(s)`;
-        projectedSavingsResult.textContent = formatCurrency(projectedSavings);
-        estimatedMonthlyIncomeResult.textContent = formatCurrency(estimatedMonthlyIncome);
-
-        if (estimatedMonthlyIncome >= desiredMonthlyExpenses) {
-            retirementSummaryMessage.className = 'alert alert-success text-center mt-4';
-            retirementSummaryMessage.textContent = `¡Felicidades! Tu ahorro proyectado de ${formatCurrency(projectedSavings)} podría generarte un ingreso mensual estimado de ${formatCurrency(estimatedMonthlyIncome)}, lo cual supera o iguala tus gastos deseados de ${formatCurrency(desiredMonthlyExpenses)}. ¡Estás en buen camino!`;
-        } else if (projectedSavings > 0) {
-            retirementSummaryMessage.className = 'alert alert-warning text-center mt-4';
-            retirementSummaryMessage.textContent = `Tu ahorro proyectado de ${formatCurrency(projectedSavings)} podría generarte un ingreso mensual estimado de ${formatCurrency(estimatedMonthlyIncome)}, lo cual es menor a tus gastos deseados de ${formatCurrency(desiredMonthlyExpenses)}. Considera aumentar tus contribuciones, buscar mayor rendimiento o ajustar tus expectativas de gastos.`;
-        } else {
-            retirementSummaryMessage.className = 'alert alert-danger text-center mt-4';
-            retirementSummaryMessage.textContent = `¡Alerta! Con tus datos actuales, tu ahorro proyectado es insuficiente para generar el ingreso mensual deseado de ${formatCurrency(desiredMonthlyExpenses)}. Necesitas revisar seriamente tu plan de ahorro y/o tus expectativas.`;
-        }
-
-        retirementPlanForm.classList.add('d-none');
-        retirementResultsSection.classList.remove('d-none');
-    });
-
-    resetRetirementFormBtn.addEventListener('click', () => {
-        retirementPlanForm.reset();
-        retirementPlanForm.classList.remove('d-none');
-        retirementResultsSection.classList.add('d-none');
-        retirementPlanForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-        retirementPlanForm.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
-    });
-
-    function formatCurrency(amount) {
-        return new Intl.NumberFormat('es-MX', {
-            style: 'currency',
-            currency: 'MXN',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(amount);
-    }
-
-    document.getElementById('retiro-jubilacion-section').classList.remove('d-none');
-
-    // Sección: lógica del botón de regresar del navegador
-    const browserBackBtn = document.getElementById('browserBackBtn');
-    if (browserBackBtn) {
-        browserBackBtn.addEventListener('click', () => {
-            window.history.back();
         });
     }
 });

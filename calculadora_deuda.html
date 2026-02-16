@@ -15,80 +15,214 @@
 
 {% block content %}
 <main class="main-content">
-    <section id="calculadora-deuda-section" class="content-section">
-        <div class="glass-card p-4 fade-in">
-            <h2 class="mb-4 titulo-dashboard text-center">¡Calculadora de deuda!</h2>
-            <p class="lead text-muted text-center mb-5">Calcula el tiempo y el interés total para pagar tu deuda.</p>
+    <section id="simulacion-deuda-section" class="content-section">
+        <div class="fade-in">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <span class="badge bg-danger rounded-pill mb-3 px-3 py-2">Libertad financiera</span>
+                <h2 class="fw-bold mb-3 display-6">Elimina tus deudas</h2>
+                <p class="lead text-muted mx-auto" style="max-width: 700px;">
+                    Calcula cuánto te costará realmente tu deuda y encuentra la mejor estrategia para liquidarla.
+                </p>
+            </div>
 
-            <div id="debt-calculation-form-section" class="mt-5">
-                <h3 class="mb-4 titulo-dashboard text-center">Detalles de tu deuda</h3>
-                <form id="debtForm" class="row g-4 justify-content-center">
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="debtAmount" class="form-label mb-2"><i class="bi bi-cash-stack me-2"></i>Monto
-                                total de la deuda:</label>
-                            <input type="number" class="form-control glass-input" id="debtAmount"
-                                placeholder="Ej: 10000" min="0.01" step="0.01" required>
-                            <div class="invalid-feedback">Ingresa el monto total de la deuda (mayor a 0).</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="annualInterestRate" class="form-label mb-2"><i
-                                    class="bi bi-percent me-2"></i>Tasa de interés anual (%):</label>
-                            <input type="number" class="form-control glass-input" id="annualInterestRate"
-                                placeholder="Ej: 12 (para 12%)" min="0" step="0.01" required>
-                            <div class="invalid-feedback">Ingresa una tasa de interés anual (mayor o igual a 0).</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-5">
-                        <div class="form-group glass-card p-4">
-                            <label for="monthlyPayment" class="form-label mb-2"><i
-                                    class="bi bi-currency-dollar me-2"></i>Pago mensual deseado:</label>
-                            <input type="number" class="form-control glass-input" id="monthlyPayment"
-                                placeholder="Ej: 200" min="0.01" step="0.01" required>
-                            <div class="invalid-feedback">Ingresa tu pago mensual deseado (mayor a 0).</div>
-                        </div>
-                    </div>
+            <div class="col-lg-7 mx-auto">
+                <div class="glass-card p-4 p-md-5 border-0 shadow-lg position-relative overflow-hidden">
+                    <form id="debtWizardForm">
 
-                    <div class="col-12 text-center">
-                        <button type="submit" class="btn btn-primary btn-lg mt-4">
-                            <i class="bi bi-calculator-fill me-2"></i> Calcular deuda
-                        </button>
-                    </div>
-                </form>
+                        <!-- Step 1: Debt Amount -->
+                        <div id="step-amount" class="step-section fade-in">
+                            <div class="step-container">
+                                <label class="form-label-premium"><i
+                                        class="bi bi-cash-coin text-danger me-2"></i>¿Cuánto debes en total?</label>
 
-                <div id="debt-results-section" class="d-none mt-5 glass-card p-4">
-                    <h3 class="mb-4 titulo-dashboard text-center">Resultados de tu deuda</h3>
-                    <div class="row text-center mb-4">
-                        <div class="col-md-6 mb-3">
-                            <div class="p-3 glass-panel h-100">
-                                <i class="bi bi-calendar-range text-info fs-3 mb-2"></i>
-                                <h5 class="text-muted">Tiempo para pagar (meses)</h5>
-                                <p class="fs-4 fw-bold text-dark" id="monthsToPayResult"></p>
+                                <div class="mb-4">
+                                    <div class="input-glass-wrapper">
+                                        <span class="input-group-text text-danger">$</span>
+                                        <input type="text" class="form-control currency-input" id="debtAmount"
+                                            placeholder="Ej: 50,000" required>
+                                    </div>
+                                    <div class="helper-text-premium">
+                                        Suma el saldo de tus tarjetas, préstamos personales o crédito automotriz.
+                                    </div>
+                                </div>
+
+                                <div class="mt-5">
+                                    <button type="button"
+                                        class="btn btn-primary btn-lg rounded-pill py-3 w-100 next-step-btn"
+                                        data-next="step-interest">
+                                        Siguiente <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="p-3 glass-panel h-100">
-                                <i class="bi bi-currency-exchange text-danger fs-3 mb-2"></i>
-                                <h5 class="text-muted">Intereses totales pagados</h5>
-                                <p class="fs-4 fw-bold text-dark" id="totalInterestPaidResult"></p>
+
+                        <!-- Step 2: Interest Rate -->
+                        <div id="step-interest" class="step-section d-none fade-in">
+                            <div class="step-container">
+                                <label class="form-label-premium"><i class="bi bi-percent text-warning me-2"></i>¿Cuál
+                                    es la tasa de interés anual?</label>
+
+                                <div class="mb-4">
+                                    <div class="input-glass-wrapper">
+                                        <span class="input-group-text text-warning">%</span>
+                                        <input type="number" class="form-control" id="annualInterestRate"
+                                            placeholder="Ej: 45" required step="0.1">
+                                    </div>
+                                    <div class="helper-text-premium">
+                                        Revisa tu estado de cuenta. El CAT promedio en tarjetas es 40-70%.
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-4 mt-5">
+                                    <button type="button"
+                                        class="btn btn-outline-secondary btn-lg rounded-pill py-3 w-50 prev-step-btn"
+                                        data-prev="step-amount">
+                                        <i class="bi bi-arrow-left me-2"></i> Atrás
+                                    </button>
+                                    <button type="button"
+                                        class="btn btn-primary btn-lg rounded-pill py-3 w-50 next-step-btn"
+                                        data-next="step-payment">
+                                        Siguiente <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div id="debt-summary-message" class="alert text-center mt-4"></div>
+                        <!-- Step 3: Monthly Payment -->
+                        <div id="step-payment" class="step-section d-none fade-in">
+                            <div class="step-container">
+                                <label class="form-label-premium"><i class="bi bi-wallet2 text-primary me-2"></i>¿Cuánto
+                                    puedes pagar al mes?</label>
 
-                    <div class="d-flex justify-content-center mt-4">
-                        <button type="button" class="btn btn-outline-secondary btn-lg" id="resetDebtForm">
-                            <i class="bi bi-arrow-repeat me-2"></i> Recalcular Deuda
-                        </button>
-                    </div>
+                                <div class="mb-4">
+                                    <div class="input-glass-wrapper">
+                                        <span class="input-group-text text-primary">$</span>
+                                        <input type="text" class="form-control currency-input" id="monthlyPayment"
+                                            placeholder="Ej: 2,000" required>
+                                    </div>
+                                    <div class="helper-text-premium">
+                                        Intenta pagar más del mínimo para evitar intereses excesivos.
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-4 mt-5">
+                                    <button type="button"
+                                        class="btn btn-outline-secondary btn-lg rounded-pill py-3 w-50 prev-step-btn"
+                                        data-prev="step-interest">
+                                        <i class="bi bi-arrow-left me-2"></i> Atrás
+                                    </button>
+                                    <button type="submit"
+                                        class="btn btn-success btn-lg rounded-pill py-3 w-50 shadow-lg hover-scale fw-bold">
+                                        Calcular Plan <i class="bi bi-calculator-fill ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
                 </div>
             </div>
         </div>
     </section>
 </main>
+{% endblock %}
+
+{% block extra_modals %}
+<div class="modal fade" id="resultsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content glass-modal border-0 shadow-lg">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">Plan de pago</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4 p-lg-5">
+                <div class="row g-4 justify-content-center">
+                    <!-- Summary Card -->
+                    <div class="col-lg-5">
+                        <div class="glass-card p-4 h-100 border-0 shadow-sm text-center card-summary">
+                            <h6 class="text-muted text-uppercase fw-bold mb-3">Serás libre de deudas en</h6>
+                            <h2 class="fw-bold text-success display-4 mb-4" id="resTime">0 Meses</h2>
+                            <p class="text-muted small">Fecha estimada: <span id="resDate"
+                                    class="fw-bold text-primary">--</span></p>
+
+                            <hr class="opacity-25 my-4">
+
+                            <div class="row text-start mt-4">
+                                <div class="col-6 mb-3">
+                                    <small class="text-muted d-block fw-bold">Interés total</small>
+                                    <span class="fs-5 fw-bold text-danger" id="resTotalInterest">$0.00</span>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <small class="text-muted d-block fw-bold">Total a pagar</small>
+                                    <span class="fs-5 fw-bold text-dark" id="resTotalPaid">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analysis Card -->
+                    <div class="col-lg-7">
+                        <div class="glass-card p-4 h-100 border-0 shadow-sm rule-analysis-card">
+                            <h5 class="fw-bold mb-4"><i class="bi bi-graph-up text-danger me-2"></i> Impacto de tu pago
+                            </h5>
+
+                            <!-- Composition Bar -->
+                            <div class="mb-5">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="fw-bold text-muted small">Composición del pago total</span>
+                                </div>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar bg-secondary" id="barPrincipal" role="progressbar"
+                                        style="width: 70%">Capital</div>
+                                    <div class="progress-bar bg-danger" id="barInterest" role="progressbar"
+                                        style="width: 30%">Interés</div>
+                                </div>
+                                <small class="text-muted mt-2 d-block">Por cada $100 que pagas, <span
+                                        id="resInterestPer100" class="fw-bold text-danger">$30</span> se van a
+                                    intereses.</small>
+                            </div>
+
+                            <!-- Diagnosis Box -->
+                            <div
+                                class="glass-panel p-3 border shadow-sm rounded-4 mb-0 d-flex align-items-center bg-opacity-10 recommendation-box">
+                                <div
+                                    class="rounded-circle bg-success bg-opacity-10 p-3 me-3 text-success flex-shrink-0 icon-box">
+                                    <i class="bi bi-lightning-charge-fill fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Estrategia turbo</h6>
+                                    <p class="small text-muted mb-0" id="resSmartTip">...</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 pb-4 justify-content-center">
+                <button type="button" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm hover-scale"
+                    data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Dark Mode Overrides */
+    [data-theme="dark"] .card-summary h6,
+    [data-theme="dark"] .card-summary small,
+    [data-theme="dark"] .card-summary span.text-dark,
+    [data-theme="dark"] .rule-analysis-card h5,
+    [data-theme="dark"] .rule-analysis-card small {
+        color: #ffffff !important;
+    }
+
+    [data-theme="dark"] .recommendation-box {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+</style>
 {% endblock %}
 
 {% block extra_js %}

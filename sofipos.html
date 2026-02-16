@@ -1,6 +1,6 @@
 {% extends "templates/base.html" %}
 
-{% block title %}Mercy - SOFIPOs{% endblock %}
+{% block title %}Mercy - Ranking SOFIPOs{% endblock %}
 
 {% block extra_css %}
 <link href="css/dashboard.css" rel="stylesheet">
@@ -8,29 +8,119 @@
 <style>
     .chart-container {
         position: relative;
-        height: 400px;
+        height: 300px;
         width: 100%;
     }
 
     .nicap-badge {
-        font-size: 0.8rem;
-        padding: 5px 10px;
+        font-size: 0.75rem;
+        padding: 4px 10px;
         border-radius: 20px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .nicap-1 {
-        background-color: var(--success-color);
-        color: white;
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
     .nicap-2 {
-        background-color: var(--warning-color);
+        background-color: rgba(245, 158, 11, 0.2);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .sofipo-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--glass-border);
+        background: var(--glass-bg);
+    }
+
+    .sofipo-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary-color);
+    }
+
+    .earning-highlight {
+        background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1), rgba(var(--secondary-rgb), 0.1));
+        border-radius: 12px;
+        padding: 10px;
+    }
+
+    /* Controls Bar */
+    .controls-bar {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 1rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .form-control-glass,
+    .form-select-glass {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        color: var(--text-color);
+        border-radius: 8px;
+    }
+
+    .form-control-glass:focus,
+    .form-select-glass:focus {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--primary-color);
+        color: var(--text-color);
+        box-shadow: none;
+    }
+
+    [data-theme="dark"] .form-control-glass,
+    [data-theme="dark"] .form-select-glass {
+        background: rgba(0, 0, 0, 0.2);
         color: white;
     }
 
-    /* Ajuste para que el navbar no choque con el contenido si el CSS varía ligeramente */
-    body {
-        padding-top: 80px;
+    /* List View Styles */
+    .list-view .col-md-6,
+    .list-view .col-lg-4 {
+        width: 100%;
+    }
+
+    .list-view .sofipo-card {
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+    }
+
+    .list-view .card-body {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .list-view .sofipo-card {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .list-view .card-body {
+            flex-direction: column;
+        }
+
+        .controls-bar {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .search-container,
+        .calculator-container,
+        .sort-container {
+            width: 100%;
+        }
     }
 </style>
 {% endblock %}
@@ -43,23 +133,102 @@
 {% endblock %}
 
 {% block content %}
-<main class="main-content" style="margin-top: 0; margin-left: 0;">
+<main class="main-content container px-3 px-md-4">
     <section class="content-section">
-        <div class="glass-card p-4 fade-in">
-            <h2 class="mb-4 titulo-dashboard text-center">Comparador de rendimientos SOFIPOs</h2>
-            <p class="lead text-muted text-center mb-5">Analiza las mejores tasas del mercado en tiempo real y visualiza
-                su crecimiento.</p>
+        <div class="fade-in">
+            <div class="text-center mb-5">
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill mb-3 px-3 py-2">Actualizado en
+                    tiempo real</span>
+                <h2 class="fw-bold mb-3 display-6">Ranking de SOFIPOs</h2>
+                <p class="lead text-muted mx-auto" style="max-width: 700px;">
+                    Compara tasas, seguridad (NICAP) y rendimientos proyectados. Encuentra dónde crece más tu dinero.
+                </p>
+            </div>
 
-            <div class="glass-panel p-4 mb-5">
-                <h4 class="text-center mb-4">Rendimiento anual estimado (%)</h4>
+            <!-- Chart Section -->
+            <div class="glass-card p-4 mb-5 border-0 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-bar-chart-fill text-primary me-2"></i>Top tasas anuales
+                    </h5>
+                </div>
                 <div class="chart-container">
                     <canvas id="sofiposChart"></canvas>
                 </div>
             </div>
 
-            <h3 class="titulo-dashboard mb-4">Detalle de entidades</h3>
-            <div id="sofipos-cards-container" class="row g-4">
+            <!-- Controls Bar -->
+            <div class="controls-bar mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3 sticky-top shadow-sm"
+                style="top: 80px; z-index: 100;">
+
+                <!-- Search -->
+                <div class="search-container flex-grow-1" style="max-width: 300px;">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-glass text-muted"><i
+                                class="bi bi-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control form-control-glass"
+                            placeholder="Buscar entidad...">
+                    </div>
+                </div>
+
+                <!-- Calculator -->
+                <div
+                    class="calculator-container d-flex align-items-center gap-2 bg-primary bg-opacity-10 p-2 rounded-3 border border-primary border-opacity-10">
+                    <i class="bi bi-calculator-fill text-primary"></i>
+                    <div class="d-flex align-items-center">
+                        <span class="text-muted small me-2 d-none d-md-inline">Inversión:</span>
+                        <div class="input-group input-group-sm" style="width: 140px;">
+                            <span
+                                class="input-group-text bg-transparent border-primary border-opacity-25 text-primary fw-bold">$</span>
+                            <input type="number" id="investInput"
+                                class="form-control form-control-glass border-primary border-opacity-25 fw-bold text-primary"
+                                value="10000" min="100" step="100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sort & View -->
+                <div class="sort-container d-flex gap-2 align-items-center">
+                    <a href="{{ url_for('glosario') }}"
+                        class="btn btn-outline-info btn-sm d-flex align-items-center me-2 fw-bold"
+                        data-bs-toggle="tooltip" title="¿Dudas con los términos?">
+                        <i class="bi bi-book-half me-2"></i> <span class="d-none d-md-inline">Diccionario</span>
+                    </a>
+
+                    <select id="sortSelect" class="form-select form-select-glass w-auto">
+                        <option value="rate_desc" selected>Mayor tasa</option>
+                        <option value="rate_asc">Menor tasa</option>
+                        <option value="nicap_asc">Mejor seguridad (NICAP)</option>
+                    </select>
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="viewMode" id="gridViewBtn" autocomplete="off"
+                            checked>
+                        <label class="btn btn-outline-secondary btn-sm d-flex align-items-center" for="gridViewBtn"><i
+                                class="bi bi-grid-fill"></i></label>
+
+                        <input type="radio" class="btn-check" name="viewMode" id="listViewBtn" autocomplete="off">
+                        <label class="btn btn-outline-secondary btn-sm d-flex align-items-center" for="listViewBtn"><i
+                                class="bi bi-list-ul"></i></label>
+                    </div>
+                </div>
             </div>
+
+            <!-- Cards Container -->
+            <div id="sofipos-cards-container" class="row g-4">
+                <!-- Cards will be injected via JS -->
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zero Results State (Hidden by default) -->
+            <div id="noResults" class="text-center py-5 d-none">
+                <i class="bi bi-search text-muted fs-1 mb-3"></i>
+                <p class="text-muted">No encontramos SOFIPOs que coincidan con tu búsqueda.</p>
+                <button class="btn btn-link" id="clearSearchBtn">Limpiar filtros</button>
+            </div>
+
         </div>
     </section>
 </main>

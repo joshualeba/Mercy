@@ -6,6 +6,33 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from email_validator import validate_email, EmailNotValidError
 from datetime import datetime
 import re
+from authlib.integrations.flask_client import OAuth
+import uuid
+
+
+
+# Helpers para formato de fecha en español
+def formato_fecha_es(fecha):
+    if not fecha:
+        return 'n/a'
+    meses = {
+        1: 'enero', 2: 'febrero', 3: 'marzo', 4: 'abril',
+        5: 'mayo', 6: 'junio', 7: 'julio', 8: 'agosto',
+        9: 'septiembre', 10: 'octubre', 11: 'noviembre', 12: 'diciembre'
+    }
+    return f"{fecha.day:02d} de {meses[fecha.month]} de {fecha.year}"
+
+def formato_fecha_hora_es(fecha):
+    if not fecha:
+        return 'n/a'
+    meses = {
+        1: 'enero', 2: 'febrero', 3: 'marzo', 4: 'abril',
+        5: 'mayo', 6: 'junio', 7: 'julio', 8: 'agosto',
+        9: 'septiembre', 10: 'octubre', 11: 'noviembre', 12: 'diciembre'
+    }
+    fecha_str = f"{fecha.day:02d} de {meses[fecha.month]} de {fecha.year}"
+    hora_str = fecha.strftime('%I:%M %p')
+    return f"{fecha_str}, {hora_str}"
 
 
 # sección: configuración de la aplicación flask
@@ -35,6 +62,18 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # inicializa la extensión de sqlalchemy
 db = SQLAlchemy(app)
 
+# configuración de oauth
+oauth = OAuth(app)
+google = oauth.register(
+    name='google',
+    client_id='1058927405635-cocrlv2e93uevoikl96qb53pb1ak9tqa.apps.googleusercontent.com', # TODO: Reemplazar con ID real
+    client_secret='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', # TODO: Reemplazar con Secret real
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={
+        'scope': 'openid email profile'
+    }
+)
+
 # carpeta para subir imágenes de perfil (aunque no se usa en este ejemplo, se mantiene)
 
 
@@ -60,6 +99,7 @@ class Usuarios(db.Model):
     fecha_registro = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     ultima_sesion = db.Column(db.DateTime)
     test_completado = db.Column(db.Boolean, nullable=False, default=False)
+    provider = db.Column(db.String(50), default='local') # 'local' o 'google'
     
     # relación inversa con datosp
     datosp = db.relationship('DatosP', back_populates='usuario', lazy=True)
@@ -198,7 +238,7 @@ def calcular_salud():
         analisis.append({
             "tipo": "deuda",
             "estado": "mal",
-            "titulo": "Sobrenedudamiento crítico",
+            "titulo": "Sobreendeudamiento crítico",
             "texto": f"Destinas el {ratio_deuda:.0f}% de tu dinero a pagar deudas. Esto es peligroso. Prioriza pagar las deudas con mayor tasa de interés (Método Avalancha)."
         })
     elif ratio_deuda > 30:
@@ -239,7 +279,7 @@ def calcular_salud():
         analisis.append({
             "tipo": "ahorro",
             "estado": "bien",
-            "titulo": "Blindaje financiero Ccompleto",
+            "titulo": "Blindaje financiero completo",
             "texto": "¡Felicidades! Tienes un fondo de emergencia sólido. Ahora podrías empezar a pensar en inversiones de mayor riesgo y rendimiento."
         })
 
@@ -364,7 +404,8 @@ def registrar_usuario():
             nuevo_usuario = Usuarios(
                 id_datosP=nuevos_datos.id,
                 correo_electronico=correo_electronico,
-                contrasena=contrasena_hasheada
+                contrasena=contrasena_hasheada,
+                provider='local'
             )
             db.session.add(nuevo_usuario)
             
@@ -376,7 +417,16 @@ def registrar_usuario():
             
         except IntegrityError: # error específico de sqlalchemy para claves únicas
             db.session.rollback()
-            flash('error: el correo electrónico ya está registrado. por favor, utiliza otro.', 'error')
+            # Verificamos si es por correo duplicado para dar un mensaje más útil
+            existing_user = Usuarios.query.filter_by(correo_electronico=correo_electronico).first()
+            if existing_user:
+                if existing_user.provider == 'google':
+                    flash('Este correo ya está registrado con Google. Por favor, inicia sesión con Google.', 'error')
+                else:
+                    flash('El correo electrónico ya está registrado. Por favor, intenta iniciar sesión.', 'error')
+            else:
+                flash('Error de integridad en la base de datos.', 'error')
+            
             return redirect(url_for('mostrar_formulario_registro'))
         except Exception as e:
             db.session.rollback()
@@ -403,6 +453,10 @@ def login_usuario():
             usuario = Usuarios.query.filter_by(correo_electronico=correo).first()
             
             if usuario and usuario.datosp:
+                # VALIDACIÓN: Si es usuario de Google, bloquear login manual
+                if usuario.provider == 'google':
+                    return jsonify(success=False, message='Esta cuenta está registrada con Google. Por favor, utiliza el botón "Continuar con Google".')
+
                 if check_password_hash(usuario.contrasena, contrasena_ingresada):
                     flash('¡bienvenido! has iniciado sesión exitosamente.', 'success')
                     
@@ -415,9 +469,11 @@ def login_usuario():
                     session['nombres'] = usuario.datosp.nombre
                     session['apellidos'] = usuario.datosp.apellidoP
                     session['correo'] = usuario.correo_electronico
-                    session['fecha_registro'] = usuario.fecha_registro.strftime('%d de %B de %Y') if usuario.fecha_registro else 'n/a'
-                    session['ultima_sesion'] = datetime.now().strftime('%d de %B de %Y, %I:%M %p')
+                    session['correo'] = usuario.correo_electronico
+                    session['fecha_registro'] = formato_fecha_es(usuario.fecha_registro)
+                    session['ultima_sesion'] = formato_fecha_hora_es(datetime.now())
                     session['test_completado'] = usuario.test_completado
+                    session['auth_method'] = 'local'
 
                     return jsonify(success=True, redirect=url_for('dashboard'))
                 else:
@@ -428,7 +484,95 @@ def login_usuario():
         except Exception as e:
             print(f"Error inesperado en login: {e}")
             return jsonify(success=False, message=f"ocurrió un error inesperado en el servidor: {e}")
-        # 'finally' con 'conn.close()' ya no es necesario
+        return jsonify(success=False, message=f"ocurrió un error inesperado en el servidor: {e}")
+    # 'finally' con 'conn.close()' ya no es necesario
+
+# --- RUTAS DE GOOGLE OAUTH ---
+
+@app.route('/login/google')
+def login_google():
+    redirect_uri = url_for('google_auth', _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+@app.route('/auth/google/callback')
+def google_auth():
+    try:
+        token = google.authorize_access_token()
+        user_info = token.get('userinfo')
+        
+        # Si no obtenemos userinfo directamente del token, intentamos consultarlo
+        if not user_info:
+            user_info = google.get('https://openidconnect.googleapis.com/v1/userinfo').json()
+
+        email = user_info.get('email')
+        given_name = user_info.get('given_name', '')
+        family_name = user_info.get('family_name', '')
+        
+        # Verificar si el usuario ya existe
+        usuario = Usuarios.query.filter_by(correo_electronico=email).first()
+
+        if not usuario:
+            # Crear nuevo usuario
+            # Generamos una contraseña aleatoria segura ya que entran por Google
+            random_password = str(uuid.uuid4())
+            contrasena_hasheada = generate_password_hash(random_password)
+            
+            nuevos_datos = DatosP(
+                nombre=given_name,
+                apellidoP=family_name,
+                fecha_nacimiento=datetime.now(),
+                telefono=None
+            )
+            db.session.add(nuevos_datos)
+            db.session.flush()
+            
+            nuevo_usuario = Usuarios(
+                id_datosP=nuevos_datos.id,
+                correo_electronico=email,
+                contrasena=contrasena_hasheada, # Contraseña dummy
+                test_completado=False,
+                provider='google'
+            )
+            db.session.add(nuevo_usuario)
+            db.session.commit()
+            flash('¡Cuenta creada exitosamente con Google!', 'success')
+            usuario = nuevo_usuario
+        else:
+            # VALIDACIÓN DE CONFLICTO DE PROVEEDOR
+            if usuario.provider == 'local':
+                 flash('Ya existe una cuenta manual registrada con este correo. Por favor, inicia sesión con tu contraseña.', 'error')
+                 return redirect(url_for('mostrar_formulario_inicio_sesion'))
+            
+             # actualiza la última sesión
+            usuario.ultima_sesion = datetime.now()
+            db.session.commit()
+
+        # Iniciar sesión manual
+        session['usuario_autenticado'] = True
+        session['user_id'] = usuario.id
+        # Aseguramos cargar datos si no están en memoria
+        if not usuario.datosp:
+             # Fallback raro, pero por si acaso
+             session['nombres'] = given_name
+             session['apellidos'] = family_name
+        else:
+            session['nombres'] = usuario.datosp.nombre
+            session['apellidos'] = usuario.datosp.apellidoP
+            
+        session['correo'] = email
+        session['correo'] = email
+        session['fecha_registro'] = formato_fecha_es(usuario.fecha_registro)
+        session['ultima_sesion'] = formato_fecha_hora_es(datetime.now())
+        session['test_completado'] = usuario.test_completado
+        session['auth_method'] = 'google'
+        
+        return redirect(url_for('dashboard'))
+
+    except Exception as e:
+        print(f"Error en Google Auth: {e}")
+        flash(f'Error al iniciar sesión con Google: {str(e)}', 'error')
+        return redirect(url_for('mostrar_formulario_inicio_sesion'))
+
 
 @app.route('/dashboard')
 def dashboard():
@@ -443,7 +587,8 @@ def dashboard():
         'correo': session.get('correo', 'correo@example.com'),
         'fecha_registro': session.get('fecha_registro', 'n/a'),
         'ultima_sesion': session.get('ultima_sesion', 'n/a'),
-        'test_completado': session.get('test_completado', False) # pasar el estado del test
+        'test_completado': session.get('test_completado', False), # pasar el estado del test
+        'auth_method': session.get('auth_method', 'local')
     }
     return render_template('dashboard.html', usuario=usuario_data)
 
@@ -590,6 +735,8 @@ def logout():
 def terminos_y_condiciones():
     return render_template('terminos_y_condiciones.html')
 
+
+
 # sección: rutas para simuladores (se mantienen sin cambios)
 @app.route('/simulador_ahorro')
 def simulador_ahorro():
@@ -670,6 +817,7 @@ def calculadora_deuda():
 
 # sección: nueva ruta para el glosario
 @app.route('/glosario')
+@app.route('/glosario.html')
 def glosario():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
         flash('por favor, inicia sesión para acceder al glosario.', 'info')
