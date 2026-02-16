@@ -1,4 +1,9 @@
 import os
+from dotenv import load_dotenv
+
+# cargar variables de entorno desde .env
+load_dotenv()
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
@@ -40,7 +45,7 @@ app = Flask(__name__,
             template_folder=os.path.abspath('.'),
             static_folder=os.path.abspath('.'))
 
-app.secret_key = 'mercysecret'
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'mercysecret')
 
 # --- CAMBIO: configuración de sqlalchemy ---
 # reemplaza pyodbc con flask_sqlalchemy
@@ -66,8 +71,8 @@ db = SQLAlchemy(app)
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
-    client_id='1058927405635-cocrlv2e93uevoikl96qb53pb1ak9tqa.apps.googleusercontent.com', # TODO: Reemplazar con ID real
-    client_secret='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', # TODO: Reemplazar con Secret real
+    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
+    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
     client_kwargs={
         'scope': 'openid email profile'
