@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/api/sofipos_data');
             const result = await response.json();
             if (result.success) {
+                console.log(`Datos recibidos: ${result.data.length} SOFIPOs`);
                 sofiposData = result.data;
                 renderApp();
             } else {
@@ -76,89 +77,121 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.sort((a, b) => {
             if (currentSort === 'rate_desc') return b.tasa - a.tasa;
             if (currentSort === 'rate_asc') return a.tasa - b.tasa;
-            if (currentSort === 'nicap_asc') return a.nicap - b.nicap; // Lower is better (1 best)
+            if (currentSort === 'nicap_asc') return b.nicap - a.nicap; // Porcentaje mayor es mejor
             return 0;
         });
 
         // Update Chart
-        updateChart(filtered.slice(0, 10));
+        try {
+            updateChart(filtered.slice(0, 10));
+        } catch (e) {
+            console.error("Error al actualizar gráfico:", e);
+        }
 
         // Render Cards
         cardsContainer.innerHTML = '';
 
         if (filtered.length === 0) {
+            console.warn("No se encontraron SOFIPOs tras filtrar.");
             if (noResults) noResults.classList.remove('d-none');
         } else {
+            console.log(`Renderizando ${filtered.length} tarjetas.`);
             if (noResults) noResults.classList.add('d-none');
         }
 
-        filtered.forEach(s => {
-            // Calculate Logic
-            const earning = (currentInvestment * (s.tasa / 100) * (s.plazo / 360));
-            const total = currentInvestment + earning;
+        filtered.forEach((s, index) => {
+            try {
+                // Ensure values are numbers
+                const tasaVal = parseFloat(s.tasa) || 0;
+                const plazoVal = parseInt(s.plazo) || 360;
+                const nicapVal = parseFloat(s.nicap) || 0;
 
-            // Format
-            const rateClass = s.tasa >= 13 ? 'text-success' : (s.tasa >= 10 ? 'text-primary' : 'text-muted');
+                // Calculate Logic
+                const earning = (currentInvestment * (tasaVal / 100) * (plazoVal / 360));
+                const total = currentInvestment + earning;
 
-            // --- Feature Injection (Make it useful!) ---
-            const getFeatures = (name) => {
-                const n = name.toLowerCase();
-                if (n.includes('nu')) return ['Disponibilidad 24/7', 'Sin monto mínimo', 'Pago diario'];
-                if (n.includes('finsus')) return ['Pago mensual', 'Plazos flexibles', 'App intuitiva'];
-                if (n.includes('super')) return ['Seguridad alta', 'Sin comisiones', 'Atención personalizada'];
-                if (n.includes('klar')) return ['Disponibilidad diaria', 'Tarjeta crédito', 'Cashback'];
-                if (n.includes('stori')) return ['Cuenta masiva', 'Gana diario', 'Sin anualidad'];
-                if (n.includes('uala')) return ['Rendimiento diario', 'Tarjeta débito', 'Sin comisiones'];
-                return ['Rendimiento fijo', 'Regulado CNBV', 'Ahorro seguro'];
-            };
+                // Format
+                const rateClass = tasaVal >= 13 ? 'text-success' : (tasaVal >= 10 ? 'text-primary' : 'text-muted');
 
-            const features = getFeatures(s.nombre);
-            const featuresHTML = features.map(f => `<span class="badge bg-light text-dark border fw-normal me-1 mb-1">${f}</span>`).join('');
+                // Nicap Display
+                let nicapDisplay = `NICAP: ${nicapVal.toFixed(1)}%`;
+                let nicapBadgeClass = 'bg-success bg-opacity-10 text-success border-success';
 
-            // Simplified Safety Badge (Prosofipo)
-            const insuranceTooltip = "Tu dinero está protegido por el Fondo de Protección hasta por 25,000 UDIS (~$200,000 MXN).";
+                if (nicapVal >= 900) {
+                    nicapDisplay = 'Respaldo Gubernamental Directo';
+                    nicapBadgeClass = 'bg-primary bg-opacity-10 text-primary border-primary';
+                } else if (nicapVal < 131) {
+                    nicapBadgeClass = 'bg-warning bg-opacity-10 text-warning border-warning';
+                }
 
-            const cardHTML = `
-                <div class="${isGridView ? 'col-md-6 col-lg-4' : 'col-12'} fade-in card-item">
-                    <div class="glass-card p-4 h-100 d-flex flex-column hover-scale sofipo-card">
-                        
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="fw-bold mb-0 text-primary" style="font-size: 1.1rem;">${s.nombre}</h5>
-                            <i class="bi bi-shield-check-fill text-success fs-5" data-bs-toggle="tooltip" title="${insuranceTooltip}"></i>
-                        </div>
+                // --- Feature Injection ---
+                const getFeatures = (name) => {
+                    if (!name) return ['Ahorro seguro'];
+                    const n = name.toLowerCase();
+                    if (n.includes('nu')) return ['Disponibilidad 24/7', 'Sin monto mínimo', 'Pago diario'];
+                    if (n.includes('finsus')) return ['Pago mensual', 'Plazos flexibles', 'App intuitiva'];
+                    if (n.includes('super')) return ['Seguridad alta', 'Sin comisiones', 'Atención personalizada'];
+                    if (n.includes('klar')) return ['Disponibilidad diaria', 'Tarjeta crédito', 'Cashback'];
+                    if (n.includes('stori')) return ['Cuenta masiva', 'Gana diario', 'Sin anualidad'];
+                    if (n.includes('uala')) return ['Rendimiento diario', 'Tarjeta débito', 'Sin comisiones'];
+                    return ['Rendimiento fijo', 'Regulado CNBV', 'Ahorro seguro'];
+                };
 
-                        <!-- Features Tags -->
-                        <div class="mb-3 d-flex flex-wrap">
-                            ${featuresHTML}
-                        </div>
-                        
-                        <div class="text-center my-2 p-3 bg-white bg-opacity-50 rounded-3 border border-white">
-                            <span class="display-5 fw-bold ${rateClass}">${s.tasa}%</span>
-                            <span class="d-block text-muted small fw-bold text-uppercase mt-1">Anual a ${s.plazo} días</span>
-                        </div>
+                const features = getFeatures(s.nombre);
+                const featuresHTML = features.map(f => `<span class="badge bg-light text-dark border fw-normal me-1 mb-1" style="font-size: 0.7rem;">${f}</span>`).join('');
 
-                        <!-- Simulator Result -->
-                        <div class="mt-3 mb-4 text-center">
-                            <div class="d-flex justify-content-between align-items-center mb-1 px-2">
-                                <small class="text-muted">Ganancia:</small>
-                                <span class="fw-bold text-success">+${formatCurrency(earning)}</span>
+                const insuranceTooltip = "Tu dinero está protegido por el Fondo de Protección hasta por 25,000 UDIS (~$200,000 MXN).";
+
+                const cardHTML = `
+                    <div class="${isGridView ? 'col-md-6 col-lg-4' : 'col-12'} fade-in card-item">
+                        <div class="glass-card p-4 h-100 d-flex flex-column hover-scale sofipo-card shadow-sm" style="border-radius: 20px;">
+                            
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="fw-bold mb-0 text-primary" style="font-size: 1.1rem;">${s.nombre || 'Entidad Financiera'}</h5>
+                                <i class="bi bi-shield-check-fill text-success fs-5" data-bs-toggle="tooltip" title="${insuranceTooltip}"></i>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center px-2">
-                                <small class="text-muted">Total final:</small>
-                                <span class="fw-bold text-dark">${formatCurrency(total)}</span>
-                            </div>
-                            <div class="progress mt-2" style="height: 4px;">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: ${Math.min(s.tasa * 5, 100)}%"></div>
-                            </div>
-                        </div>
 
-                        <a href="${s.url}" target="_blank" class="btn btn-primary rounded-pill w-100 mt-auto fw-bold shadow-sm btn-sm">
-                            Visitar sitio oficial <i class="bi bi-box-arrow-up-right ms-2"></i>
-                        </a>
+                            <div class="mb-3 d-flex align-items-center">
+                                <span class="badge ${nicapBadgeClass} border me-2" data-bs-toggle="tooltip" title="Nivel de Capitalización: Un % alto significa mayor fortaleza para proteger tus ahorros.">
+                                    <i class="bi bi-bar-chart-fill me-1"></i> ${nicapDisplay}
+                                </span>
+                            </div>
+
+                            <!-- Features Tags -->
+                            <div class="mb-3 d-flex flex-wrap">
+                                ${featuresHTML}
+                            </div>
+                            
+                            <div class="text-center my-2 p-3 bg-white bg-opacity-50 rounded-4 border border-white">
+                                <span class="display-5 fw-bold ${rateClass}">${tasaVal.toFixed(2)}%</span>
+                                <span class="d-block text-muted small fw-bold text-uppercase mt-1">Anual a ${plazoVal} días</span>
+                            </div>
+
+                            <!-- Simulator Result -->
+                            <div class="mt-3 mb-4 text-center">
+                                <div class="d-flex justify-content-between align-items-center mb-1 px-2">
+                                    <small class="text-muted">Ganancia:</small>
+                                    <span class="fw-bold text-success">+${formatCurrency(earning)}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center px-2">
+                                    <small class="text-muted">Total final:</small>
+                                    <span class="fw-bold text-dark">${formatCurrency(total)}</span>
+                                </div>
+                                <div class="progress mt-2" style="height: 6px; border-radius: 10px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: ${Math.min(tasaVal * 5, 100)}%"></div>
+                                </div>
+                            </div>
+
+                            <a href="${s.url || '#'}" target="_blank" class="btn btn-primary rounded-pill w-100 mt-auto fw-bold shadow-sm py-2">
+                                Visitar sitio oficial <i class="bi bi-box-arrow-up-right ms-2"></i>
+                            </a>
+                        </div>
                     </div>
-                </div>
-            `;
-            cardsContainer.insertAdjacentHTML('beforeend', cardHTML);
+                `;
+                cardsContainer.insertAdjacentHTML('beforeend', cardHTML);
+            } catch (err) {
+                console.error(`Error al renderizar SOFIPO en índice ${index}:`, err);
+            }
         });
     }
 

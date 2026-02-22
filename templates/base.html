@@ -147,7 +147,43 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.addEventListener('input', (e) => {
+                if (e.target.tagName !== 'INPUT') return;
+
+                const stepSection = e.target.closest('.step-section, .step-container');
+                if (!stepSection) return;
+
+                const nextBtn = stepSection.querySelector('.next-step-btn, button[type="submit"]');
+                if (!nextBtn) return;
+
+                // Get raw numeric value or text length
+                let valStr = e.target.value.replace(/,/g, '').trim();
+                const hasValue = valStr.length > 0 && parseFloat(valStr) >= 0;
+
+                if (hasValue) {
+                    // Try to preserve original btn- class to revert, though assuming btn-primary default
+                    if (!nextBtn.dataset.originalBtnClass) {
+                        const match = nextBtn.className.match(/btn-(primary|dark|info|warning|secondary)/);
+                        nextBtn.dataset.originalBtnClass = match ? match[0] : 'btn-primary';
+                    }
+                    nextBtn.classList.remove('btn-primary', 'btn-dark', 'btn-info', 'btn-warning');
+                    nextBtn.classList.add('btn-success', 'text-white');
+                } else {
+                    nextBtn.classList.remove('btn-success', 'text-white');
+                    const orig = nextBtn.dataset.originalBtnClass || 'btn-primary';
+                    nextBtn.classList.add(orig);
+                }
+            });
+        });
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="js/logo_b64.js"></script>
+    <script src="js/pdf_utils.js"></script>
     {% block extra_js %}{% endblock %}
 </body>
 

@@ -493,3 +493,61 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Función para descargar PDF de Ahorro
+window.descargarPDFAhorro = function (event) {
+    if (event) event.preventDefault();
+    if (typeof window.jsPDF !== 'undefined') {
+        const doc = new window.jsPDF();
+        if (typeof aplicarEstiloPDFMercy === 'function') {
+            aplicarEstiloPDFMercy(doc, 'Proyección de Ahorro');
+        } else {
+            doc.setFontSize(18);
+            doc.text("Proyección de Ahorro", 14, 20);
+        }
+
+        let yPos = 60;
+        doc.setFontSize(12);
+        doc.setTextColor(50, 50, 50);
+
+        // Extraer valores actuales
+        const meses = document.getElementById('resultMonths').innerText;
+        const fecha = document.getElementById('resultDate').innerText;
+        const ahorroAcumulado = document.getElementById('resultTotalSaved').innerText;
+        const proyeccionInversion = document.getElementById('resultTotalInvested').innerText;
+        const interesGanado = document.getElementById('resultInterest').innerText;
+        const recomendacion = document.getElementById('recommendation-text').innerText;
+
+        doc.setFont('helvetica', 'normal');
+
+        doc.autoTable({
+            startY: yPos,
+            head: [['Concepto', 'Valor']],
+            body: [
+                ['Tiempo estimado', `${meses} meses`],
+                ['Fecha meta', fecha],
+                ['Ahorro acumulado (sin invertir)', ahorroAcumulado],
+                ['Proyección con Inversión (~10%)', proyeccionInversion],
+                ['Interés Ganado Estimado', interesGanado]
+            ],
+            theme: 'striped',
+            headStyles: { fillColor: [25, 135, 84] } // Verde success para ahorro
+        });
+
+        yPos = doc.lastAutoTable.finalY + 15;
+
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Recomendación", 15, yPos);
+        yPos += 10;
+
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        const textLines = doc.splitTextToSize(recomendacion, doc.internal.pageSize.getWidth() - 30);
+        doc.text(textLines, 15, yPos);
+
+        doc.save('Mercy_Proyeccion_Ahorro.pdf');
+    } else {
+        alert("La biblioteca de PDF no pudo cargar. Por favor recarga la página.");
+    }
+};

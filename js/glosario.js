@@ -138,10 +138,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (randomBtn) {
         randomBtn.addEventListener('click', showRandomTerm);
-        // Also init on load if not searching
-        if (!searchInput || !searchInput.value) {
-            // Maybe random on load? 
-            // showRandomTerm(); // Optional, let's keep hardcoded one for stability or call it
+
+        // Init Terminal del día: Un término diferente pero fijo por cada día
+        if (allTerms.length > 0) {
+            const today = new Date();
+            const dateString = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+
+            // Simple hash
+            let hash = 0;
+            for (let i = 0; i < dateString.length; i++) {
+                hash = Math.imul(31, hash) + dateString.charCodeAt(i) | 0;
+            }
+
+            const dailyIndex = Math.abs(hash) % allTerms.length;
+            const dailyTerm = allTerms[dailyIndex];
+
+            heroTitle.textContent = dailyTerm.querySelector('h5').textContent;
+            heroDesc.textContent = dailyTerm.querySelector('p').textContent;
         }
     }
 

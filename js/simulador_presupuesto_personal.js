@@ -317,4 +317,83 @@ document.addEventListener('DOMContentLoaded', () => {
             logoutModal.hide();
         });
     }
+
 });
+
+// Función para descargar PDF de Presupuesto
+window.descargarPDFPresupuesto = function (event) {
+    if (event) event.preventDefault();
+    if (typeof window.jsPDF !== 'undefined') {
+        const doc = new window.jsPDF();
+        if (typeof aplicarEstiloPDFMercy === 'function') {
+            aplicarEstiloPDFMercy(doc, 'Proyección de Presupuesto Personal');
+        } else {
+            doc.setFontSize(18);
+            doc.text("Proyección de Presupuesto Personal", 14, 20);
+        }
+
+        let yPos = 60;
+        doc.setFontSize(12);
+        doc.setTextColor(50, 50, 50);
+
+        // Extraer valores actuales
+        const ingresos = document.getElementById('resIncome').innerText;
+        const gastos = document.getElementById('resExpenses').innerText;
+        const balance = document.getElementById('resBalance').innerText;
+
+        const reqIdeal = '50%';
+        const valReq = document.getElementById('valNeeds').innerText;
+
+        const desIdeal = '30%';
+        const valDes = document.getElementById('valWants').innerText;
+
+        const ahoIdeal = '20%';
+        const valAho = document.getElementById('valSavings').innerText;
+
+        const diagnostico = document.getElementById('budgetDiagnosis').innerText;
+
+        doc.setFont('helvetica', 'normal');
+
+        doc.autoTable({
+            startY: yPos,
+            head: [['Resumen', 'Monto']],
+            body: [
+                ['Ingresos Mensuales', ingresos],
+                ['Gastos Totales', gastos],
+                ['Balance Final', balance]
+            ],
+            theme: 'striped',
+            headStyles: { fillColor: [13, 110, 253] }
+        });
+
+        yPos = doc.lastAutoTable.finalY + 10;
+
+        doc.autoTable({
+            startY: yPos,
+            head: [['Regla 50/30/20', 'Ideal', 'Tu Porcentaje']],
+            body: [
+                ['Necesidades (Fijos)', reqIdeal, valReq],
+                ['Deseos (Variables)', desIdeal, valDes],
+                ['Ahorro', ahoIdeal, valAho]
+            ],
+            theme: 'grid',
+            headStyles: { fillColor: [108, 117, 125] }
+        });
+
+        yPos = doc.lastAutoTable.finalY + 15;
+
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Diagnóstico Financiero", 15, yPos);
+        yPos += 10;
+
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        const textLines = doc.splitTextToSize(diagnostico, doc.internal.pageSize.getWidth() - 30);
+        doc.text(textLines, 15, yPos);
+
+        doc.save('Mercy_Proyeccion_Presupuesto.pdf');
+    } else {
+        alert("La biblioteca de PDF no pudo cargar. Por favor recarga la página.");
+    }
+};

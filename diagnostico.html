@@ -318,8 +318,12 @@
                         <!-- Cards injertadas por JS -->
                     </div>
 
-                    <div class="mt-5 text-center pt-3">
-                        <button class="btn btn-outline-dark rounded-pill px-5 py-2" id="btnRehacer">
+                    <div class="mt-5 text-center pt-3 d-flex flex-wrap justify-content-center gap-3">
+                        <button class="btn btn-outline-danger rounded-pill px-5 py-2 fw-bold"
+                            onclick="descargarPDFDiagnostico(event)">
+                            <i class="bi bi-file-pdf-fill me-2"></i> Descargar PDF
+                        </button>
+                        <button class="btn btn-dark text-white rounded-pill px-5 py-2" id="btnRehacer">
                             <i class="bi bi-arrow-repeat me-2"></i> Realizar nuevo diagnóstico
                         </button>
                     </div>
@@ -437,6 +441,7 @@
             const el = document.getElementById(id);
             // Format immediately with commas
             el.value = new Intl.NumberFormat('en-US').format(val);
+            if (typeof updateNextBtnState === 'function') updateNextBtnState();
             el.focus();     // Focus to trigger any styles
         };
 
@@ -454,6 +459,7 @@
             } else {
                 input.value = new Intl.NumberFormat('en-US').format(value);
             }
+            if (typeof updateNextBtnState === 'function') updateNextBtnState();
         };
 
         // --- INICIALIZACIÓN ---
@@ -517,14 +523,21 @@
             prevBtn.classList.toggle('text-muted', currentStep === 1);
             prevBtn.classList.toggle('text-primary', currentStep > 1);
 
+            updateNextBtnState();
+        }
+
+        function updateNextBtnState() {
+            const activeStep = document.querySelector(`.step-content[data-step="${currentStep}"]`);
+            if (!activeStep) return;
+            const input = activeStep.querySelector('input');
+            const hasValue = input && input.value.trim().length > 0;
+
             if (currentStep === totalSteps) {
                 nextBtn.innerHTML = 'Ver resultado <i class="bi bi-stars ms-2"></i>';
-                nextBtn.classList.remove('btn-dark');
-                nextBtn.classList.add('btn-primary');
+                nextBtn.className = 'btn rounded-pill px-5 py-3 shadow-lg hover-scale ' + (hasValue ? 'btn-success text-white' : 'btn-primary text-white');
             } else {
                 nextBtn.innerHTML = 'Siguiente <i class="bi bi-arrow-right ms-2"></i>';
-                nextBtn.classList.add('btn-dark');
-                nextBtn.classList.remove('btn-primary');
+                nextBtn.className = 'btn rounded-pill px-5 py-3 shadow-lg hover-scale ' + (hasValue ? 'btn-success text-white' : 'btn-dark text-white');
             }
         }
 
@@ -664,6 +677,80 @@
                 document.getElementById('scoreValue').innerHTML = '0';
             });
         }
+        // PDF Download
+        window.descargarPDFDiagnostico = function (e) {
+            e.preventDefault();
+            if (typeof window.jsPDF !== 'undefined') {
+                const doc = new window.jsPDF();
+                if (typeof aplicarEstiloPDFMercy === 'function') {
+                    aplicarEstiloPDFMercy(doc, 'Diagnóstico Financiero');
+                } else {
+                    doc.setFontSize(18);
+                    doc.text("Diagnóstico Financiero", 14, 20);
+                }
+
+                let yPos = 60;
+
+                // Puntuación
+                const scoreStr = document.getElementById('scoreValue').innerText || '0';
+                const score = parseInt(scoreStr, 10);
+                const scoreMessage = document.getElementById('scoreMessage').innerText || '';
+                const scoreSubMessage = document.getElementById('scoreSubMessage').innerText || '';
+
+                doc.setFontSize(22);
+                const color = score >= 80 ? [25, 135, 84] : score >= 50 ? [255, 193, 7] : [220, 53, 69]; // success, warning, danger
+                doc.setTextColor(color[0], color[1], color[2]);
+                doc.text(`${score} Puntos - ${scoreMessage}`, 15, yPos);
+
+                yPos += 10;
+                doc.setFontSize(12);
+                doc.setTextColor(100, 100, 100);
+                const subLines = doc.splitTextToSize(scoreSubMessage, doc.internal.pageSize.getWidth() - 30);
+                doc.text(subLines, 15, yPos);
+                yPos += (subLines.length * 6) + 10;
+
+                // Recomendaciones
+                doc.setFontSize(16);
+                doc.setTextColor(40, 40, 40);
+                doc.setFont('helvetica', 'bold');
+                doc.text("Recomendaciones Personalizadas:", 15, yPos);
+                yPos += 10;
+
+                doc.setFont('helvetica', 'normal');
+
+                // Recolectar recomendaciones de la interfaz
+                const recContainer = document.getElementById('analisisContainer');
+                if (recContainer) {
+                    const cards = recContainer.querySelectorAll('.d-flex');
+                    cards.forEach((card, index) => {
+                        if (yPos > doc.internal.pageSize.getHeight() - 30) {
+                            doc.addPage();
+                            yPos = 30;
+                        }
+
+                        const titulo = card.querySelector('h6')?.innerText || '';
+                        const texto = card.querySelector('p')?.innerText || '';
+
+                        doc.setFontSize(12);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setTextColor(13, 110, 253); // Primary color for title
+                        doc.text(`${index + 1}. ${titulo}`, 15, yPos);
+                        yPos += 6;
+
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor(80, 80, 80);
+                        const lines = doc.splitTextToSize(texto, doc.internal.pageSize.getWidth() - 35);
+                        doc.text(lines, 20, yPos);
+                        yPos += (lines.length * 5) + 8;
+                    });
+                }
+
+                doc.save('Mercy_Diagnostico_Financiero.pdf');
+            } else {
+                alert("La biblioteca de PDF no pudo cargar. Por favor recarga la página.");
+            }
+        };
     });
 </script>
 

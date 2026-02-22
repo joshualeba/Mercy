@@ -90,7 +90,7 @@ class DatosP(db.Model):
     nombre = db.Column(db.String(255), nullable=False)
     apellidoP = db.Column(db.String(255))
     apellidoM = db.Column(db.String(255))
-    fecha_nacimiento = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    fecha_nacimiento = db.Column(db.DateTime, nullable=False, default=datetime.now)
     telefono = db.Column(db.BigInteger)
     # relación uno-a-uno con usuarios
     usuario = db.relationship('Usuarios', back_populates='datosp', uselist=False, lazy=True)
@@ -101,7 +101,7 @@ class Usuarios(db.Model):
     id_datosP = db.Column(db.Integer, db.ForeignKey('DatosP.id'), unique=True, nullable=False)
     correo_electronico = db.Column(db.String(255), nullable=False, unique=True)
     contrasena = db.Column(db.String(255), nullable=False)
-    fecha_registro = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    fecha_registro = db.Column(db.DateTime, nullable=False, default=datetime.now)
     ultima_sesion = db.Column(db.DateTime)
     test_completado = db.Column(db.Boolean, nullable=False, default=False)
     provider = db.Column(db.String(50), default='local') # 'local' o 'google'
@@ -160,7 +160,7 @@ class ResultadosTest(db.Model):
     total_preguntas = db.Column(db.Integer, nullable=False)
     puntuacion_total = db.Column(db.Integer, nullable=False, default=0)
     tiempo_resolucion_segundos = db.Column(db.Numeric(10, 2), nullable=False, default=0.00)
-    fecha_realizacion = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    fecha_realizacion = db.Column(db.DateTime, nullable=False, default=datetime.now)
     
     usuario = db.relationship('Usuarios', back_populates='resultados', lazy=True)
 
@@ -170,23 +170,29 @@ class Sofipos(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     tasa_anual = db.Column(db.Numeric(5, 2), nullable=False)
     plazo_dias = db.Column(db.Integer, nullable=False)
-    nicap = db.Column(db.Integer, nullable=False)
+    nicap = db.Column(db.Numeric(6, 2), nullable=False)
     logo_url = db.Column(db.String(255))
     url_web = db.Column(db.String(255))
 
-    # 1. Agrega el Modelo ORM al inicio junto con los otros
-    class DiagnosticosFinancieros(db.Model):
-        __tablename__ = 'diagnosticos_financieros'
-        id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-        usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
-        ingresos_mensuales = db.Column(db.Numeric(10,2))
-        gastos_mensuales = db.Column(db.Numeric(10,2))
-        deuda_total = db.Column(db.Numeric(10,2))
-        ahorro_actual = db.Column(db.Numeric(10,2))
-        puntaje_salud = db.Column(db.Integer)
-        nivel_endeudamiento = db.Column(db.Numeric(5,2))
-        recomendacion_clave = db.Column(db.String(255))
-        fecha_diagnostico = db.Column(db.DateTime, default=datetime.utcnow)
+class DiagnosticosFinancieros(db.Model):
+    __tablename__ = 'diagnosticos_financieros'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+    ingresos_mensuales = db.Column(db.Numeric(10,2))
+    gastos_mensuales = db.Column(db.Numeric(10,2))
+    deuda_total = db.Column(db.Numeric(10,2))
+    ahorro_actual = db.Column(db.Numeric(10,2))
+    puntaje_salud = db.Column(db.Integer)
+    nivel_endeudamiento = db.Column(db.Numeric(5,2))
+    recomendacion_clave = db.Column(db.String(255))
+    fecha_diagnostico = db.Column(db.DateTime, default=datetime.now)
+
+class Glosario(db.Model):
+    __tablename__ = 'glosario'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    termino = db.Column(db.String(150), nullable=False)
+    descripcion = db.Column(db.Text, nullable=False)
+    categoria = db.Column(db.String(50), nullable=False)
 
 # 2. Ruta para procesar el diagnóstico
 @app.route('/api/calcular_salud', methods=['POST'])
@@ -311,7 +317,7 @@ def calcular_salud():
 @app.route('/sofipos')
 def sofipos_view():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        flash('por favor, inicia sesión.', 'info')
+        flash('Por favor, inicia sesión.', 'info')
         return redirect(url_for('mostrar_formulario_inicio_sesion'))
     
     usuario_data = {
@@ -331,7 +337,7 @@ def get_sofipos_data():
                 'nombre': s.nombre,
                 'tasa': float(s.tasa_anual),
                 'plazo': s.plazo_dias,
-                'nicap': s.nicap,
+                'nicap': float(s.nicap) if s.nicap is not None else 0.0,
                 'logo': s.logo_url,
                 'url': s.url_web
             })
@@ -378,14 +384,14 @@ def registrar_usuario():
             apellidos = ' '.join(word.capitalize() for word in apellidos.strip().split())
 
         if not nombres or not apellidos or not correo_electronico or not contrasena_plana:
-            flash('todos los campos son obligatorios.', 'error')
+            flash('Todos los campos son obligatorios.', 'error')
             return redirect(url_for('mostrar_formulario_registro'))
 
         try:
             valid_email = validate_email(correo_electronico, check_deliverability=False) 
             correo_electronico = valid_email.email
         except EmailNotValidError as e:
-            flash(f'el correo electrónico "{correo_electronico}" no es válido: {e}', 'error')
+            flash(f'El correo electrónico "{correo_electronico}" no es válido: {e}', 'error')
             return redirect(url_for('mostrar_formulario_registro'))
 
         contrasena_hasheada = generate_password_hash(contrasena_plana)
@@ -417,7 +423,7 @@ def registrar_usuario():
             # 3. hacer commit de ambas operaciones
             db.session.commit()
 
-            flash('¡usuario registrado exitosamente! ahora puedes iniciar sesión.', 'success')
+            flash('¡Usuario registrado exitosamente! Ahora puedes iniciar sesión.', 'success')
             return redirect(url_for('mostrar_pagina_estatica', filename='iniciar_sesion.html'))
             
         except IntegrityError: # error específico de sqlalchemy para claves únicas
@@ -435,7 +441,7 @@ def registrar_usuario():
             return redirect(url_for('mostrar_formulario_registro'))
         except Exception as e:
             db.session.rollback()
-            flash(f"ocurrió un error inesperado en el servidor: {e}", 'error')
+            flash(f"Ocurrió un error inesperado en el servidor: {e}", 'error')
             return redirect(url_for('mostrar_formulario_registro'))
         # 'finally' con 'conn.close()' ya no es necesario
 
@@ -450,7 +456,7 @@ def login_usuario():
         contrasena_ingresada = request.form.get('contrasena')
 
         if not correo or not contrasena_ingresada:
-            return jsonify(success=False, message='por favor, ingresa tu correo y contraseña.')
+            return jsonify(success=False, message='Por favor, ingresa tu correo y contraseña.')
 
         # --- REFACTORIZADO: lógica de login con orm ---
         try:
@@ -463,7 +469,7 @@ def login_usuario():
                     return jsonify(success=False, message='Esta cuenta está registrada con Google. Por favor, utiliza el botón "Continuar con Google".')
 
                 if check_password_hash(usuario.contrasena, contrasena_ingresada):
-                    flash('¡bienvenido! has iniciado sesión exitosamente.', 'success')
+                    flash('¡Bienvenido! Has iniciado sesión exitosamente.', 'success')
                     
                     # actualiza la última sesión (reemplaza sp)
                     usuario.ultima_sesion = datetime.now()
@@ -482,13 +488,13 @@ def login_usuario():
 
                     return jsonify(success=True, redirect=url_for('dashboard'))
                 else:
-                    return jsonify(success=False, message='contraseña incorrecta. por favor, inténtalo de nuevo.')
+                    return jsonify(success=False, message='Contraseña incorrecta. Por favor, inténtalo de nuevo.')
             else:
-                return jsonify(success=False, message='correo electrónico no registrado.')
+                return jsonify(success=False, message='Correo electrónico no registrado.')
             
         except Exception as e:
             print(f"Error inesperado en login: {e}")
-            return jsonify(success=False, message=f"ocurrió un error inesperado en el servidor: {e}")
+            return jsonify(success=False, message=f"Ocurrió un error inesperado en el servidor: {e}")
         return jsonify(success=False, message=f"ocurrió un error inesperado en el servidor: {e}")
     # 'finally' con 'conn.close()' ya no es necesario
 
@@ -582,17 +588,24 @@ def google_auth():
 @app.route('/dashboard')
 def dashboard():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        flash('por favor, inicia sesión para acceder al dashboard.', 'info')
+        flash('Por favor, inicia sesión para acceder al dashboard.', 'info')
         return redirect(url_for('mostrar_formulario_inicio_sesion'))
     
+    user_id = session.get('user_id')
+    usuario = Usuarios.query.get(user_id)
+    
+    if not usuario:
+        session.clear()
+        return redirect(url_for('mostrar_formulario_inicio_sesion'))
+
     usuario_data = {
-        'id': session.get('user_id'),
-        'nombres': session.get('nombres', 'usuario'),
-        'apellidos': session.get('apellidos', ''),
-        'correo': session.get('correo', 'correo@example.com'),
-        'fecha_registro': session.get('fecha_registro', 'n/a'),
-        'ultima_sesion': session.get('ultima_sesion', 'n/a'),
-        'test_completado': session.get('test_completado', False), # pasar el estado del test
+        'id': usuario.id,
+        'nombres': usuario.datosp.nombre,
+        'apellidos': usuario.datosp.apellidoP,
+        'correo': usuario.correo_electronico,
+        'fecha_registro': formato_fecha_es(usuario.fecha_registro),
+        'ultima_sesion': formato_fecha_hora_es(usuario.ultima_sesion),
+        'test_completado': usuario.test_completado,
         'auth_method': session.get('auth_method', 'local')
     }
     return render_template('dashboard.html', usuario=usuario_data)
@@ -600,12 +613,12 @@ def dashboard():
 @app.route('/actualizar_perfil', methods=['POST'])
 def actualizar_perfil():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        flash('por favor, inicia sesión para actualizar tu perfil.', 'error')
+        flash('Por favor, inicia sesión para actualizar tu perfil.', 'error')
         return redirect(url_for('mostrar_formulario_inicio_sesion'))
 
     user_id = session.get('user_id')
     if not user_id:
-        flash('error: no se pudo encontrar el id de usuario en la sesión.', 'error')
+        flash('Error: No se pudo encontrar el ID de usuario en la sesión.', 'error')
         return redirect(url_for('dashboard'))
 
     nombres = request.form.get('nombres')
@@ -630,26 +643,26 @@ def actualizar_perfil():
             session['nombres'] = nombres
             session['apellidos'] = apellidos
 
-            flash('tu perfil ha sido actualizado exitosamente.', 'success')
+            flash('Tu perfil ha sido actualizado exitosamente.', 'success')
         else:
-            flash('error: no se pudo encontrar el usuario para actualizar.', 'error')
+            flash('Error: No se pudo encontrar el usuario para actualizar.', 'error')
             
         return redirect(url_for('dashboard'))
     
     except Exception as e:
         db.session.rollback()
-        flash(f"ocurrió un error inesperado al actualizar tu perfil: {e}", 'error')
+        flash(f"Ocurrió un error inesperado al actualizar tu perfil: {e}", 'error')
         return redirect(url_for('dashboard'))
     # 'finally' con 'conn.close()' ya no es necesario
 
 @app.route('/cambiar_contrasena', methods=['POST'])
 def cambiar_contrasena():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        return jsonify(success=False, message='por favor, inicia sesión para cambiar tu contraseña.')
+        return jsonify(success=False, message='Por favor, inicia sesión para cambiar tu contraseña.')
 
     user_id = session.get('user_id')
     if not user_id:
-        return jsonify(success=False, message='error: no se pudo encontrar el id de usuario en la sesión.')
+        return jsonify(success=False, message='Error: No se pudo encontrar el ID de usuario en la sesión.')
 
     contrasena_actual = request.form.get('contrasena_actual')
     nueva_contrasena = request.form.get('nueva_contrasena')
@@ -657,15 +670,15 @@ def cambiar_contrasena():
 
     # (validaciones de campos se mantienen igual)
     if not contrasena_actual or not nueva_contrasena or not confirmar_nueva_contrasena:
-        return jsonify(success=False, message='todos los campos de contraseña son obligatorios.')
+        return jsonify(success=False, message='Todos los campos de contraseña son obligatorios.')
     if nueva_contrasena != confirmar_nueva_contrasena:
-        return jsonify(success=False, message='la nueva contraseña y su confirmación no coinciden.')
+        return jsonify(success=False, message='La nueva contraseña y su confirmación no coinciden.')
     if not re.search(r'[A-Z]', nueva_contrasena):
-        return jsonify(success=False, message='la nueva contraseña debe contener al menos una letra mayúscula.')
+        return jsonify(success=False, message='La nueva contraseña debe contener al menos una letra mayúscula.')
     if not re.search(r'[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?~]', nueva_contrasena):
-        return jsonify(success=False, message='la nueva contraseña debe contener al menos un carácter especial.')
+        return jsonify(success=False, message='La nueva contraseña debe contener al menos un carácter especial.')
     if not (8 <= len(nueva_contrasena) <= 25):
-        return jsonify(success=False, message='la nueva contraseña debe tener entre 8 y 25 caracteres.')
+        return jsonify(success=False, message='La nueva contraseña debe tener entre 8 y 25 caracteres.')
 
     # --- REFACTORIZADO: lógica de cambio de contraseña con orm ---
     try:
@@ -678,27 +691,27 @@ def cambiar_contrasena():
             
             # 3. hacer commit
             db.session.commit()
-            return jsonify(success=True, message='tu contraseña ha sido cambiada exitosamente.')
+            return jsonify(success=True, message='Tu contraseña ha sido cambiada exitosamente.')
         else:
-            return jsonify(success=False, message='la contraseña actual es incorrecta.')
+            return jsonify(success=False, message='La contraseña actual es incorrecta.')
         
     except Exception as e:
         db.session.rollback()
-        return jsonify(success=False, message=f"ocurrió un error inesperado al cambiar contraseña: {e}")
+        return jsonify(success=False, message=f"Ocurrió un error inesperado al cambiar contraseña: {e}")
     # 'finally' con 'conn.close()' ya no es necesario
 
 # --- NUEVO: ruta para delete (crud completo) ---
 @app.route('/eliminar_cuenta', methods=['POST'])
 def eliminar_cuenta():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        flash('por favor, inicia sesión para eliminar tu cuenta.', 'error')
+        flash('Por favor, inicia sesión para eliminar tu cuenta.', 'error')
         return redirect(url_for('mostrar_formulario_inicio_sesion'))
         
     user_id = session.get('user_id')
     contrasena_ingresada = request.form.get('contrasena_confirmar_eliminar')
 
     if not contrasena_ingresada:
-        flash('debes ingresar tu contraseña para confirmar la eliminación.', 'error')
+        flash('Debes ingresar tu contraseña para confirmar la eliminación.', 'error')
         return redirect(url_for('dashboard')) # o donde tengas el modal de eliminar
 
     try:
@@ -718,22 +731,22 @@ def eliminar_cuenta():
             db.session.commit()
             
             session.clear()
-            flash('tu cuenta y todos tus datos han sido eliminados permanentemente.', 'success')
+            flash('Tu cuenta y todos tus datos han sido eliminados permanentemente.', 'success')
             return redirect(url_for('index'))
         else:
-            flash('contraseña incorrecta. no se pudo eliminar la cuenta.', 'error')
+            flash('Contraseña incorrecta. No se pudo eliminar la cuenta.', 'error')
             return redirect(url_for('dashboard')) # o donde tengas el modal
 
     except Exception as e:
         db.session.rollback()
-        flash(f'ocurrió un error al intentar eliminar tu cuenta: {e}', 'error')
+        flash(f'Ocurrió un error al intentar eliminar tu cuenta: {e}', 'error')
         return redirect(url_for('dashboard'))
 
 
 @app.route('/logout')
 def logout():
     session.clear()
-    flash('has cerrado sesión exitosamente.', 'info')
+    flash('Has cerrado sesión exitosamente.', 'info')
     return redirect(url_for('mostrar_pagina_estatica', filename='index.html'))
 
 @app.route('/terminos_y_condiciones')
@@ -746,7 +759,7 @@ def terminos_y_condiciones():
 @app.route('/simulador_ahorro')
 def simulador_ahorro():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        flash('por favor, inicia sesión para acceder al simulador de ahorro.', 'info')
+        flash('Por favor, inicia sesión para acceder al simulador de ahorro.', 'info')
         return redirect(url_for('mostrar_formulario_inicio_sesion'))
     usuario_data = {
         'nombres': session.get('nombres', 'usuario'),
@@ -763,7 +776,7 @@ def mostrar_pagina_estatica(filename):
 @app.route('/simulador_credito')
 def simulador_credito():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        flash('por favor, inicia sesión para acceder al simulador de crédito.', 'info')
+        flash('Por favor, inicia sesión para acceder al simulador de crédito.', 'info')
         return redirect(url_for('mostrar_formulario_inicio_sesion'))
     usuario_data = {
         'nombres': session.get('nombres', 'usuario'),
@@ -775,7 +788,7 @@ def simulador_credito():
 @app.route('/simulador_inversion')
 def simulador_inversion():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        flash('por favor, inicia sesión para acceder al simulador de inversión.', 'info')
+        flash('Por favor, inicia sesión para acceder al simulador de inversión.', 'info')
         return redirect(url_for('mostrar_formulario_inicio_sesion'))
     usuario_data = {
         'nombres': session.get('nombres', 'usuario'),
@@ -787,7 +800,7 @@ def simulador_inversion():
 @app.route('/simulador_presupuesto_personal')
 def simulador_presupuesto_personal():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        flash('por favor, inicia sesión para acceder al simulador de presupuesto personal.', 'info')
+        flash('Por favor, inicia sesión para acceder al simulador de presupuesto personal.', 'info')
         return redirect(url_for('mostrar_formulario_inicio_sesion'))
     usuario_data = {
         'nombres': session.get('nombres', 'usuario'),
@@ -799,7 +812,7 @@ def simulador_presupuesto_personal():
 @app.route('/simulador_retiro_jubilacion')
 def simulador_retiro_jubilacion():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        flash('por favor, inicia sesión para acceder al simulador de retiro/jubilación.', 'info')
+        flash('Por favor, inicia sesión para acceder al simulador de retiro/jubilación.', 'info')
         return redirect(url_for('mostrar_formulario_inicio_sesion'))
     usuario_data = {
         'nombres': session.get('nombres', 'usuario'),
@@ -811,7 +824,7 @@ def simulador_retiro_jubilacion():
 @app.route('/calculadora_deuda')
 def calculadora_deuda():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        flash('por favor, inicia sesión para acceder al simulador de retiro/jubilación.', 'info')
+        flash('Por favor, inicia sesión para acceder al simulador de retiro/jubilación.', 'info')
         return redirect(url_for('mostrar_formulario_inicio_sesion'))
     usuario_data = {
         'nombres': session.get('nombres', 'usuario'),
@@ -825,21 +838,24 @@ def calculadora_deuda():
 @app.route('/glosario.html')
 def glosario():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        flash('por favor, inicia sesión para acceder al glosario.', 'info')
+        flash('Por favor, inicia sesión para acceder al glosario.', 'info')
         return redirect(url_for('mostrar_formulario_inicio_sesion'))
+    
+    terminos = Glosario.query.order_by(Glosario.termino).all()
+    
     usuario_data = {
         'nombres': session.get('nombres', 'usuario'),
         'apellidos': session.get('apellidos', ''),
         'correo': session.get('correo', 'correo@ejemplo.com')
     }
-    return render_template('glosario.html', usuario=usuario_data)
+    return render_template('glosario.html', usuario=usuario_data, terminos=terminos)
 
 
 # sección: rutas para el test de conocimientos financieros
 @app.route('/api/preguntas_test', methods=['GET'])
 def get_preguntas_test():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        return jsonify(message='no autorizado para acceder a las preguntas del test.'), 401
+        return jsonify(message='No autorizado para acceder a las preguntas del test.'), 401
 
     user_id = session.get('user_id')
     
@@ -890,14 +906,14 @@ def get_preguntas_test():
         return jsonify(test_completado=False, preguntas=preguntas)
     
     except Exception as e:
-        print(f"error inesperado al obtener preguntas: {e}")
-        return jsonify(message=f"error inesperado en el servidor: {e}"), 500
+        print(f"Error inesperado al obtener preguntas: {e}")
+        return jsonify(message=f"Error inesperado en el servidor: {e}"), 500
     # 'finally' con 'conn.close()' ya no es necesario
 
 @app.route('/api/submit_test', methods=['POST'])
 def submit_test():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        return jsonify(message='no autorizado para enviar el test.'), 401
+        return jsonify(message='No autorizado para enviar el test.'), 401
 
     user_id = session.get('user_id')
     data = request.json
@@ -907,14 +923,14 @@ def submit_test():
     respuestas_correctas_count = data.get('respuestas_correctas_count', 0) 
 
     if not respuestas_usuario:
-        return jsonify(success=False, message='no se recibieron respuestas.'), 400
+        return jsonify(success=False, message='No se recibieron respuestas.'), 400
 
     # --- REFACTORIZADO: lógica de envío de test con orm ---
     try:
         usuario = Usuarios.query.get(user_id)
 
         if usuario.test_completado:
-            return jsonify(success=False, message='ya has completado el test. no puedes enviarlo de nuevo.'), 403
+            return jsonify(success=False, message='Ya has completado el test. No puedes enviarlo de nuevo.'), 403
 
         # guardar los resultados (reemplaza sp)
         nuevo_resultado = ResultadosTest(
@@ -939,19 +955,19 @@ def submit_test():
             total=len(respuestas_usuario), 
             puntuacion_total=puntuacion_total_calculada, 
             tiempo_resolucion_segundos=tiempo_total_segundos,
-            message='test enviado y guardado exitosamente.'
+            message='Test enviado y guardado exitosamente.'
         )
 
     except Exception as e:
         db.session.rollback()
-        print(f"error inesperado al enviar test: {e}")
-        return jsonify(success=False, message=f"error inesperado en el servidor: {e}"), 500
+        print(f"Error inesperado al enviar test: {e}")
+        return jsonify(success=False, message=f"Error inesperado en el servidor: {e}"), 500
     # 'finally' con 'conn.close()' ya no es necesario
 
 @app.route('/api/ranking', methods=['GET'])
 def get_ranking():
     if 'usuario_autenticado' not in session or not session['usuario_autenticado']:
-        return jsonify(message='no autorizado para acceder al ranking.'), 401
+        return jsonify(message='No autorizado para acceder al ranking.'), 401
 
     user_id = session.get('user_id')
     
@@ -1002,8 +1018,8 @@ def get_ranking():
         return jsonify(success=True, ranking=ranking, user_result=user_result, user_position=user_position)
 
     except Exception as e:
-        print(f"error inesperado al obtener ranking: {e}")
-        return jsonify(success=False, message=f"error inesperado en el servidor: {e}"), 500
+        print(f"Error inesperado al obtener ranking: {e}")
+        return jsonify(success=False, message=f"Error inesperado en el servidor: {e}"), 500
     # 'finally' con 'conn.close()' ya no es necesario
 
 # sección: ejecución de la aplicación

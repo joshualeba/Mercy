@@ -342,3 +342,57 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Función para descargar PDF de Inversión
+window.descargarPDFInversion = function (event) {
+    if (event) event.preventDefault();
+    if (typeof window.jsPDF !== 'undefined') {
+        const doc = new window.jsPDF();
+        if (typeof aplicarEstiloPDFMercy === 'function') {
+            aplicarEstiloPDFMercy(doc, 'Proyección de Inversión');
+        } else {
+            doc.setFontSize(18);
+            doc.text("Proyección de Inversión", 14, 20);
+        }
+
+        let yPos = 60;
+        doc.setFontSize(12);
+        doc.setTextColor(50, 50, 50);
+
+        // Extraer valores actuales
+        const totalInvertido = document.getElementById('displayTotalInvested').innerText;
+        const gananciaInteres = document.getElementById('displayTotalInterest').innerText;
+        const montoFinal = document.getElementById('displayFinalAmount').innerText;
+        const recomendacion = document.getElementById('investmentRecommendation').innerText;
+
+        doc.setFont('helvetica', 'normal');
+
+        doc.autoTable({
+            startY: yPos,
+            head: [['Concepto', 'Monto']],
+            body: [
+                ['Total invertido por ti', totalInvertido],
+                ['Ganancia obtenida por intereses', gananciaInteres],
+                ['Monto Final Estimado', montoFinal]
+            ],
+            theme: 'striped',
+            headStyles: { fillColor: [13, 110, 253] }
+        });
+
+        yPos = doc.lastAutoTable.finalY + 15;
+
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Análisis Inteligente", 15, yPos);
+        yPos += 10;
+
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        const textLines = doc.splitTextToSize(recomendacion, doc.internal.pageSize.getWidth() - 30);
+        doc.text(textLines, 15, yPos);
+
+        doc.save('Mercy_Proyeccion_Inversion.pdf');
+    } else {
+        alert("La biblioteca de PDF no pudo cargar. Por favor recarga la página.");
+    }
+};

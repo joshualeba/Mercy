@@ -324,19 +324,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             nuevaContrasenaFeedback.textContent = '';
             if (!hasUpperCase) {
-                nuevaContrasenaFeedback.textContent = 'la contraseña debe contener al menos una letra mayúscula.';
+                nuevaContrasenaFeedback.textContent = 'La contraseña debe contener al menos una letra mayúscula.';
                 isValid = false;
             } else if (!hasSpecialChar) {
-                nuevaContrasenaFeedback.textContent = 'la contraseña debe contener al menos un carácter especial.';
+                nuevaContrasenaFeedback.textContent = 'La contraseña debe contener al menos un carácter especial.';
                 isValid = false;
             } else if (!isLengthValid) {
-                nuevaContrasenaFeedback.textContent = 'la contraseña debe tener entre 8 y 25 caracteres.';
+                nuevaContrasenaFeedback.textContent = 'La contraseña debe tener entre 8 y 25 caracteres.';
                 isValid = false;
             }
 
             confirmarNuevaContrasenaFeedback.textContent = '';
             if (nuevaContrasena !== confirmarNuevaContrasena) {
-                confirmarNuevaContrasenaFeedback.textContent = 'las contraseñas no coinciden.';
+                confirmarNuevaContrasenaFeedback.textContent = 'Las contraseñas no coinciden.';
                 isValid = false;
             }
 
@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.success) {
                 const successModal = new bootstrap.Modal(document.getElementById('successMessageModal'));
                 const successModalBody = document.getElementById('successMessageModalBody');
-                successModalBody.textContent = 'contraseña cambiada con éxito.';
+                successModalBody.textContent = 'Contraseña cambiada con éxito.';
                 successModal.show();
 
                 setTimeout(() => {
@@ -364,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 const errorModal = new bootstrap.Modal(document.getElementById('errorMessageModal'));
                 const errorMessageModalBody = document.getElementById('errorMessageModalBody');
-                errorMessageModalBody.textContent = result.message || 'ocurrió un error al cambiar la contraseña.';
+                errorMessageModalBody.textContent = result.message || 'Ocurrió un error al cambiar la contraseña.';
                 errorModal.show();
             }
         });
@@ -490,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/api/preguntas_test');
             if (!response.ok) {
-                throw new Error(`error http! estado: ${response.status}`);
+                throw new Error(`Error HTTP! Estado: ${response.status}`);
             }
             const data = await response.json();
 
@@ -508,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 questions = data.preguntas;
                 if (questions.length === 0) {
-                    questionTextElement.textContent = 'no hay preguntas disponibles.';
+                    questionTextElement.textContent = 'No hay preguntas disponibles.';
                     return;
                 }
                 // Mostrar intro, ocultar otros secciones
@@ -519,13 +519,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 isTestInProgress = false;
             }
         } catch (error) {
-            console.error('error al cargar las preguntas:', error);
-            questionTextElement.textContent = 'error al cargar las preguntas.';
+            console.error('Error al cargar las preguntas:', error);
+            questionTextElement.textContent = 'Error al cargar las preguntas.';
             testContainer.classList.add('d-none');
             testResult.classList.add('d-none');
             testIntro.classList.add('d-none');
             testCompletedSection.classList.remove('d-none');
-            completedResultMessage.textContent = 'error al cargar el test. por favor, inténtalo de nuevo más tarde.';
+            completedResultMessage.textContent = 'Error al cargar el test. Por favor, inténtalo de nuevo más tarde.';
         }
     }
 
@@ -578,7 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                feedbackMessage.textContent = '¡tiempo agotado! la respuesta es: ' + getCorrectAnswerText(questions[currentQuestionIndex]);
+                feedbackMessage.textContent = '¡Tiempo agotado! La respuesta es: ' + getCorrectAnswerText(questions[currentQuestionIndex]);
                 feedbackMessage.classList.remove('text-success');
                 feedbackMessage.classList.add('text-danger');
 
@@ -721,7 +721,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentQuestion.tipo_pregunta === 'multiple_choice' || currentQuestion.tipo_pregunta === 'true_false') {
             const selectedOptionCard = optionsContainer.querySelector('.option-card-enhanced.selected');
             if (!selectedOptionCard) {
-                feedbackMessage.textContent = 'por favor, selecciona una opción.';
+                feedbackMessage.textContent = 'Por favor, selecciona una opción.';
                 feedbackMessage.classList.add('text-danger');
                 startQuestionTimer();
                 return;
@@ -730,7 +730,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (currentQuestion.tipo_pregunta === 'fill_in_the_blank') {
             const inputField = document.getElementById(`input_${currentQuestion.id}`);
             if (!inputField || inputField.value.trim() === '') {
-                feedbackMessage.textContent = 'por favor, escribe tu respuesta.';
+                feedbackMessage.textContent = 'Por favor, escribe tu respuesta.';
                 feedbackMessage.classList.add('text-danger');
                 startQuestionTimer();
                 return;
@@ -744,7 +744,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentQuestionPoints = 0;
 
         if (isCorrect) {
-            feedbackMessage.textContent = '¡correcto!';
+            feedbackMessage.textContent = '¡Correcto!';
             feedbackMessage.classList.remove('text-danger');
             feedbackMessage.classList.add('text-success');
             correctAnswersCount++;
@@ -755,7 +755,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentQuestionPoints += Math.round(timeSaved * TIME_BONUS_PER_SECOND);
             }
         } else {
-            feedbackMessage.textContent = 'incorrecto. la respuesta correcta es: ' + getCorrectAnswerText(currentQuestion);
+            feedbackMessage.textContent = 'Incorrecto. La respuesta correcta es: ' + getCorrectAnswerText(currentQuestion);
             feedbackMessage.classList.remove('text-success');
             feedbackMessage.classList.add('text-danger');
         }
@@ -869,13 +869,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 } else {
                     const errorModal = new bootstrap.Modal(document.getElementById('errorMessageModal'));
-                    document.getElementById('errorMessageModalBody').textContent = 'error al enviar el test: ' + result.message;
+                    document.getElementById('errorMessageModalBody').textContent = 'Error al enviar el test: ' + result.message;
                     errorModal.show();
                 }
             } catch (error) {
-                console.error('error al enviar el test:', error);
+                console.error('Error al enviar el test:', error);
                 const errorModal = new bootstrap.Modal(document.getElementById('errorMessageModal'));
-                document.getElementById('errorMessageModalBody').textContent = 'error al enviar el test.';
+                document.getElementById('errorMessageModalBody').textContent = 'Error al enviar el test.';
                 errorModal.show();
             }
         };
@@ -886,7 +886,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (points >= (totalQuestions * BASE_POINTS_PER_CORRECT_ANSWER * 0.9)) {
             element.textContent = '¡Excelente! ¡Eres un/a experto/a financiero/a!';
         } else if (points >= (totalQuestions * BASE_POINTS_PER_CORRECT_ANSWER * 0.6)) {
-            element.textContent = '¡Bien hecho! tienes un buen conocimiento. sigue practicando.';
+            element.textContent = '¡Bien hecho! Tienes un buen conocimiento. Sigue practicando.';
         } else {
             element.textContent = 'Puedes mejorar. ¡No te rindas, sigue aprendiendo!';
         }
@@ -940,7 +940,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/api/ranking');
             if (!response.ok) {
-                throw new Error(`error http! estado: ${response.status}`);
+                throw new Error(`Error HTTP! Estado: ${response.status}`);
             }
             const data = await response.json();
 
@@ -986,9 +986,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
         } catch (error) {
-            console.error('error al cargar el ranking:', error);
+            console.error('Error al cargar el ranking:', error);
             const errorModal = new bootstrap.Modal(document.getElementById('errorMessageModal'));
-            document.getElementById('errorMessageModalBody').textContent = 'error al cargar el ranking.';
+            document.getElementById('errorMessageModalBody').textContent = 'Error al cargar el ranking.';
             errorModal.show();
         }
     }

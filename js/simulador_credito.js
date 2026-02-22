@@ -491,5 +491,139 @@ document.addEventListener('DOMContentLoaded', () => {
             window.history.back();
         });
     }
-
 });
+
+// Función para descargar PDF de Crédito
+window.descargarPDFCredito = function (event) {
+    if (event) event.preventDefault();
+    if (typeof window.jsPDF !== 'undefined') {
+        const doc = new window.jsPDF();
+
+        let titulo = "Calculadora de Crédito";
+        const formTitle = document.getElementById('form-title');
+        if (formTitle) titulo = formTitle.textContent;
+
+        if (typeof aplicarEstiloPDFMercy === 'function') {
+            aplicarEstiloPDFMercy(doc, titulo);
+        } else {
+            doc.setFontSize(18);
+            doc.text(titulo, 14, 20);
+        }
+
+        let yPos = 60;
+        doc.setFontSize(12);
+        doc.setTextColor(50, 50, 50);
+
+        // Extraer valores actuales
+        const pagoMensual = document.getElementById('modalMonthlyPayment').innerText;
+        const plazoMeses = document.getElementById('modalTermDisplay').innerText;
+        const montoPrinicpal = document.getElementById('modalLoanAmount').innerText;
+        const tasaAnual = document.getElementById('modalInterestRate').innerText;
+        const totalPagar = document.getElementById('modalTotalPayment').innerText;
+
+        doc.setFont('helvetica', 'normal');
+
+        doc.autoTable({
+            startY: yPos,
+            head: [['Concepto', 'Valor']],
+            body: [
+                ['Monto solicitado', montoPrinicpal],
+                ['Tasa de interés anual', tasaAnual],
+                ['Plazo total', `${plazoMeses} meses`],
+                ['Pago mensual estimado', pagoMensual],
+                ['Total a pagar', totalPagar]
+            ],
+            theme: 'striped',
+            headStyles: { fillColor: [10, 37, 64] }
+        });
+
+        yPos = doc.lastAutoTable.finalY + 15;
+
+        // Recuperar para tabla de amortización
+        const inputMonto = document.getElementById('loanAmount');
+        const inputPlazo = document.getElementById('loanTerm');
+        const inputTasa = document.getElementById('interestRate');
+
+        if (inputMonto && inputPlazo && inputTasa) {
+            const amount = parseFloat(inputMonto.value.replace(/,/g, ''));
+            const months = parseInt(inputPlazo.value);
+            const annualRate = parseFloat(inputTasa.value);
+
+            if (amount && months && annualRate) {
+                doc.setFontSize(16);
+                doc.setTextColor(10, 37, 64);
+                doc.setFont('helvetica', 'bold');
+                doc.text("Tabla de Amortización Mensual", 15, yPos);
+                yPos += 8;
+
+                const monthlyRate = annualRate / 100 / 12;
+                let monthlyPayment = 0;
+
+                if (monthlyRate === 0) {
+                    monthlyPayment = amount / months;
+                } else {
+                    monthlyPayment = (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+                }
+
+                let saldo = amount;
+                let bodyAmortizacion = [];
+
+                const formatC = val => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
+
+                for (let i = 1; i <= months; i++) {
+                    let interesMes = saldo * monthlyRate;
+                    let capitalMes = monthlyPayment - interesMes;
+
+                    if (i === months) {
+                        // Ajuste por redondeo
+                        capitalMes = saldo;
+                        monthlyPayment = capitalMes + interesMes;
+                    }
+
+                    saldo = saldo - capitalMes;
+                    if (saldo < 0) saldo = 0;
+
+                    bodyAmortizacion.push([
+                        i,
+                        formatC(monthlyPayment),
+                        formatC(capitalMes),
+                        formatC(interesMes),
+                        formatC(saldo)
+                    ]);
+                }
+
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['Mes', 'Pago Mensual', 'A Capital', 'Interés', 'Saldo Restante']],
+                    body: bodyAmortizacion,
+                    theme: 'grid',
+                    headStyles: { fillColor: [13, 110, 253] },
+                    styles: { fontSize: 9 }
+                });
+
+                yPos = doc.lastAutoTable.finalY + 15;
+            }
+        }
+
+        if (yPos > doc.internal.pageSize.getHeight() - 40) {
+            doc.addPage();
+            yPos = 30;
+        }
+
+        doc.setFontSize(14);
+        doc.setTextColor(30, 41, 59);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Consejo Financiero Inteligente", 15, yPos);
+        yPos += 10;
+
+        doc.setFontSize(11);
+        doc.setTextColor(80, 80, 80);
+        doc.setFont('helvetica', 'normal');
+        const textLines = doc.splitTextToSize("Si puedes destinar un poco de dinero extra (aunque sea pequeño) y hacer aportaciones a capital durante los primeros meses del crédito, reducirás significativamente el monto total de intereses generados. Recuerda que los intereses se calculan sobre el saldo restante.", doc.internal.pageSize.getWidth() - 30);
+        doc.text(textLines, 15, yPos);
+
+        doc.save(`Mercy_Simulacion_${titulo.replace(/\s+/g, '_')}.pdf`);
+    } else {
+        alert("La biblioteca de PDF no pudo cargar. Por favor recarga la página.");
+    }
+};

@@ -305,3 +305,60 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Función para descargar PDF de Jubilación
+window.descargarPDFJubilacion = function (event) {
+    if (event) event.preventDefault();
+    if (typeof window.jsPDF !== 'undefined') {
+        const doc = new window.jsPDF();
+        if (typeof aplicarEstiloPDFMercy === 'function') {
+            aplicarEstiloPDFMercy(doc, 'Proyección de Jubilación');
+        } else {
+            doc.setFontSize(18);
+            doc.text("Proyección de Jubilación", 14, 20);
+        }
+
+        let yPos = 60;
+        doc.setFontSize(12);
+        doc.setTextColor(50, 50, 50);
+
+        // Extraer valores actuales
+        const edadRetiro = document.getElementById('resRetirementAge').innerText;
+        const totalAcumulado = document.getElementById('resTotalAccumulated').innerText;
+        const pensionMensual = document.getElementById('resMonthlyIncome').innerText;
+        const metaDeseada = document.getElementById('resDesiredIncome').innerText;
+        const diagnostico = document.getElementById('resDiagnosis').innerText;
+        const porcentaje = document.getElementById('resCoveragePct').innerText;
+
+        doc.setFont('helvetica', 'normal');
+
+        doc.autoTable({
+            startY: yPos,
+            head: [['Concepto', 'Monto']],
+            body: [
+                [`Total Acumulado a los ${edadRetiro} años`, totalAcumulado],
+                ['Pensión Mensual Proyectada (Regla 4%)', pensionMensual],
+                ['Meta de Pensión Deseada', metaDeseada],
+                ['Cobertura de tu meta', porcentaje]
+            ],
+            theme: 'striped',
+            headStyles: { fillColor: [13, 110, 253] }
+        });
+
+        yPos = doc.lastAutoTable.finalY + 15;
+
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Diagnóstico de Viabilidad", 15, yPos);
+        yPos += 10;
+
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        const textLines = doc.splitTextToSize(diagnostico, doc.internal.pageSize.getWidth() - 30);
+        doc.text(textLines, 15, yPos);
+
+        doc.save('Mercy_Proyeccion_Jubilacion.pdf');
+    } else {
+        alert("La biblioteca de PDF no pudo cargar. Por favor recarga la página.");
+    }
+};
