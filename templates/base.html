@@ -147,6 +147,324 @@
         </div>
     </div>
 
+    <!-- CHATBOT COPILOTO -->
+    <style>
+        .chatbot-container {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 400px;
+            /* Más ancho en PC */
+            max-width: calc(100vw - 40px);
+            height: 600px;
+            /* Más alto en PC */
+            max-height: calc(100vh - 130px);
+            background: var(--glass-bg, rgba(255, 255, 255, 0.9));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.4));
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            z-index: 1060;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] .chatbot-container {
+            background: rgba(30, 30, 40, 0.9);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .chatbot-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(13, 110, 253, 0.05);
+        }
+
+        [data-theme="dark"] .chatbot-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chatbot-messages {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-bubble {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .user-bubble {
+            align-self: flex-end;
+            background: #0d6efd;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-bubble {
+            align-self: flex-start;
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-color, #333);
+            border-bottom-left-radius: 4px;
+        }
+
+        [data-theme="dark"] .ai-bubble {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f8f9fa;
+        }
+
+        .chatbot-input-area {
+            padding: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+
+        [data-theme="dark"] .chatbot-input-area {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chatbot-input-area input {
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        [data-theme="dark"] .chatbot-input-area input {
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .chatbot-trigger {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1055;
+            transition: transform 0.3s;
+        }
+
+        .chatbot-trigger::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            border: 3px solid var(--primary-color, #0d6efd);
+            animation: pulse-ring 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+            z-index: -1;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.6);
+                opacity: 0;
+            }
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #888;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-indicator span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chatbot-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-track {
+            background: var(--secondary-color, #f8f9fa);
+            border-radius: 10px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color, #0d6efd);
+            border-radius: 10px;
+        }
+
+        [data-theme="dark"] .chatbot-messages::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color, #0d6efd);
+        }
+
+        .chatbot-call-to-action {
+            position: fixed;
+            bottom: 40px;
+            right: 105px;
+            z-index: 1050;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: var(--primary-color, #0d6efd);
+            border: 1px solid rgba(13, 110, 253, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            animation: bounce-horizontal 2.5s infinite ease-in-out;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .chatbot-call-to-action::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -8px;
+            transform: translateY(-50%);
+            border-width: 8px 0 8px 8px;
+            border-style: solid;
+            border-color: transparent transparent transparent rgba(255, 255, 255, 0.95);
+        }
+
+        [data-theme="dark"] .chatbot-call-to-action {
+            background: rgba(33, 37, 41, 0.95);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="dark"] .chatbot-call-to-action::after {
+            border-color: transparent transparent transparent rgba(33, 37, 41, 0.95);
+        }
+
+        @keyframes bounce-horizontal {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(-10px);
+            }
+        }
+
+        @media (max-width: 991px) {
+            .chatbot-container {
+                width: calc(100vw - 30px);
+                height: calc(100vh - 190px);
+                bottom: 100px;
+                right: 15px;
+                /* Más centrado en móviles */
+                max-width: none;
+                max-height: none;
+                border-radius: 20px;
+            }
+
+            body.chatbot-is-open .main-content,
+            body.chatbot-is-open .sidebar,
+            body.chatbot-is-open footer {
+                filter: blur(5px);
+                pointer-events: none;
+                transition: filter 0.3s ease;
+            }
+        }
+    </style>
+
+    <div id="mercyChatbotContainer" class="chatbot-container d-none">
+        <div class="chatbot-header">
+            <div class="d-flex align-items-center">
+                <!-- Ícono relacionado con Mercy (pulso/latido) en rojo, como en el logo -->
+                <i class="bi bi-heart-pulse-fill text-danger me-2 fs-5"></i>
+                <h6 class="fw-bold mb-0">Mercy IA</h6>
+            </div>
+            <button type="button" id="closeChatbotBtn" class="btn btn-sm btn-link text-muted p-0"><i
+                    class="bi bi-x-lg fs-6"></i></button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="chat-bubble ai-bubble">
+                ¡Hola! Soy Mercy IA. Tu copiloto financiero personal. ¿En qué puedo ayudarte hoy?
+            </div>
+            <div class="d-flex flex-wrap gap-2 mt-2" id="chatQuickActions">
+            </div>
+        </div>
+
+        <!-- Botón flotante para bajar el scroll automático -->
+        <button type="button" class="btn btn-primary btn-sm rounded-circle shadow-lg d-none position-absolute"
+            id="scrollToBottomChatBtn"
+            style="bottom: 75px; right: 20px; z-index: 1070; width: 35px; height: 35px; opacity: 0.9;">
+            <i class="bi bi-chevron-down mt-1 d-block"></i>
+        </button>
+
+        <div class="chatbot-input-area">
+            <input type="text" id="chatbotInput" class="form-control" placeholder="Pregúntale a Mercy IA..."
+                autocomplete="off">
+            <button type="button" class="btn btn-primary rounded-circle" id="chatbotSendBtn"
+                style="width: 40px; height: 40px; padding: 0;">
+                <i class="bi bi-send-fill" style="margin-left: -2px;"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="chatbotCta" class="chatbot-call-to-action">
+        ¿Tienes dudas financieras? ¡Pregúntame! <i class="bi bi-robot ms-2 fs-5"></i>
+    </div>
+    <button type="button" class="btn btn-primary shadow-lg hover-scale chatbot-trigger" id="chatbotTriggerBtn">
+        <i class="bi bi-heart-pulse-fill fs-3"></i>
+    </button>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             document.body.addEventListener('input', (e) => {
@@ -184,6 +502,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="js/logo_b64.js"></script>
     <script src="js/pdf_utils.js"></script>
+    <script src="js/chat.js"></script>
     {% block extra_js %}{% endblock %}
 </body>
 

@@ -13,6 +13,7 @@ from datetime import datetime
 import re
 from authlib.integrations.flask_client import OAuth
 import uuid
+from groq import Groq
 
 
 
@@ -1022,9 +1023,87 @@ def get_ranking():
         return jsonify(success=False, message=f"Error inesperado en el servidor: {e}"), 500
     # 'finally' con 'conn.close()' ya no es necesario
 
-# sección: ejecución de la aplicación
+# --- CHATBOT COPILOTO IA ---
+@app.route('/api/copiloto', methods=['POST'])
+def copiloto_financiero():
+    if not os.environ.get("GROQ_API_KEY"):
+        return jsonify({"success": False, "respuesta": "Por favor configura tu GROQ_API_KEY en el archivo .env"}), 400
+
+    data = request.json
+    mensaje_usuario = data.get('mensaje', '')
+    contexto_pagina = data.get('contexto', 'Navegando en Mercy')
+    historial = data.get('historial', [])
+
+    internet_context = ""
+    try:
+        from duckduckgo_search import DDGS
+        resultados_busqueda = DDGS().text(mensaje_usuario + " finanzas mexico rendimientos", max_results=3)
+        if resultados_busqueda:
+            internet_context = "\n\nRESULTADOS EN TIEMPO REAL (Úsalos para responder con datos actuales, como el GAT nominal/real o rendimientos de Nu, Ualá, Klar, etc.):\n"
+            for res in resultados_busqueda:
+                internet_context += f"- {res.get('body')}\n"
+    except Exception as e:
+        print("Error en búsqueda en internet DDGS: ", e)
+
+    system_prompt = f"""Eres 'Mercy IA', el copiloto experto en finanzas de la plataforma "Mercy".
+Tu misión es educar y resolver de forma clara, directa y útil las dudas de finanzas e inversiones.
+Contexto actual de la pantalla del usuario: {contexto_pagina}.{internet_context}
+
+REGLAS IMPORTANTES:
+1. LOGITUD PERFECTA: No te explayes demasiado ni seas excesivamente corto. Sé directo, amable y explica justo lo necesario para dar valor.
+2. Tienes profundo conocimiento de conceptos financieros y ahora acceso a datos actuales gracias al contexto de arriba.
+3. ESTILO DE LISTAS ESTRICTO: Tienes estrictamente prohibido usar asteriscos (*) o guiones (-) para hacer viñetas o listas. Si necesitas enlistar algo, debes usar código HTML con <ul> y <li>.
+Ejemplo:
+<ul>
+<li>Tasa de rendimiento anual</li>
+<li>Beneficio del GAT real</li>
+</ul>
+4. Mantén tus títulos o resaltos con markdown normal (como **negritas**), pero para viñetas solo usa HTML.
+5. Si te pide un paso a paso para conseguir una API, explícale que puede obtener una "Tavily API Key" gratuita registrándose en su página web y copiar esa key en su proyecto de backend, pero que POR AHORA tú ya tienes conexión nativa a internet interconectada y no ocupa buscarla en otro lugar."""
+
+    try:
+        from groq import Groq
+        cliente_groq = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
+        mensajes = [{"role": "system", "content": system_prompt}]
+        for msg in historial:
+            role = msg.get('role')
+            content = msg.get('content')
+            if role in ['user', 'assistant'] and content:
+                mensajes.append({"role": role, "content": content})
+        mensajes.append({"role": "user", "content": mensaje_usuario})
+
+        chat_completion = cliente_groq.chat.completions.create(
+            messages=mensajes,
+            model="llama-3.3-70b-versatile", 
+            temperature=0.7,
+        )
+        
+        respuesta_ia = chat_completion.choices[0].message.content
+        return jsonify({"success": True, "respuesta": respuesta_ia, "respuesta_cruda": respuesta_ia})
+
+    except Exception as e:
+        print(f"Error AI: {e}")
+        return jsonify({"success": False, "respuesta": f"Hubo un error de conexión con mi cerebro. Intenta de nuevo más tarde."}), 500
+
+# Inicialización automática de base de datos
+with app.app_context():
+    # 1. Crear las tablas físicas si no existen (esencial para Render/producción)
+    db.create_all()
+    print("Tablas verificadas en db.")
+    
+    # 2. Verificar si hay datos clave (por ejemplo, si existen categorías)
+    # Si la tabla Categorias está vacía, asumimos que es una base de datos recién creada.
+    categoria_existente = Categorias.query.first()
+    if not categoria_existente:
+        print("La base de datos está vacía. Ejecutando la semilla de inicialización...")
+        try:
+            from semilla import hard_reset_database
+            hard_reset_database()
+            print("Semilla inyectada correctamente en el arranque automático.")
+        except Exception as e:
+            print(f"ATENCIÓN: Hubo un problema al inyectar la semilla en producción: {e}")
+
+# sección: ejecución de la aplicación (entorno local)
 if __name__ == '__main__':
-    # (opcional) crea las tablas si no existen antes de correr la app
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
