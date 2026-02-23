@@ -267,11 +267,11 @@
             <div id="glossaryTermsContainer">
                 {% if terminos %}
                 {% for item in terminos %}
-                <div class="glossary-item" data-term="{{ item.termino.lower() }}"
+                <div class="glossary-item has-bubbles" data-term="{{ item.termino.lower() }}"
                     data-category="{{ item.categoria.lower() }}">
                     <span class="category-badge">{{ item.categoria|capitalize }}</span>
-                    <h5>{{ item.termino }}</h5>
-                    <p>{{ item.descripcion }}</p>
+                    <h5 class="position-relative z-1">{{ item.termino }}</h5>
+                    <p class="position-relative z-1">{{ item.descripcion }}</p>
                 </div>
                 {% endfor %}
                 {% else %}

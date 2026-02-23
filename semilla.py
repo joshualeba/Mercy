@@ -250,7 +250,8 @@ def hard_reset_database():
             ('Tarjeta de crédito', 'Instrumento financiero que te permite pedir dinero prestado hasta cierto límite para hacer compras, comprometiéndote a pagar la deuda en futuras fechas.', 'credito'),
             ('NICAP', 'Nivel de Capitalización. Indica la fortaleza financiera de una SOFIPO; un porcentaje alto significa que tienen solidez para respaldar los depósitos de los clientes.', 'inversion'),
             ('Tarjeta de débito', 'Instrumento financiero diseñado para realizar compras directas con el saldo guardado en una cuenta bancaria sin generar deuda a futuro.', 'digital'),
-            ('Rendimiento fijo', 'Porcentaje constante de utilidades prometido por una inversión de deuda, sin importar cómo se mueva el panorama económico o el mercado de valores.', 'inversion')
+            ('Rendimiento fijo', 'Porcentaje constante de utilidades prometido por una inversión de deuda, sin importar cómo se mueva el panorama económico o el mercado de valores.', 'inversion'),
+            ('Tasa de amortización', 'Porcentaje que determina qué parte de cada pago mensual se destina a reducir el capital de una deuda y cuánto va a cubrir los intereses. Una tasa alta de amortización significa que pagas más capital en cada cuota, liquidando la deuda más rápido.', 'credito')
         ]
         
         for termino, desc, cat in lista_glosario:

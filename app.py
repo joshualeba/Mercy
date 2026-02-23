@@ -1086,6 +1086,57 @@ Ejemplo:
         print(f"Error AI: {e}")
         return jsonify({"success": False, "respuesta": f"Hubo un error de conexión con mi cerebro. Intenta de nuevo más tarde."}), 500
 
+@app.route('/api/noticia_financiera', methods=['GET'])
+def noticia_financiera():
+    if not os.environ.get("GROQ_API_KEY"):
+        return jsonify({"success": False, "respuesta": "API key de Groq no configurada."}), 500
+
+    import random
+    temas = [
+        "SOFIPO rendimientos México actual", "Cetes directo tasa actual", 
+        "Ahorro para el retiro AFORE tips", "Inflación en México impacto hoy",
+        "Estrategias para salir de deudas rápido México", "Bolsa Mexicana de Valores análisis",
+        "Mercado inmobiliario y Fibras México", "Criptomonedas tendencias hoy",
+        "Bancos vs Fintech tasas de interés", "Fondos indexados S&P 500"
+    ]
+    tema = random.choice(temas)
+    
+    enfoques = [
+        "un consejo inesperado pero efectivo",
+        "una advertencia sobre un riesgo común",
+        "una tendencia emergente que pocos están aprovechando",
+        "una estadística contundente seguida de una lección práctica",
+        "un mito financiero común y por qué es falso"
+    ]
+    enfoque = random.choice(enfoques)
+    
+    internet_context = ""
+    try:
+        from duckduckgo_search import DDGS
+        resultados = DDGS().text(tema, max_results=2)
+        if resultados:
+            for r in resultados:
+                internet_context += f"- {r['title']}: {r['body']}\n"
+    except:
+        pass
+
+    try:
+        from groq import Groq
+        cliente_groq = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        mensajes = [
+            {"role": "system", "content": "Eres Mercy, una IA financiera. Escribe un titular o tip financiero actualizado de 2 oraciones máximo y sin emojis. Capitaliza estrictamente bien (solo la primera letra al iniciar las oraciones). Ve directo al grano."},
+            {"role": "user", "content": f"Tema base: {tema}. Enfoque requerido para que sea único: {enfoque}.\nUsa esta información reciente si sirve:\n{internet_context}\n\nEscribe el tip ahora mismo."}
+        ]
+        chat_completion = cliente_groq.chat.completions.create(
+            messages=mensajes,
+            model="llama-3.3-70b-versatile",
+            temperature=0.9, # Higher temperature for more variance
+        )
+        return jsonify({"success": True, "respuesta": chat_completion.choices[0].message.content.strip()})
+    except Exception as e:
+        print("Error noticia_financiera:", e)
+        return jsonify({"success": False, "respuesta": "Revisa tus finanzas cada semana para mantenerte seguro."})
+
 # Inicialización automática de base de datos
 with app.app_context():
     # 1. Crear las tablas físicas si no existen (esencial para Render/producción)

@@ -80,152 +80,245 @@
     <!-- Sección: Inicio (Diseño Limpio y Profesional) -->
     <section id="inicio-section" class="content-section">
         <div class="fade-in">
-            <!-- Hero de Bienvenida Minimalista -->
-            <div class="glass-card p-5 mb-5 border-0 shadow-lg position-relative overflow-hidden">
-                <!-- Fondo sutil decorativo -->
-                <div class="position-absolute top-0 end-0 h-100 w-50 bg-gradient-primary opacity-05"
-                    style="background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.1), transparent 70%);">
+            <!-- Hero de Bienvenida Premium v3 -->
+            <div class="glass-card has-bubbles p-4 p-md-5 mb-5 border-0 shadow-lg position-relative overflow-hidden"
+                style="border-radius: 24px;">
+                <!-- Fondo animado interactivo -->
+                <div class="position-absolute top-0 end-0 h-100 w-100 opacity-25"
+                    style="background: radial-gradient(circle at right 20%, rgba(13, 110, 253, 0.4), transparent 50%), radial-gradient(circle at left 80%, rgba(13, 202, 240, 0.2), transparent 50%); mix-blend-mode: multiply;">
                 </div>
 
                 <div class="row align-items-center position-relative z-1">
-                    <div class="col-lg-8 text-center text-lg-start">
-                        <span class="text-uppercase tracking-wide text-primary fw-bold small mb-2 d-block">Panel de
-                            Control</span>
-                        <h1 class="display-6 fw-bold mb-3">¡Hola de nuevo, {{ session.get('nombres', 'Usuario').split('
-                            ')[0] }}!</h1>
-                        <p class="lead text-muted mb-4" style="max-width: 600px;">
-                            Estás a un paso de tomar mejores decisiones financieras. ¿Por dónde quieres empezar hoy?
+                    <div class="col-lg-7 text-center text-lg-start mb-4 mb-lg-0">
+                        <h1 class="display-5 fw-bold mb-3" style="letter-spacing: -0.03em;">
+                            Bienvenido al futuro de tus finanzas, <span class="text-primary">{{ session.get('nombres',
+                                'Usuario').split(' ')[0] }}</span>.
+                        </h1>
+                        <p class="lead text-muted mb-4 opacity-75" style="max-width: 550px;">
+                            Simuladores, herramientas, ranking de SOFIPOs e inteligencia artificial: todo en un solo
+                            lugar para que tu dinero trabaje por ti.
                         </p>
-                        <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
+                        <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
                             <a href="#" data-section="simulaciones"
-                                class="btn btn-primary rounded-pill px-4 py-2 shadow-sm transition-all mb-2">
-                                <i class="bi bi-calculator me-2"></i>Nueva simulación
-                            </a>
-                            <a href="{{ url_for('diagnostico') }}"
-                                class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm transition-all mb-2">
-                                <i class="bi bi-heart-pulse me-2"></i>Ver mi diagnóstico
+                                class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm hover-scale d-flex align-items-center">
+                                <i class="bi bi-rocket-takeoff me-2"></i> Explorar simuladores
                             </a>
                         </div>
                     </div>
-                    <div class="col-lg-4 d-none d-lg-block text-center opacity-75">
-                        <!-- Icono ilustrativo limpio -->
-                        <i class="bi bi-wallet2 text-primary" style="font-size: 8rem; opacity: 0.2;"></i>
+
+                    <div class="col-lg-5 position-relative">
+                        <div class="d-flex flex-column gap-3">
+                            <!-- Novedad Groq API Box -->
+                            <div class="glass-card has-bubbles shadow-sm border border-primary border-opacity-25 p-4 text-start hover-scale position-relative overflow-hidden"
+                                style="border-radius: 20px; background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(13, 110, 253, 0.05)); z-index: 5;">
+                                <div class="position-absolute top-0 end-0 mt-3 me-3">
+                                    <span class="spinner-grow spinner-grow-sm text-primary" role="status"
+                                        id="mercyRadarSpinner"></span>
+                                </div>
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary text-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center shadow"
+                                        style="width: 40px; height: 40px;">
+                                        <i class="bi bi-lightning-charge-fill fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bolder mb-0 text-dark" style="letter-spacing: -0.02em;">Mercy
+                                            radar</h6>
+                                        <small class="text-primary fw-semibold">Inteligencia en tiempo real</small>
+                                    </div>
+                                </div>
+                                <p class="small text-muted mb-0 fw-medium lh-base" id="mercyNewsContainer"
+                                    style="font-size: 0.9rem;">
+                                    Analizando y extrayendo los últimos movimientos de los mercados financieros...
+                                </p>
+                            </div>
+
+                            <!-- Widget Interactivo de Crecimiento -->
+                            <div class="glass-card has-bubbles shadow-lg border-0 p-4 text-start position-relative"
+                                style="border-radius: 20px; background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); z-index: 5;">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="fw-bold mb-0"><i
+                                            class="bi bi-graph-up-arrow text-success me-2"></i>Crecimiento rápido</h6>
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2">10% a 5
+                                        años</span>
+                                </div>
+                                <p class="small text-muted mb-3">Juega con la barra para ver cuánto tendrías invirtiendo
+                                    en
+                                    una buena SOFIPO mes a mes.</p>
+
+                                <div class="d-flex justify-content-between mb-1">
+                                    <label class="small fw-bold text-dark">Ahorro mensual:</label>
+                                    <span id="quickSimulValue" class="small fw-bold text-primary">$2,000</span>
+                                </div>
+                                <input type="range" class="form-range mb-4" id="quickSimulRange" min="500" max="10000"
+                                    step="500" value="2000">
+
+                                <div class="p-3 bg-white bg-opacity-75 rounded-3 border d-flex flex-column mb-0">
+                                    <div class="d-flex justify-content-between mb-2 pb-2 border-bottom">
+                                        <small class="text-muted fw-semibold">Tú habrás aportado (en 5 años):</small>
+                                        <small class="fw-bold text-dark" id="quickSimulInvested">$120,000</small>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <small class="text-muted d-block fw-semibold"
+                                                style="font-size: 0.75rem;">Total final (capital + ganancias):</small>
+                                            <h4 class="fw-bold text-success mb-0 letter-spacing-tight"
+                                                id="quickSimulResult">$154,874</h4>
+                                        </div>
+                                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                            style="width: 45px; height: 45px; flex-shrink: 0; margin-left: 10px;">
+                                            <i class="bi bi-currency-dollar fs-5"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <script>
+                                    // Script for quick simulation + news API fetch
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        // Simulator
+                                        const slider = document.getElementById('quickSimulRange');
+                                        const valueDisplay = document.getElementById('quickSimulValue');
+                                        const resultDisplay = document.getElementById('quickSimulResult');
+                                        const investedDisplay = document.getElementById('quickSimulInvested');
+
+                                        function updateQuickSim() {
+                                            const value = parseInt(slider.value);
+                                            // Se agrega la ',' de miles
+                                            valueDisplay.innerText = '$' + value.toLocaleString('en-US');
+
+                                            const r = 0.10 / 12; // Modificado a 10% anual para ser más realista
+                                            const n = 5 * 12; // 5 años
+                                            const PMT = value;
+                                            const FV = PMT * ((Math.pow(1 + r, n) - 1) / r);
+                                            const totalInvested = PMT * n;
+
+                                            if (investedDisplay) {
+                                                investedDisplay.innerText = '$' + totalInvested.toLocaleString('en-US');
+                                            }
+
+                                            // Si hay centavos, poner 2 decimales, y con , de miles
+                                            resultDisplay.innerText = '$' + FV.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                        }
+
+                                        if (slider) {
+                                            slider.addEventListener('input', updateQuickSim);
+                                            updateQuickSim();
+                                        }
+
+                                        // Fetch Financial News
+                                        const newsContainer = document.getElementById('mercyNewsContainer');
+                                        const spinner = document.getElementById('mercyRadarSpinner');
+                                        if (newsContainer) {
+                                            // Agregar date.now() para que nunca se cachee e invoque siempre uno nuevo al recargar
+                                            fetch('/api/noticia_financiera?t=' + Date.now())
+                                                .then(response => response.json())
+                                                .then(data => {
+                                                    if (spinner) spinner.style.display = 'none';
+                                                    if (data.success && data.respuesta) {
+                                                        newsContainer.innerHTML = `<span class="fw-bold text-dark">Radar:</span> ${data.respuesta}`;
+                                                    } else {
+                                                        newsContainer.innerHTML = "Mantente siempre informado sobre las tasas de rendimiento para que tu dinero crezca.";
+                                                    }
+                                                })
+                                                .catch(err => {
+                                                    if (spinner) spinner.style.display = 'none';
+                                                    newsContainer.innerHTML = "Revisa tus finanzas cada semana para mantenerte seguro.";
+                                                });
+                                        }
+                                    });
+                                </script>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Grid de Herramientas -->
+            <!-- Redesigned Herramientas Section -->
             <div class="mb-5">
-                <h5 class="fw-bold text-muted mb-4 ps-3 border-start border-4 border-primary">Herramientas principales
-                </h5>
+                <div class="d-flex align-items-center mb-4">
+                    <h4 class="fw-bold mb-0 me-3">Herramientas Mercy</h4>
+                    <div class="flex-grow-1 border-bottom" style="opacity: 0.15;"></div>
+                </div>
+
                 <div class="row g-4">
-                    <!-- Card: Simuladores -->
-                    <div class="col-md-4">
-                        <a href="#" data-section="simulaciones"
-                            class="text-decoration-none text-reset d-block h-100 user-select-none">
-                            <div class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all">
-                                <div class="d-flex align-items-start mb-3">
-                                    <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success me-3">
+                    <!-- Simuladores -->
+                    <div class="col-xl-3 col-md-6">
+                        <a href="#" data-section="simulaciones" class="text-decoration-none text-reset d-block h-100">
+                            <div class="glass-card has-bubbles h-100 p-4 border-0 shadow-sm hover-lift transition-all d-flex flex-column"
+                                style="border-radius: 20px;">
+                                <div class="d-flex justify-content-between align-items-start mb-auto">
+                                    <div class="rounded-circle bg-success bg-opacity-10 text-success p-3 d-flex align-items-center justify-content-center"
+                                        style="width: 50px; height: 50px;">
                                         <i class="bi bi-calculator-fill fs-4"></i>
                                     </div>
-                                    <div>
-                                        <h5 class="fw-bold mb-1">Simuladores</h5>
-                                        <span
-                                            class="badge bg-success bg-opacity-10 text-success rounded-pill small">Finanzas</span>
-                                    </div>
+                                    <i class="bi bi-arrow-up-right text-muted opacity-50"></i>
                                 </div>
-                                <p class="text-muted small mb-0">Calcula ahorros, créditos, inversiones y planes de
-                                    retiro con precisión.</p>
+                                <div class="mt-4">
+                                    <h5 class="fw-bold mb-2">Simuladores pro</h5>
+                                    <p class="text-muted small mb-0 line-clamp-2">Proyecta tus ahorros, créditos e
+                                        inversiones con alta precisión.</p>
+                                </div>
                             </div>
                         </a>
                     </div>
 
-                    <!-- Card: Diagnóstico -->
-                    <div class="col-md-4">
-                        <a href="{{ url_for('diagnostico') }}"
-                            class="text-decoration-none text-reset d-block h-100 user-select-none">
-                            <div class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all">
-                                <div class="d-flex align-items-start mb-3">
-                                    <div class="rounded-circle bg-danger bg-opacity-10 p-3 text-danger me-3">
-                                        <i class="bi bi-activity fs-4"></i>
+                    <!-- Diagnóstico -->
+                    <div class="col-xl-3 col-md-6">
+                        <a href="{{ url_for('diagnostico') }}" class="text-decoration-none text-reset d-block h-100">
+                            <div class="glass-card has-bubbles h-100 p-4 border border-danger border-opacity-10 shadow-sm hover-lift transition-all d-flex flex-column"
+                                style="border-radius: 20px;">
+                                <div class="d-flex justify-content-between align-items-start mb-auto">
+                                    <div class="rounded-circle bg-danger bg-opacity-10 text-danger p-3 d-flex align-items-center justify-content-center"
+                                        style="width: 50px; height: 50px;">
+                                        <i class="bi bi-heart-pulse-fill fs-4"></i>
                                     </div>
-                                    <div>
-                                        <h5 class="fw-bold mb-1">Diagnóstico 360°</h5>
-                                        <span
-                                            class="badge bg-danger bg-opacity-10 text-danger-emphasis rounded-pill small">Salud</span>
-                                    </div>
+                                    <i class="bi bi-arrow-up-right text-muted opacity-50"></i>
                                 </div>
-                                <p class="text-muted small mb-0">Evalúa tu estado financiero actual y recibe consejos
-                                    personalizados.</p>
+                                <div class="mt-4">
+                                    <h5 class="fw-bold mb-2">Diagnóstico 360°</h5>
+                                    <p class="text-muted small mb-0 line-clamp-2">Conoce tu salud financiera actual y
+                                        recibe una estrategia personalizada.</p>
+                                </div>
                             </div>
                         </a>
                     </div>
 
-                    <!-- Card: SOFIPOs -->
-                    <div class="col-md-4">
-                        <a href="/sofipos" class="text-decoration-none text-reset d-block h-100 user-select-none">
-                            <div class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all">
-                                <div class="d-flex align-items-start mb-3">
-                                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning me-3">
+                    <!-- SOFIPOs -->
+                    <div class="col-xl-3 col-md-6">
+                        <a href="/sofipos" class="text-decoration-none text-reset d-block h-100">
+                            <div class="glass-card has-bubbles h-100 p-4 border border-warning border-opacity-25 shadow-sm hover-lift transition-all d-flex flex-column"
+                                style="border-radius: 20px;">
+                                <div class="d-flex justify-content-between align-items-start mb-auto">
+                                    <div class="rounded-circle bg-warning bg-opacity-10 text-warning p-3 d-flex align-items-center justify-content-center"
+                                        style="width: 50px; height: 50px;">
                                         <i class="bi bi-graph-up-arrow fs-4"></i>
                                     </div>
-                                    <div>
-                                        <h5 class="fw-bold mb-1">Ranking SOFIPOs</h5>
-                                        <span
-                                            class="badge bg-warning bg-opacity-10 text-warning rounded-pill small">Inversión</span>
+                                    <i class="bi bi-arrow-up-right text-muted opacity-50"></i>
+                                </div>
+                                <div class="mt-4">
+                                    <h5 class="fw-bold mb-2">Ranking SOFIPOs</h5>
+                                    <p class="text-muted small mb-0 line-clamp-2">Compara las tasas de rendimiento de
+                                        las instituciones financieras populares.</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Glosario -->
+                    <div class="col-xl-3 col-md-6">
+                        <a href="#" data-section="glosario" class="text-decoration-none text-reset d-block h-100">
+                            <div class="glass-card has-bubbles h-100 p-4 border-0 shadow-sm hover-lift transition-all d-flex flex-column"
+                                style="border-radius: 20px;">
+                                <div class="d-flex justify-content-between align-items-start mb-auto">
+                                    <div class="rounded-circle bg-info bg-opacity-10 text-info p-3 d-flex align-items-center justify-content-center"
+                                        style="width: 50px; height: 50px;">
+                                        <i class="bi bi-book-half fs-4"></i>
                                     </div>
+                                    <i class="bi bi-arrow-up-right text-muted opacity-50"></i>
                                 </div>
-                                <p class="text-muted small mb-0">Descubre las mejores tasas de rendimiento actualizadas
-                                    del mercado.</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Grid de Aprendizaje -->
-            <div>
-                <h5 class="fw-bold text-muted mb-4 ps-3 border-start border-4 border-info">Aprendizaje y recursos</h5>
-                <div class="row g-4">
-                    <!-- Card: Test -->
-                    <div class="col-md-6">
-                        <a href="#" data-section="test-conocimientos"
-                            class="text-decoration-none text-reset d-block h-100 user-select-none">
-                            <div
-                                class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all d-flex align-items-center">
-                                <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary me-4">
-                                    <i class="bi bi-trophy-fill fs-3"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="fw-bold mb-1">Desafío de conocimientos</h5>
-                                    <p class="text-muted small mb-0">Demuestra tus habilidades financieras.</p>
-                                </div>
-                                <div class="ms-3">
-                                    {% if session.get('test_completado') %}
-                                    <i class="bi bi-check-circle-fill text-success fs-4" title="Completado"></i>
-                                    {% else %}
-                                    <i class="bi bi-arrow-right-circle text-primary fs-4 opacity-50"></i>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Card: Glosario -->
-                    <div class="col-md-6">
-                        <a href="#" data-section="glosario"
-                            class="text-decoration-none text-reset d-block h-100 user-select-none">
-                            <div
-                                class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all d-flex align-items-center">
-                                <div class="rounded-circle bg-info bg-opacity-10 p-3 text-info me-4">
-                                    <i class="bi bi-book-half fs-3"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="fw-bold mb-1">Diccionario financiero</h5>
-                                    <p class="text-muted small mb-0">Conceptos clave explicados de forma sencilla.</p>
-                                </div>
-                                <div class="ms-3">
-                                    <i class="bi bi-search text-info fs-4 opacity-50"></i>
+                                <div class="mt-4">
+                                    <h5 class="fw-bold mb-2">Diccionario A-Z</h5>
+                                    <p class="text-muted small mb-0 line-clamp-2">Domina todos los conceptos clave
+                                        explicados de forma sencilla.</p>
                                 </div>
                             </div>
                         </a>
@@ -233,7 +326,39 @@
                 </div>
             </div>
 
-        </div>
+            <!-- Desafío de conocimientos CTA -->
+            <div class="mb-4">
+                <a href="#" data-section="test-conocimientos"
+                    class="text-decoration-none text-reset d-block hover-scale transition-all">
+                    <div class="glass-card has-bubbles p-4 border-primary border-opacity-25 shadow-sm d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3"
+                        style="border-radius: 20px; background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(13,110,253,0.05));">
+                        <div class="d-flex align-items-center position-relative z-1">
+                            <div class="rounded-circle bg-primary bg-opacity-10 text-primary p-3 d-flex align-items-center justify-content-center me-4"
+                                style="width: 60px; height: 60px;">
+                                <i class="bi bi-trophy-fill fs-3"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-1 text-dark">Desafío de conocimientos</h4>
+                                <p class="text-muted small mb-0">Demuestra tus habilidades financieras y evalúa lo
+                                    aprendido.</p>
+                            </div>
+                        </div>
+                        <div class="text-end position-relative z-1">
+                            {% if session.get('test_completado') %}
+                            <span
+                                class="badge bg-success bg-opacity-10 text-success p-2 px-3 rounded-pill d-inline-flex align-items-center">
+                                <i class="bi bi-check-circle-fill me-2"></i> Completado
+                            </span>
+                            {% else %}
+                            <span class="btn btn-primary rounded-pill px-4" style="pointer-events: none;">
+                                Iniciar test ahora <i class="bi bi-arrow-right ms-2"></i>
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+
         </div>
     </section>
 
@@ -256,7 +381,7 @@
                 <!-- Ahorro -->
                 <div class="col-lg-6">
                     <div
-                        class="glass-card p-4 h-100 border-0 shadow-sm hover-scale transition-all d-flex align-items-center position-relative overflow-hidden">
+                        class="glass-card has-bubbles p-4 h-100 border-0 shadow-sm hover-scale transition-all d-flex align-items-center position-relative overflow-hidden">
                         <div class="row align-items-center w-100 g-0 position-relative z-1">
                             <div class="col-sm-3 text-center text-sm-start mb-3 mb-sm-0">
                                 <div class="rounded-circle bg-success bg-opacity-10 p-4 d-inline-flex">
@@ -279,7 +404,7 @@
                 <!-- Crédito -->
                 <div class="col-lg-6">
                     <div
-                        class="glass-card p-4 h-100 border-0 shadow-sm hover-scale transition-all d-flex align-items-center position-relative overflow-hidden">
+                        class="glass-card has-bubbles p-4 h-100 border-0 shadow-sm hover-scale transition-all d-flex align-items-center position-relative overflow-hidden">
 
                         <div class="row align-items-center w-100 g-0 position-relative z-1">
                             <div class="col-sm-3 text-center text-sm-start mb-3 mb-sm-0">
@@ -308,7 +433,7 @@
                 <!-- Inversión -->
                 <div class="col-md-6 col-lg-3">
                     <div
-                        class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all position-relative text-center text-lg-start">
+                        class="glass-card has-bubbles h-100 p-4 border-0 shadow-sm hover-lift transition-all position-relative text-center text-lg-start">
                         <div class="rounded-circle bg-indigo bg-opacity-10 text-indigo p-3 d-inline-flex mb-3"
                             style="color: #6610f2; background-color: rgba(102, 16, 242, 0.1);">
                             <i class="bi bi-graph-up-arrow fs-4"></i>
@@ -326,7 +451,7 @@
                 <!-- Presupuesto -->
                 <div class="col-md-6 col-lg-3">
                     <div
-                        class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all position-relative text-center text-lg-start">
+                        class="glass-card has-bubbles h-100 p-4 border-0 shadow-sm hover-lift transition-all position-relative text-center text-lg-start">
                         <div class="rounded-circle bg-info bg-opacity-10 text-info p-3 d-inline-flex mb-3">
                             <i class="bi bi-pie-chart fs-4"></i>
                         </div>
@@ -343,7 +468,7 @@
                 <!-- Retiro -->
                 <div class="col-md-6 col-lg-3">
                     <div
-                        class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all position-relative text-center text-lg-start">
+                        class="glass-card has-bubbles h-100 p-4 border-0 shadow-sm hover-lift transition-all position-relative text-center text-lg-start">
                         <div class="rounded-circle bg-warning bg-opacity-10 text-warning p-3 d-inline-flex mb-3">
                             <i class="bi bi-umbrella fs-4"></i>
                         </div>
@@ -360,7 +485,7 @@
                 <!-- Deuda -->
                 <div class="col-md-6 col-lg-3">
                     <div
-                        class="glass-card h-100 p-4 border-0 shadow-sm hover-lift transition-all position-relative text-center text-lg-start">
+                        class="glass-card has-bubbles h-100 p-4 border-0 shadow-sm hover-lift transition-all position-relative text-center text-lg-start">
                         <div class="rounded-circle bg-danger bg-opacity-10 text-danger p-3 d-inline-flex mb-3">
                             <i class="bi bi-calculator fs-4"></i>
                         </div>
@@ -378,7 +503,7 @@
 
     <!-- Sección: Test de conocimientos -->
     <section id="test-conocimientos-section" class="content-section d-none">
-        <div class="glass-card p-4 fade-in">
+        <div class="glass-card has-bubbles p-4 fade-in">
             <div id="testHeader">
                 <h2 class="mb-4 titulo-dashboard text-center">Test de conocimientos financieros</h2>
                 <p class="lead text-muted text-center mb-5">Pon a prueba tus conocimientos financieros con nuestras
@@ -608,7 +733,7 @@
 
     <!-- Sección: Glosario de términos -->
     <section id="glosario-section" class="content-section d-none">
-        <div class="glass-card p-4 fade-in">
+        <div class="glass-card has-bubbles p-4 fade-in">
             <h2 class="mb-4 titulo-dashboard text-center">Glosario de términos financieros</h2>
             <p class="lead text-muted text-center mb-5">
                 Explora y comprende los conceptos clave del mundo financiero. Desde términos básicos hasta definiciones
@@ -624,14 +749,14 @@
 
     <!-- Sección: Mi perfil -->
     <section id="perfil-section" class="content-section d-none">
-        <div class="glass-card p-4 fade-in">
+        <div class="glass-card has-bubbles p-4 fade-in">
             <h2 class="mb-4 titulo-dashboard text-center">Mi perfil</h2>
             <p class="lead text-muted text-center mb-5">Aquí puedes revisar y gestionar tu información personal y los
                 detalles de tu cuenta.</p>
 
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-md-10">
-                    <div class="glass-card p-4 mb-4">
+                    <div class="glass-card has-bubbles p-4 mb-4">
                         <h5 class="mb-3 text-primary"><i class="bi bi-person-circle me-2"></i> Información personal</h5>
                         <hr>
                         <div class="row mb-2">
@@ -659,7 +784,7 @@
                         </div>
                     </div>
 
-                    <div class="glass-card p-4 mb-4">
+                    <div class="glass-card has-bubbles p-4 mb-4">
                         <h5 class="mb-3 text-success"><i class="bi bi-shield-lock me-2"></i> Seguridad de la cuenta</h5>
                         <hr>
                         <div class="row mb-2">

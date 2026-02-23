@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const cardHTML = `
                     <div class="${isGridView ? 'col-md-6 col-lg-4' : 'col-12'} fade-in card-item">
-                        <div class="glass-card p-4 h-100 d-flex flex-column hover-scale sofipo-card shadow-sm" style="border-radius: 20px;">
+                        <div class="glass-card has-bubbles p-4 h-100 d-flex flex-column hover-scale sofipo-card shadow-sm" style="border-radius: 20px;">
                             
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <h5 class="fw-bold mb-0 text-primary" style="font-size: 1.1rem;">${s.nombre || 'Entidad Financiera'}</h5>

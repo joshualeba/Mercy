@@ -12,3 +12,7 @@ env/
 
 # VS Code
 .vscode/
+
+# Base de datos local (SQLite) - no subir a producción
+instance/
+*.db

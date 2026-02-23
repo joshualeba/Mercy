@@ -476,12 +476,10 @@
                 const nextBtn = stepSection.querySelector('.next-step-btn, button[type="submit"]');
                 if (!nextBtn) return;
 
-                // Get raw numeric value or text length
                 let valStr = e.target.value.replace(/,/g, '').trim();
                 const hasValue = valStr.length > 0 && parseFloat(valStr) >= 0;
 
                 if (hasValue) {
-                    // Try to preserve original btn- class to revert, though assuming btn-primary default
                     if (!nextBtn.dataset.originalBtnClass) {
                         const match = nextBtn.className.match(/btn-(primary|dark|info|warning|secondary)/);
                         nextBtn.dataset.originalBtnClass = match ? match[0] : 'btn-primary';
@@ -494,6 +492,31 @@
                     nextBtn.classList.add(orig);
                 }
             });
+
+            // Ocultar el CTA del chatbot al bajar la página (aplica en todas las páginas)
+            const cta = document.getElementById('chatbotCta');
+            if (cta) {
+                cta.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+
+                function updateCtaVisibility() {
+                    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    const scrollRatio = docHeight > 0 ? scrollTop / docHeight : 0;
+
+                    if (scrollRatio > 0.75) {
+                        cta.style.opacity = '0';
+                        cta.style.pointerEvents = 'none';
+                        cta.style.transform = 'translateX(20px)';
+                    } else {
+                        cta.style.opacity = '';
+                        cta.style.pointerEvents = '';
+                        cta.style.transform = '';
+                    }
+                }
+
+                window.addEventListener('scroll', updateCtaVisibility, { passive: true });
+                updateCtaVisibility();
+            }
         });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -503,6 +526,7 @@
     <script src="js/logo_b64.js"></script>
     <script src="js/pdf_utils.js"></script>
     <script src="js/chat.js"></script>
+    <script src="js/bubbles.js"></script>
     {% block extra_js %}{% endblock %}
 </body>
 
