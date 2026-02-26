@@ -152,6 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const allSectionLinks = document.querySelectorAll('[data-section]');
     const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
 
+    // Mapa de IDs internos → rutas en español para la URL
+    const seccionesDashboard = {
+        'inicio': '/inicio',
+        'simulaciones': '/simulaciones',
+        'test-conocimientos': '/test-de-conocimientos',
+        'glosario': '/glosario',
+        'perfil': '/mi-perfil'
+    };
+
     function showSection(sectionId) {
         contentSections.forEach(section => {
             section.classList.add('d-none');
@@ -168,10 +177,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Actualizar la URL con la ruta en español
+        const rutaLimpia = seccionesDashboard[sectionId] || '/dashboard/' + sectionId;
+        history.replaceState(null, '', rutaLimpia);
+
         if (sectionId === 'test-conocimientos') {
             loadTest();
         }
     }
+
 
     allSectionLinks.forEach(link => {
         link.addEventListener('click', function (event) {

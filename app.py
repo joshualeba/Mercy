@@ -1036,7 +1036,7 @@ def copiloto_financiero():
 
     internet_context = ""
     try:
-        from duckduckgo_search import DDGS
+        from ddgs import DDGS
         resultados_busqueda = DDGS().text(mensaje_usuario + " finanzas mexico rendimientos", max_results=3)
         if resultados_busqueda:
             internet_context = "\n\nRESULTADOS EN TIEMPO REAL (Úsalos para responder con datos actuales, como el GAT nominal/real o rendimientos de Nu, Ualá, Klar, etc.):\n"
@@ -1112,7 +1112,7 @@ def noticia_financiera():
     
     internet_context = ""
     try:
-        from duckduckgo_search import DDGS
+        from ddgs import DDGS
         resultados = DDGS().text(tema, max_results=2)
         if resultados:
             for r in resultados:
