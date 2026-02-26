@@ -57,8 +57,8 @@ Asegúrate de tener instalado lo siguiente:
 **1. Clona el repositorio**
 
 ```sh
-git clone https://github.com/TU_USUARIO/TU_REPO.git
-cd TU_REPO
+git clone https://github.com/joshualeba/Mercy.git
+cd Mercy
 ```
 
 **2. Crea y activa el entorno virtual**
@@ -121,8 +121,8 @@ sudo apt install -y git python3 python3-pip python3-venv
 **2. Clona el repositorio**
 
 ```bash
-git clone https://github.com/TU_USUARIO/TU_REPO.git
-cd TU_REPO
+git clone https://github.com/joshualeba/Mercy.git
+cd Mercy
 ```
 
 **3. Crea y activa el entorno virtual**
