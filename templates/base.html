@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mercy{% endblock %}</title>
+    <link rel="icon" href="https://res.cloudinary.com/dpvm2gro2/image/upload/v1769711039/logo_o4wtjy.ico"
+        type="image/x-icon" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+    <!-- Lenis Smooth Scroll -->
+    <!-- Lenis Smooth Scroll Library and Initialization -->
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+    <style>
+        /* Estilos recomendados por Lenis para evitar conflictos */
+        html.lenis, html.lenis body {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+    </style>
+    <script>
+        // Configuración idéntica a blaj.netlify.app para máxima fluidez
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: 'vertical',
+            gestureOrientation: 'vertical',
+            smoothWheel: true,
+            smoothTouch: false,
+            touchMultiplier: 2,
+            syncTouch: true,
+        });
+
+        // Loop de animación (RAF) único para toda la plataforma
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // Bloquear Lenis cuando un modal de Bootstrap está abierto para evitar scroll de fondo
+        document.addEventListener('show.bs.modal', () => {
+            if (window.lenis) window.lenis.stop();
+        });
+        
+        document.addEventListener('hidden.bs.modal', () => {
+            if (window.lenis) window.lenis.start();
+        });
+
+        // Exponer globalmente para otros scripts si es necesario
+        window.lenis = lenis;
+    </script>
+</head>
+
+<body class="loader_bg">
+    <!-- Loader -->
+    {% block loader %}
+    <div class="loader_p">
+        <div class="loader">
+            <span class="loader-text">Cargando</span>
+            <span class="load"></span>
+        </div>
+    </div>
+    {% endblock %}
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top {% block navbar_class %}glass-nav{% endblock %}">
+        {% block navbar_content %}
+        <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                {% block navbar_left %}
+                <a class="navbar-brand d-flex align-items-center"
+                    href="{{ url_for('dashboard') if session.get('usuario_autenticado') else url_for('index') }}">
+                    <img src="https://res.cloudinary.com/dpvm2gro2/image/upload/v1769711039/logo_qp8c8w.png"
+                        alt="Logo Mercy" class="me-2" width="40" height="40">
+                </a>
+                {% endblock %}
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                {% block navbar_actions %}
+                {% endblock %}
+
+                <button class="btn btn-glass" id="themeToggle" aria-label="Toggle theme">
+                    <i class="bi bi-sun-fill" id="themeIcon"></i>
+                </button>
+
+                <div class="position-relative">
+                    {% if session.get('usuario_autenticado') %}
+                    <button class="btn btn-glass d-flex align-items-center" id="userBtn" aria-expanded="false"
+                        aria-controls="userDropdown">
+                        <i class="bi bi-person-fill d-md-none"></i>
+                        <span class="d-none d-md-inline">{{ session.get('nombres', '').split(' ')[0] }} {{
+                            session.get('apellidos', '').split(' ')[0] }}</span>
+                    </button>
+
+                    <div class="user-dropdown glass-panel" id="userDropdown">
+                        <div class="p-3">
+                            <div class="text-center mb-3">
+                                <h6 class="mb-1">{{ session.get('nombres', '') }} {{ session.get('apellidos', '') }}
+                                </h6>
+                                <small class="mb-1">{{ session.get('correo', '') }}</small>
+                            </div>
+                            <hr>
+                            <div class="d-grid gap-2">
+                                {% block user_dropdown_content %}
+                                <button class="btn btn-outline-danger btn-sm" id="logoutBtn">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+                                </button>
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="{{ url_for('mostrar_formulario_inicio_sesion') }}" class="btn btn-primary btn-sm">Iniciar sesión</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    {% block footer %}{% endblock %}
+
+    <!-- Global Modals -->
+    {% block extra_modals %}
+    {% endblock %}
+
+    <!-- Logout Modal (Common - diseño premium) -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-modal border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;" data-lenis-prevent>
+                <!-- Decoración sutil de fondo -->
+                <div class="position-absolute top-0 start-0 w-100 h-100"
+                    style="background: radial-gradient(circle at top right, rgba(220, 53, 69, 0.05), transparent 60%); z-index: -1;">
+                </div>
+
+                <div class="modal-header border-0 flex-column align-items-center justify-content-center pt-5 pb-0">
+                    <div class="rounded-circle bg-danger bg-opacity-10 text-danger p-4 mb-3 animate-bounce-slow"
+                        style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-box-arrow-right fs-1"></i>
+                    </div>
+                    <h4 class="modal-title fw-bold" id="logoutModalLabel">Cerrar sesión</h4>
+                </div>
+                <div class="modal-body text-center px-4 pt-3 pb-4">
+                    <p class="text-muted fs-5 mb-0">¿Seguro/a que deseas cerrar tu sesión? asegúrate de haber guardado cualquier cambio antes de continuar.</p>
+                </div>
+                <div class="modal-footer border-0 justify-content-center gap-3 pb-5">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-medium"
+                        data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger rounded-pill px-5 fw-bold shadow-sm"
+                        id="confirmLogout">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal (Common) -->
+    <div class="modal fade" id="successMessageModal" tabindex="-1" aria-labelledby="successMessageModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-modal" data-lenis-prevent>
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="successMessageModalLabel">Éxito</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="successMessageModalBody"></p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal (Common) -->
+    <div class="modal fade" id="errorMessageModal" tabindex="-1" aria-labelledby="errorMessageModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-modal" data-lenis-prevent>
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="errorMessageModalLabel">Error</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="errorMessageModalBody"></p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHATBOT COPILOTO -->
+    {% block chatbot %}
+    <style>
+        .chatbot-container {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 400px;
+            /* Más ancho en PC */
+            max-width: calc(100vw - 40px);
+            height: 600px;
+            /* Más alto en PC */
+            max-height: calc(100vh - 130px);
+            background: var(--glass-bg, rgba(255, 255, 255, 0.9));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.4));
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            z-index: 1060;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] .chatbot-container {
+            background: rgba(30, 30, 40, 0.9);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .chatbot-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(13, 110, 253, 0.05);
+        }
+
+        [data-theme="dark"] .chatbot-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chatbot-messages {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-bubble {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .user-bubble {
+            align-self: flex-end;
+            background: #0d6efd;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-bubble {
+            align-self: flex-start;
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-color, #333);
+            border-bottom-left-radius: 4px;
+        }
+
+        [data-theme="dark"] .ai-bubble {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f8f9fa;
+        }
+
+        .chatbot-input-area {
+            padding: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+
+        [data-theme="dark"] .chatbot-input-area {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chatbot-input-area input {
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        [data-theme="dark"] .chatbot-input-area input {
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .chatbot-trigger {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1055;
+            transition: transform 0.3s;
+        }
+
+        .chatbot-trigger::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            border: 3px solid var(--primary-color, #0d6efd);
+            animation: pulse-ring 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+            z-index: -1;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.6);
+                opacity: 0;
+            }
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #888;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-indicator span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chatbot-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-track {
+            background: var(--secondary-color, #f8f9fa);
+            border-radius: 10px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color, #0d6efd);
+            border-radius: 10px;
+        }
+
+        [data-theme="dark"] .chatbot-messages::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color, #0d6efd);
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: var(--secondary-color);
+            border-radius: 10px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+            border: 1px solid transparent;
+            background-clip: content-box;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background-color: var(--accent-color);
+        }
+
+        .chatbot-call-to-action {
+            position: fixed;
+            bottom: 40px;
+            right: 105px;
+            z-index: 1050;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: var(--primary-color, #0d6efd);
+            border: 1px solid rgba(13, 110, 253, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            animation: bounce-horizontal 2.5s infinite ease-in-out;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .chatbot-call-to-action::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -8px;
+            transform: translateY(-50%);
+            border-width: 8px 0 8px 8px;
+            border-style: solid;
+            border-color: transparent transparent transparent rgba(255, 255, 255, 0.95);
+        }
+
+        [data-theme="dark"] .chatbot-call-to-action {
+            background: rgba(33, 37, 41, 0.95);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="dark"] .chatbot-call-to-action::after {
+            border-color: transparent transparent transparent rgba(33, 37, 41, 0.95);
+        }
+
+        @keyframes bounce-horizontal {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(-10px);
+            }
+        }
+
+        @media (max-width: 991px) {
+            .chatbot-container {
+                width: calc(100vw - 30px);
+                height: calc(100vh - 190px);
+                bottom: 100px;
+                right: 15px;
+                /* Más centrado en móviles */
+                max-width: none;
+                max-height: none;
+                border-radius: 20px;
+            }
+
+            body.chatbot-is-open .main-content,
+            body.chatbot-is-open .sidebar,
+            body.chatbot-is-open footer {
+                filter: blur(5px);
+                pointer-events: none;
+                transition: filter 0.3s ease;
+            }
+        }
+    </style>
+
+    <div id="bankChatbotContainer" class="chatbot-container d-none">
+        <div class="chatbot-header">
+            <div class="d-flex align-items-center">
+                <!-- Ícono relacionado con Mercy (pulso/latido) en rojo, como en el logo -->
+                <i class="bi bi-heart-pulse-fill text-danger me-2 fs-5"></i>
+                <h6 class="fw-bold mb-0">Mercy IA</h6>
+            </div>
+            <button type="button" id="closeChatbotBtn" class="btn btn-sm btn-link text-muted p-0"><i
+                    class="bi bi-x-lg fs-6"></i></button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="chat-bubble ai-bubble">
+                ¡Hola! Soy Mercy IA. Tu copiloto financiero personal. ¿En qué puedo ayudarte hoy?
+            </div>
+            <div class="d-flex flex-wrap gap-2 mt-2" id="chatQuickActions">
+            </div>
+        </div>
+
+        <!-- Botón flotante para bajar el scroll automático -->
+        <button type="button" class="btn btn-primary btn-sm rounded-circle shadow-lg d-none position-absolute"
+            id="scrollToBottomChatBtn"
+            style="bottom: 75px; right: 20px; z-index: 1070; width: 35px; height: 35px; opacity: 0.9;">
+            <i class="bi bi-chevron-down mt-1 d-block"></i>
+        </button>
+
+        <div class="chatbot-input-area">
+            <input type="text" id="chatbotInput" class="form-control" placeholder="Pregúntale a Mercy IA..."
+                autocomplete="off">
+            <button type="button" class="btn btn-primary rounded-circle" id="chatbotSendBtn"
+                style="width: 40px; height: 40px; padding: 0;">
+                <i class="bi bi-send-fill" style="margin-left: -2px;"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="chatbotCta" class="chatbot-call-to-action">
+        ¿Tienes dudas financieras? ¡Pregúntame! <i class="bi bi-robot ms-2 fs-5"></i>
+    </div>
+    <button type="button" class="btn btn-primary shadow-lg hover-scale chatbot-trigger" id="chatbotTriggerBtn">
+        <i class="bi bi-heart-pulse-fill fs-3"></i>
+    </button>
+    {% endblock %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.addEventListener('input', (e) => {
+                if (e.target.tagName !== 'INPUT') return;
+
+                const stepSection = e.target.closest('.step-section, .step-container');
+                if (!stepSection) return;
+
+                const nextBtn = stepSection.querySelector('.next-step-btn, button[type="submit"]');
+                if (!nextBtn) return;
+
+                let valStr = e.target.value.replace(/,/g, '').trim();
+                const hasValue = valStr.length > 0 && parseFloat(valStr) >= 0;
+
+                if (hasValue) {
+                    if (!nextBtn.dataset.originalBtnClass) {
+                        const match = nextBtn.className.match(/btn-(primary|dark|info|warning|secondary)/);
+                        nextBtn.dataset.originalBtnClass = match ? match[0] : 'btn-primary';
+                    }
+                    nextBtn.classList.remove('btn-primary', 'btn-dark', 'btn-info', 'btn-warning');
+                    nextBtn.classList.add('btn-success', 'text-white');
+                } else {
+                    nextBtn.classList.remove('btn-success', 'text-white');
+                    const orig = nextBtn.dataset.originalBtnClass || 'btn-primary';
+                    nextBtn.classList.add(orig);
+                }
+            });
+
+            // Ocultar el CTA del chatbot al bajar la página (aplica en todas las páginas)
+            const cta = document.getElementById('chatbotCta');
+            if (cta) {
+                cta.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+
+                function updateCtaVisibility() {
+                    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    const scrollRatio = docHeight > 0 ? scrollTop / docHeight : 0;
+
+                    if (scrollRatio > 0.75) {
+                        cta.style.opacity = '0';
+                        cta.style.pointerEvents = 'none';
+                        cta.style.transform = 'translateX(20px)';
+                    } else {
+                        cta.style.opacity = '';
+                        cta.style.pointerEvents = '';
+                        cta.style.transform = '';
+                    }
+                }
+
+                window.addEventListener('scroll', updateCtaVisibility, { passive: true });
+                updateCtaVisibility();
+            }
+
+            // Lógica para ocultar el loader globalmente
+            const hideLoader = () => {
+                const loaderP = document.querySelector('.loader_p');
+                const loaderScreen = document.getElementById('loader-screen');
+                
+                if (loaderP) {
+                    loaderP.style.opacity = '0';
+                    setTimeout(() => {
+                        loaderP.style.display = 'none';
+                    }, 500);
+                }
+                
+                if (loaderScreen) {
+                    loaderScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loaderScreen.style.display = 'none';
+                    }, 500);
+                }
+                document.body.classList.remove('loader_bg');
+            };
+
+            // Ejecutar al cargar completamente
+            window.addEventListener('load', hideLoader);
+            
+            // Seguridad por si el evento load tarda demasiado (3 segundos máximo)
+            setTimeout(hideLoader, 3000);
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="js/logo_b64.js"></script>
+    <script src="js/pdf_utils.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/bubbles.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

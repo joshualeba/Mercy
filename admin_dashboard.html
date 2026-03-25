@@ -1,0 +1,2509 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Admin Dashboard - Mercy{% endblock %}
+
+{% block chatbot %}{% endblock %}
+
+{% block navbar_class %}navbar-admin-custom fixed-top{% endblock %}
+
+{% block extra_css %}
+<link href="css/dashboard.css" rel="stylesheet">
+<style>
+    :root {
+        --admin-bg: #f8fafc;
+        --admin-card-bg: #ffffff;
+        --admin-accent: #0f172a;
+        --admin-primary: #3b82f6;
+        --admin-danger: #ef4444;
+        --admin-success: #10b981;
+        --admin-text-main: #1e293b;
+        --admin-text-muted: #64748b;
+        --sidebar-bg: #ffffff;
+        --sidebar-link-active: #f1f5f9;
+    }
+
+    body {
+        background-color: var(--admin-bg) !important;
+        color: var(--admin-text-main);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .glass-sidebar {
+        background: var(--sidebar-bg);
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1040;
+        width: 280px;
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar-content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .sidebar .nav-link {
+        color: var(--admin-text-muted);
+        border-radius: 12px;
+        margin: 4px 12px;
+        padding: 12px 16px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .sidebar .nav-link:hover {
+        background: var(--sidebar-link-active);
+        color: var(--admin-accent);
+    }
+
+    .sidebar .nav-link.active {
+        background: var(--admin-accent);
+        color: #ffffff !important;
+    }
+
+    .sidebar .nav-link i {
+        font-size: 1.1rem;
+    }
+
+    .main-content {
+        padding: 2rem;
+    }
+
+    .premium-card {
+        background: var(--admin-card-bg);
+        border-radius: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+        padding: 1.5rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .premium-card:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-badge {
+        padding: 10px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    /* Gestión de Usuarios - Nuevos Estilos */
+    .user-list-item {
+        display: grid;
+        grid-template-columns: auto 1fr auto auto;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+        transition: background 0.2s ease;
+    }
+
+    .user-list-item:last-child {
+        border-bottom: none;
+    }
+
+    .user-list-item:hover {
+        background: rgba(0, 0, 0, 0.02);
+    }
+
+    [data-theme="dark"] .user-list-item:hover {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .avatar-placeholder {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .role-tag {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+
+    .tag-superadmin {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .tag-admin {
+        background: #e0e7ff;
+        color: #3730a3;
+    }
+
+    .tag-cliente {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .action-button {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--admin-text-muted);
+        transition: all 0.2s;
+    }
+
+    .action-button:hover {
+        background: #f8fafc;
+        color: var(--admin-accent);
+        border-color: #cbd5e1;
+    }
+
+    .btn-superadmin {
+        background: var(--admin-accent);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    /* Modal Hero Style */
+    .custom-modal-content {
+        border-radius: 24px;
+        border: none;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .custom-modal-header {
+        border: none;
+        padding: 2rem 2rem 1rem;
+    }
+
+    .custom-modal-body {
+        padding: 1rem 2rem 2rem;
+    }
+
+    .custom-modal-footer {
+        border: none;
+        padding: 0 2rem 2.5rem;
+    }
+
+    .btn-round {
+        border-radius: 14px;
+        padding: 12px 24px;
+        font-weight: 600;
+    }
+
+    .user-dropdown.show {
+        display: block;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-green {
+        0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+        }
+
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+        }
+
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+        }
+    }
+
+    /* Estilos para el Modo Oscuro - Fixes */
+    [data-theme="dark"] body {
+        background-color: #020617 !important;
+        color: #f1f5f9;
+        --admin-bg: #020617;
+        --admin-card-bg: #0b1120;
+        --sidebar-bg: #0b1120;
+        --sidebar-link-active: rgba(255, 255, 255, 0.05);
+        --admin-text-main: #f1f5f9;
+        --admin-text-muted: #94a3b8;
+    }
+
+    [data-theme="dark"] .glass-sidebar {
+        background: var(--sidebar-bg);
+        border-right-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-theme="dark"] .premium-card {
+        background: var(--admin-card-bg);
+        border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-theme="dark"] .navbar-brand {
+        color: #ffffff !important;
+    }
+
+    [data-theme="dark"] .btn-light,
+    [data-theme="dark"] .bg-light,
+    [data-theme="dark"] .bg-white {
+        background-color: rgba(255, 255, 255, 0.03) !important;
+        color: #f1f5f9 !important;
+        border-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    [data-theme="dark"] .status-indicator,
+    [data-theme="dark"] .superadmin-badge {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        border-color: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    [data-theme="dark"] .status-indicator small,
+    [data-theme="dark"] .superadmin-badge span {
+        color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] .header-section p {
+        color: #94a3b8 !important;
+    }
+
+    [data-theme="dark"] #triggerLogout {
+        background-color: rgba(239, 68, 68, 0.1) !important;
+        border-color: rgba(239, 68, 68, 0.2) !important;
+        color: #f87171 !important;
+    }
+
+    [data-theme="dark"] .input-group-text,
+    [data-theme="dark"] .form-control {
+        background-color: #111a2e;
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #f1f5f9;
+    }
+
+    [data-theme="dark"] .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    [data-theme="dark"] .dropdown-menu {
+        background-color: #111a2e;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    [data-theme="dark"] .dropdown-item {
+        color: #f1f5f9;
+    }
+
+    [data-theme="dark"] .dropdown-item:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Glosario en Modo Oscuro */
+    [data-theme="dark"] .glossary-card {
+        background: #0f172a !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    [data-theme="dark"] .glossary-card h5 {
+        color: #ffffff !important;
+    }
+
+    [data-theme="dark"] .glossary-search-container {
+        background: #0b1120 !important;
+        border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    [data-theme="dark"] .filter-pill {
+        background: #1e293b;
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #94a3b8;
+    }
+
+    [data-theme="dark"] .filter-pill:hover:not(.active) {
+        border-color: #3b82f6;
+        color: #3b82f6;
+    }
+
+    /* SOFIPOs en Modo Oscuro */
+    [data-theme="dark"] .table {
+        color: #f1f5f9;
+    }
+
+    [data-theme="dark"] .table {
+        color: #f1f5f9 !important;
+        background-color: transparent !important;
+        border-color: rgba(255, 255, 255, 0.05) !important;
+        --bs-table-bg: transparent !important;
+        --bs-table-hover-bg: rgba(255, 255, 255, 0.03) !important;
+        --bs-table-color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] .table thead.bg-light,
+    [data-theme="dark"] .table thead,
+    [data-theme="dark"] .table thead th {
+        background-color: #1e293b !important;
+        color: #94a3b8 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    [data-theme="dark"] .bg-light,
+    [data-theme="dark"] .bg-white {
+        background-color: #0b1120 !important;
+        color: #f1f5f9 !important;
+        border-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    [data-theme="dark"] .text-muted {
+        color: #94a3b8 !important;
+    }
+
+    [data-theme="dark"] .text-primary {
+        color: #60a5fa !important;
+    }
+
+    [data-theme="dark"] .text-dark {
+        color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] tr td.text-primary,
+    [data-theme="dark"] tr td span.text-primary {
+        color: #60a5fa !important;
+        font-weight: 700 !important;
+    }
+
+    /* Logs de Actividad - Estilos */
+    .activity-badge {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        display: inline-block;
+        min-width: 65px;
+        text-align: center;
+    }
+
+    .badge-create {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    .badge-delete {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    .badge-update {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+
+    .badge-login {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+    }
+
+    .badge-test {
+        background: rgba(139, 92, 246, 0.1);
+        color: #8b5cf6;
+    }
+
+    .badge-login {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .user-list-item {
+            grid-template-columns: 1fr;
+            text-align: center;
+            gap: 0.5rem;
+        }
+
+        .avatar-placeholder {
+            margin: 0 auto;
+        }
+
+        .user-actions {
+            justify-content: center;
+            margin-top: 1rem;
+        }
+    }
+
+    /* FIX DEFINITIVO Y RADICAL CONTRA EL DESENFOQUE */
+    /* Cuando SweetAlert está activo, prohibimos CUALQUIER filtro en la página */
+    body.swal2-shown,
+    body.swal2-shown *,
+    body.swal2-shown .modal,
+    body.swal2-shown .modal-backdrop,
+    body.swal2-shown #userProfileModal,
+    body.swal2-shown .main-content {
+        filter: none !important;
+        -webkit-filter: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    /* Aseguramos que el contenedor de SweetAlert sea el único con prioridad visual */
+    .swal2-container {
+        z-index: 999999 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background-color: rgba(0, 0, 0, 0.4) !important;
+        /* Fondo oscuro semi-transparente sin blur */
+    }
+
+    .swal2-popup {
+        filter: none !important;
+        -webkit-filter: none !important;
+    }
+
+    /* Mejora de legibilidad en el expediente */
+    .stat-item-premium {
+        background: rgba(255, 255, 255, 0.4);
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .badge-premium {
+        border: none !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.02em;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Estilos personalizados para SweetAlert (Menos "IA", más Mercy) */
+    .mercy-swal-popup {
+        border-radius: 24px !important;
+        padding: 2rem !important;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    }
+
+    .mercy-swal-title {
+        font-weight: 800 !important;
+        color: #0f172a !important;
+        font-size: 1.5rem !important;
+    }
+
+    .mercy-swal-html {
+        color: #64748b !important;
+        font-size: 0.95rem !important;
+    }
+
+    .mercy-swal-confirm {
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        padding: 12px 24px !important;
+    }
+
+    .mercy-swal-cancel {
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        padding: 12px 24px !important;
+        background-color: #f1f5f9 !important;
+        color: #475569 !important;
+    }
+
+    /* Estilos para el Glosario Reorganizado */
+    .glossary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .glossary-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .glossary-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);
+        border-color: var(--admin-primary);
+    }
+
+    .category-chip {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+        letter-spacing: 0.05em;
+    }
+
+    .chip-economia {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563eb;
+    }
+
+    .chip-inversion {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+    }
+
+    .chip-credito {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+    }
+
+    .chip-digital {
+        background: rgba(139, 92, 246, 0.1);
+        color: #7c3aed;
+    }
+
+    .chip-otros {
+        background: rgba(100, 116, 139, 0.1);
+        color: #475569;
+    }
+
+    .glossary-search-container {
+        padding: 1.5rem;
+        background: #ffffff;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    /* Scrollbar personalizado para tablas con scroll horizontal */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+        width: 8px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background-color: var(--admin-primary);
+        border-radius: 10px;
+    }
+
+    [data-theme="dark"] .table-responsive::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    [data-theme="dark"] .table-responsive::-webkit-scrollbar-thumb {
+        background-color: var(--admin-primary);
+    }
+
+    /* Estilos para píldoras de filtrado (Glosario y Usuarios) */
+    .filter-pills,
+    .filter-container {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        background: #f1f5f9 !important;
+        padding: 5px !important;
+        border-radius: 14px !important;
+        border: none !important;
+    }
+
+    .filter-pill,
+    .filter-btn {
+        border: none !important;
+        background: transparent !important;
+        padding: 7px 18px !important;
+        border-radius: 10px !important;
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        color: #64748b !important;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        outline: none !important;
+    }
+
+    .filter-pill.active,
+    .filter-btn.active {
+        background: #ffffff !important;
+        color: var(--admin-accent) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+        transform: translateY(-1px);
+    }
+
+    .filter-pill:hover:not(.active),
+    .filter-btn:hover:not(.active) {
+        background: rgba(255, 255, 255, 0.6) !important;
+        color: var(--admin-accent) !important;
+    }
+
+    /* Estilo para el botón de usuario consistente con el dashboard */
+    @media (min-width: 992px) {
+        #userBtn {
+            border-radius: 12px !important;
+            padding: 8px 20px !important;
+            background: rgba(0, 0, 0, 0.04) !important;
+            border: 1px solid rgba(0, 0, 0, 0.06) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        #userBtn:hover {
+            background: rgba(0, 0, 0, 0.07) !important;
+            transform: translateY(-1px);
+        }
+
+        #userDropdown {
+            border-radius: 12px !important;
+            border: none !important;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+            margin-top: 12px !important;
+        }
+    }
+
+    /* Responsividad */
+    .sidebar-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(4px);
+        z-index: 2000;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .sidebar-backdrop.active {
+        display: block;
+        opacity: 1;
+    }
+
+    @media (max-width: 991.98px) {
+        .glass-sidebar {
+            width: 280px !important;
+            z-index: 11000 !important;
+            transform: translateX(-100%) !important;
+            background: var(--sidebar-bg) !important;
+            box-shadow: none !important;
+            visibility: visible !important;
+        }
+
+        .glass-sidebar.active {
+            transform: translateX(0) !important;
+            box-shadow: 20px 0 50px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .main-content {
+            margin-left: 0 !important;
+            padding: 1rem !important;
+        }
+
+        .header-section h2 {
+            font-size: 1.5rem;
+        }
+
+        .user-list-item {
+            grid-template-columns: auto 1fr;
+            gap: 1rem;
+        }
+
+        .user-list-item>div:nth-child(3),
+        .user-list-item>div:nth-child(4) {
+            grid-column: span 2;
+            justify-content: flex-start !important;
+        }
+
+        .glossary-search-container {
+            padding: 1rem;
+        }
+
+        .glossary-grid {
+            grid-template-columns: 1fr;
+            padding: 1rem;
+        }
+
+        .d-flex.justify-content-between.align-items-center:not(.navbar-left) {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+        }
+
+        .btn-round {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .premium-card {
+            padding: 1.25rem;
+        }
+
+        /* Fix Navbar Wrapping */
+        .navbar>.container-fluid {
+            flex-wrap: nowrap !important;
+            justify-content: space-between !important;
+        }
+
+        .navbar-brand span {
+            font-size: 0.9rem;
+            max-width: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .navbar .d-flex.align-items-center.gap-3 {
+            gap: 0.5rem !important;
+        }
+
+        .btn-glass {
+            padding: 0.4rem !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .navbar-brand span {
+            display: none;
+        }
+    }
+
+    /* Navbar Fixes Definitivos */
+    .navbar-admin-custom {
+        background: #ffffff !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 0.5rem 1.5rem !important;
+        min-height: 70px;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+        z-index: 1050 !important;
+        /* Por encima del sidebar en desktop */
+    }
+
+    [data-theme="dark"] .navbar-admin-custom {
+        background: #0b1120 !important;
+        border-bottom-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .navbar-admin-custom .container-fluid {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 0 !important;
+        width: 100%;
+    }
+
+    .btn-glass {
+        background: rgba(0, 0, 0, 0.04) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        color: var(--admin-text-main) !important;
+        min-width: 42px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px !important;
+        padding: 0 12px !important;
+    }
+
+    [data-theme="dark"] .btn-glass {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+    }
+
+    #sidebarToggle {
+        z-index: 1100 !important;
+        position: relative;
+        pointer-events: auto !important;
+        cursor: pointer !important;
+    }
+
+    /* Ajustar margen superior del contenido principal para la nueva navbar */
+    .main-content {
+        padding-top: 5rem !important;
+    }
+
+    @media (min-width: 992px) {
+        .glass-sidebar {
+            padding-top: 80px !important;
+            /* Espacio para la navbar */
+            transform: translateX(0) !important;
+        }
+
+        .main-content {
+            margin-left: 280px !important;
+            padding: 3rem !important;
+            padding-top: 7rem !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block navbar_left %}
+<button class="btn btn-glass d-lg-none me-3" id="sidebarToggle" onclick="toggleSidebarAdmin(event)">
+    <i class="bi bi-list fs-4"></i>
+</button>
+<a class="navbar-brand d-flex align-items-center" href="#" data-section="inicio">
+    <div class="me-2" style="width: 32px; height: 32px;">
+        <img src="https://res.cloudinary.com/dpvm2gro2/image/upload/v1769711039/logo_qp8c8w.png" alt="Logo Mercy" width="30"> <span class="fw-bold text-mercy">Mercy</span> <span class="ms-1 fw-light">Admin</span>
+    </div>
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Sidebar Backdrop para Mobile -->
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebarAdmin(event)"></div>
+
+<!-- Sidebar -->
+<div class="sidebar glass-sidebar" id="sidebar">
+    <div class="sidebar-content pt-4">
+        <div class="px-4 mb-4">
+            <small class="text-uppercase fw-bold text-muted"
+                style="font-size: 0.65rem; letter-spacing: 0.1em;">Administración</small>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" data-section="inicio">
+                    <i class="bi bi-grid-fill me-3"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="usuarios">
+                    <i class="bi bi-people-fill me-3"></i>
+                    <span>Usuarios</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="contenido">
+                    <i class="bi bi-book-half me-3"></i>
+                    <span>Glosario</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="sofipos">
+                    <i class="bi bi-graph-up-arrow me-3"></i>
+                    <span>SOFIPOs</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="px-4 mb-2 mt-5">
+            <small class="text-uppercase fw-bold text-muted"
+                style="font-size: 0.65rem; letter-spacing: 0.1em;">Sistema</small>
+        </div>
+        <ul class="nav flex-column mb-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="actividad">
+                    <i class="bi bi-journal-text me-3"></i>
+                    <span>Actividad</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="px-4 pb-4 mt-5">
+            <button class="btn w-100 text-danger fw-bold d-flex align-items-center justify-content-center gap-2 py-3"
+                style="background: #fff1f2; border-radius: 16px; border: 1px solid #fee2e2;" id="triggerLogout">
+                <i class="bi bi-power"></i>
+                <span>Finalizar sesión</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<main class="main-content">
+    <!-- Inicio -->
+    <section id="inicio-section" class="content-section">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div class="header-section">
+                <h2 class="fw-bold mb-1">Hola de nuevo, {{ admin.nombres }}</h2>
+                <p class="text-muted mb-0">Esto es lo que ha pasado en Mercy mientras no estabas.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <div class="status-indicator d-flex align-items-center bg-white border rounded-pill px-3 py-2">
+                    <span class="status-dot bg-success me-2"></span>
+                    <small class="fw-bold"
+                        style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em;">Sistema
+                        activo</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="premium-card">
+                    <div class="stat-badge bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-people-fill fs-5"></i>
+                    </div>
+                    <h3 class="fw-bold fs-2 mb-1">{{ stats.total_usuarios }}</h3>
+                    <p class="text-muted mb-0">Total de usuarios registrados</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="premium-card">
+                    <div class="stat-badge bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-check-circle-fill fs-5"></i>
+                    </div>
+                    <h3 class="fw-bold fs-2 mb-1">{{ stats.total_test }}</h3>
+                    <p class="text-muted mb-0">Tests de conocimientos completados</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="premium-card">
+                    <div class="stat-badge bg-info bg-opacity-10 text-info">
+                        <i class="bi bi-activity fs-5"></i>
+                    </div>
+                    <h3 class="fw-bold fs-2 mb-1">{{ stats.total_diagnosticos }}</h3>
+                    <p class="text-muted mb-0">Diagnósticos financieros realizados</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-8">
+                <div class="premium-card h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h5 class="fw-bold mb-0">Crecimiento de la plataforma</h5>
+                            <small class="text-muted">Visualización semanal de registros de usuarios.</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2"
+                                style="border-radius: 8px;">+12% esta semana</span>
+                        </div>
+                    </div>
+                    <div style="height: 300px;">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="premium-card h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Actividad reciente</h5>
+                        <i class="bi bi-clock-history text-muted"></i>
+                    </div>
+                    <div class="timeline-activity">
+                        {% for u in usuarios[:4] %}
+                        <div class="d-flex gap-3 mb-3 pb-3 border-bottom border-light">
+                            <div class="flex-shrink-0">
+                                <div class="avatar-placeholder small"
+                                    style="width: 32px; height: 32px; font-size: 0.6rem; background: #f8fafc;">
+                                    {{ u.datosp.nombre[0] }}{{ u.datosp.apellidoP[0] }}
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 fw-bold small" style="font-size: 0.75rem;">{{ u.datosp.nombre }} {{
+                                    u.datosp.apellidoP }}</h6>
+                                <p class="text-muted mb-0" style="font-size: 0.65rem;">Nueva cuenta registrada</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="btn btn-link btn-sm w-100 text-decoration-none fw-bold mt-2"
+                        style="font-size: 0.7rem;"
+                        onclick="document.querySelector('[data-section=\'usuarios\']').click()">Ver historial completo</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="premium-card mb-5">
+            <h5 class="fw-bold mb-4">Actividades rápidas</h5>
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <button class="btn btn-light w-100 py-3 text-start px-3"
+                        onclick="document.querySelector('[data-section=\'usuarios\']').click()">
+                        <i class="bi bi-people-fill d-block mb-2 text-primary"></i>
+                        <span class="d-block fw-bold small">Ver usuarios</span>
+                    </button>
+                </div>
+                <div class="col-6 col-md-3">
+                    <button class="btn btn-light w-100 py-3 text-start px-3"
+                        onclick="document.querySelector('[data-section=\'contenido\']').click()">
+                        <i class="bi bi-book-fill d-block mb-2 text-success"></i>
+                        <span class="d-block fw-bold small">Ver glosario</span>
+                    </button>
+                </div>
+                <div class="col-6 col-md-3">
+                    <button class="btn btn-light w-100 py-3 text-start px-3"
+                        onclick="document.querySelector('[data-section=\'sofipos\']').click()">
+                        <i class="bi bi-graph-up-arrow d-block mb-2 text-warning"></i>
+                        <span class="d-block fw-bold small">Ranking SOFIPOs</span>
+                    </button>
+                </div>
+                <div class="col-6 col-md-3">
+                    <button class="btn btn-light w-100 py-3 text-start px-3"
+                        onclick="document.querySelector('[data-section=\'actividad\']').click()">
+                        <i class="bi bi-journal-text d-block mb-2 text-secondary"></i>
+                        <span class="d-block fw-bold small">Ver historial</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Usuarios -->
+    <section id="usuarios-section" class="content-section d-none">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Directorio de usuarios</h2>
+                <p class="text-muted mb-0">Gestiona los accesos y niveles de privilegio en la plataforma.</p>
+            </div>
+            {% if admin.rol == 'superadmin' %}
+            <div class="d-none d-md-block">
+                <div class="d-flex align-items-center gap-2 bg-white border px-3 py-2 superadmin-badge"
+                    style="border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                    <div class="bg-dark rounded-circle d-flex align-items-center justify-content-center"
+                        style="width: 24px; height: 24px;">
+                        <i class="bi bi-shield-lock-fill text-white" style="font-size: 0.75rem;"></i>
+                    </div>
+                    <span class="fw-bold" style="font-size: 0.8rem; letter-spacing: -0.01em;">Sesión de superadmin</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Gráficas de usuarios -->
+        <div class="row g-4 mb-4" id="userChartsContainer">
+            <div class="col-md-6">
+                <div class="premium-card h-100">
+                    <h6 class="fw-bold mb-3">Distribución de roles</h6>
+                    <div style="height: 200px;">
+                        <canvas id="rolesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="premium-card h-100">
+                    <h6 class="fw-bold mb-3">Estado de cuentas</h6>
+                    <div style="height: 200px;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="premium-card p-0 overflow-hidden">
+            <div class="p-4 bg-light bg-opacity-50 border-bottom d-flex justify-content-between align-items-center">
+                <div class="input-group" style="width: 300px;">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" class="form-control border-start-0 ps-0" placeholder="Buscar usuario..."
+                        id="userSearch">
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    <div class="d-flex bg-white p-1 rounded-3 border gap-1 me-2 filter-container">
+                        <button class="filter-btn active" data-filter="todos">Todos</button>
+                        <button class="filter-btn" data-filter="admin">Admins</button>
+                        <button class="filter-btn" data-filter="cliente">Clientes</button>
+                    </div>
+                    <button class="btn btn-dark btn-sm fw-bold h-100 py-2 px-3" id="exportDataBtn"
+                        style="border-radius: 10px;">
+                        <i class="bi bi-file-earmark-pdf-fill me-2"></i>Exportar reporte
+                    </button>
+                </div>
+            </div>
+
+            <div class="user-list">
+                {% for u in usuarios %}
+                <div class="user-list-item" data-role="{{ u.role }}" data-id="{{ u.id }}"
+                    data-name="{{ u.datosp.nombre }} {{ u.datosp.apellidoP }}">
+                    <div class="avatar-placeholder">
+                        {{ u.datosp.nombre[0] }}{{ u.datosp.apellidoP[0] }}
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">{{ u.datosp.nombre }} {{ u.datosp.apellidoP }}</h6>
+                        <small class="text-muted">{{ u.correo_electronico }}</small>
+                    </div>
+                    <div>
+                        <span class="role-tag tag-{{ u.role }}">
+                            {% if u.role == 'superadmin' %}SuperAdmin{% elif u.role == 'admin' %}Admin{% else
+                            %}Cliente{% endif %}
+                        </span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        {# SuperAdmin es intocable (candado para todos) #}
+                        {% if u.role == 'superadmin' %}
+                        <button class="action-button opacity-50" disabled title="SuperAdmin protegido">
+                            <i class="bi bi-person-fill-lock text-muted"></i>
+                        </button>
+                        
+                        {# Los Admins pueden ser gestionados por el SuperAdmin, pero otros Admins ven candado #}
+                        {% elif u.role == 'admin' %}
+                            {% if admin.rol == 'superadmin' %}
+                            <button class="action-button btn-view-file" data-id="{{ u.id }}"
+                                title="Gestionar permisos administrativos">
+                                <i class="bi bi-shield-lock text-primary"></i>
+                            </button>
+                            {% else %}
+                            <button class="action-button opacity-50" disabled title="Administrador protegido">
+                                <i class="bi bi-person-fill-lock text-muted"></i>
+                            </button>
+                            {% endif %}
+                        
+                        {# Los Clientes son accesibles para ambos tipos de admin #}
+                        {% else %}
+                        <button class="action-button btn-view-file" data-id="{{ u.id }}"
+                            title="Ver expediente detallado">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section id="contenido-section" class="content-section d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Gestión de glosario</h2>
+                <p class="text-muted mb-0">Administra el glosario financiero y términos de búsqueda de Mercy.</p>
+            </div>
+            <button class="btn btn-dark btn-round px-4 py-2 d-flex align-items-center gap-2" id="btnAddNewTerm">
+                <i class="bi bi-plus-lg"></i>
+                <span>Nuevo término</span>
+            </button>
+        </div>
+
+        <div class="premium-card p-0 overflow-hidden border-0 shadow-sm">
+            <!-- Buscador y Filtros -->
+            <div class="glossary-search-container">
+                <div class="input-group" style="max-width: 400px;">
+                    <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" class="form-control border-0 bg-light"
+                        placeholder="Buscar concepto o palabra clave..." id="glossarySearchInp">
+                </div>
+                <div class="filter-pills" id="glossaryFilterPills">
+                    <div class="filter-pill active" data-cat="all">Todos</div>
+                    <div class="filter-pill" data-cat="economia">Economía</div>
+                    <div class="filter-pill" data-cat="inversion">Inversión</div>
+                    <div class="filter-pill" data-cat="credito">Crédito</div>
+                    <div class="filter-pill" data-cat="digital">Digital</div>
+                </div>
+            </div>
+
+            <!-- Grid de Términos -->
+            <div id="glossaryGrid" class="glossary-grid">
+                <!-- Se llena vía JS con tarjetas -->
+            </div>
+
+            <!-- Estado Vacío -->
+            <div id="glossaryEmptyState" class="text-center py-5 d-none">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                    style="width: 80px; height: 80px;">
+                    <i class="bi bi-search fs-2 text-muted"></i>
+                </div>
+                <h5>No encontramos resultados</h5>
+                <p class="text-muted">Intenta buscar con otros términos o cambia el filtro.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de SOFIPOs -->
+    <section id="sofipos-section" class="content-section d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Ranking de SOFIPOs</h2>
+                <p class="text-muted mb-0">Gestiona las tasas, niveles de capitalización y enlaces oficiales.</p>
+            </div>
+            <button class="btn btn-dark btn-round px-4 py-2 d-flex align-items-center gap-2" id="btnAddNewSofipo">
+                <i class="bi bi-plus-lg"></i>
+                <span>Agregar institución</span>
+            </button>
+        </div>
+
+        <div class="premium-card p-0 overflow-hidden border-0 shadow-sm">
+            <div class="table-responsive" data-lenis-prevent>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 border-0 py-3 small text-uppercase text-muted fw-bold">Institución</th>
+                            <th class="border-0 py-3 small text-uppercase text-muted fw-bold text-center">Tasa %</th>
+                            <th class="border-0 py-3 small text-uppercase text-muted fw-bold text-center">Plazo (Días)
+                            </th>
+                            <th class="border-0 py-3 small text-uppercase text-muted fw-bold text-center">NICAP %</th>
+                            <th class="pe-4 border-0 py-3 small text-uppercase text-muted fw-bold text-end">Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="sofipoListBody">
+                        <!-- Se llena vía JS -->
+                    </tbody>
+                </table>
+                <div id="sofipoEmptyState" class="text-center py-5 d-none">
+                    <i class="bi bi-building fs-1 text-muted mb-3 d-block"></i>
+                    <h5>No hay instituciones registradas</h5>
+                    <p class="text-muted">Comienza agregando la primera SOFIPO al ranking.</p>
+                </div>
+            </div>
+    </section>
+
+    <!-- Sección de Actividad -->
+    <section id="actividad-section" class="content-section d-none">
+        <div class="header-section mb-4">
+            <h2 class="fw-bold mb-1">Logs de actividad</h2>
+            <p class="text-muted mb-0">Monitorea en tiempo real las acciones administrativas y eventos del sistema.</p>
+        </div>
+
+        <div class="premium-card p-0 overflow-hidden border-0 shadow-sm">
+            <div class="table-responsive" data-lenis-prevent>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 border-0 py-3 small text-uppercase text-muted fw-bold">Fecha y Hora</th>
+                            <th class="border-0 py-3 small text-uppercase text-muted fw-bold">Administrador</th>
+                            <th class="border-0 py-3 small text-uppercase text-muted fw-bold">Acción Realizada</th>
+                            <th class="pe-4 border-0 py-3 small text-uppercase text-muted fw-bold text-end">Evento
+                                ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityListBody">
+                        <!-- Cargando... -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="activityEmptyState" class="text-center py-5 d-none">
+                <i class="bi bi-clock-history fs-1 text-muted mb-3 d-block"></i>
+                <h5>Sin actividad reciente</h5>
+                <p class="text-muted">No se han registrado eventos en las últimas 24 horas.</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Modal de Perfil de Usuario -->
+<div class="modal fade" id="userProfileModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content custom-modal-content">
+            <div class="modal-header border-0 pb-0 px-4 pt-4">
+                <h5 class="fw-bold mb-0">Expediente del usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4 pb-4 border-bottom">
+                    <div class="d-flex align-items-center gap-4">
+                        <div id="modal-avatar" class="avatar-placeholder"
+                            style="width: 80px; height: 80px; font-size: 1.5rem;"></div>
+                        <div>
+                            <h4 id="modal-user-name" class="fw-bold mb-1"></h4>
+                            <p id="modal-user-email" class="text-muted mb-1"></p>
+                            <span id="modal-user-date" class="badge bg-light text-dark border p-2 fw-normal"></span>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div id="risk-badge" class="badge rounded-pill px-3 py-2 mb-2"></div>
+                        <div class="small fw-bold text-muted" id="modal-auth-method"></div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-12">
+                        <div class="stat-item-premium d-flex justify-content-around text-center">
+                            <div>
+                                <small class="text-muted d-block mb-1">Última conexión</small>
+                                <span class="fw-bold small" id="modal-last-login"></span>
+                            </div>
+                            <div class="border-start ps-4">
+                                <small class="text-muted d-block mb-1">Estatus</small>
+                                <span class="badge bg-success bg-opacity-10 text-success">Verificado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4" id="modal-client-sections">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-4 h-100 border">
+                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-clipboard2-check-fill text-primary"></i>Test de conocimientos
+                            </h6>
+                            <div id="test-status-area">
+                                <p class="small text-muted mb-2">Estado: <span id="test-status"
+                                        class="fw-bold text-dark"></span></p>
+                                <div class="bg-white p-3 rounded-3 border">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="small text-muted">Aciertos:</span>
+                                        <span id="test-score" class="fw-bold"></span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div id="test-progress-bar" class="progress-bar" style="width: 0%"></div>
+                                    </div>
+                                    <p class="text-center small text-muted mt-2 mb-0" id="test-date"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-4 h-100 border">
+                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-heart-pulse-fill text-danger"></i>Salud financiera
+                            </h6>
+                            <div id="diag-status-area">
+                                <p class="small text-muted mb-2">Último resultado:</p>
+                                <div class="bg-white p-3 rounded-3 border">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div class="text-center flex-grow-1 border-end">
+                                            <h3 id="diag-score" class="fw-bold mb-0"></h3>
+                                            <small class="text-muted">Puntos</small>
+                                        </div>
+                                        <div class="flex-grow-1 ps-3">
+                                            <p class="small mb-1">Ingresos: <b id="diag-ingresos"></b></p>
+                                            <p class="small mb-0">Gastos: <b id="diag-gastos"></b></p>
+                                        </div>
+                                    </div>
+                                    <p class="text-center small text-muted mb-0" id="diag-date"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if admin.rol == 'superadmin' %}
+            <div class="row g-4 mt-1">
+                <div class="col-12">
+                    <div class="p-4 bg-light rounded-4 border">
+                        <h6 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                            <i class="bi bi-shield-lock-fill text-dark"></i>Gestión administrativa
+                        </h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button id="modal-btn-role"
+                                class="btn btn-dark btn-round flex-grow-1 d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-shield-shaded"></i>
+                                <span id="modal-role-text">Cargando...</span>
+                            </button>
+                            <button id="modal-btn-delete"
+                                class="btn btn-outline-danger btn-round flex-grow-1 d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-trash3"></i>
+                                <span>Eliminar definitivamente</span>
+                            </button>
+                        </div>
+                        <p class="text-center small text-muted mt-3 mb-0">Estas acciones son permanentes y requieren privilegios de SuperAdmin.</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="modal-footer border-0 p-4 pt-0">
+                <button type="button" class="btn btn-light btn-round w-100 py-3 fw-bold" data-bs-dismiss="modal">Cerrar expediente</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Personalizado para Logout -->
+<div class="modal fade" id="customLogoutModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-content">
+            <div class="custom-modal-header text-center">
+                <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
+                    style="width: 60px; height: 60px;">
+                    <i class="bi bi-power fs-3"></i>
+                </div>
+                <h4 class="fw-bold mb-0">¿Terminar sesión?</h4>
+            </div>
+            <div class="custom-modal-body text-center">
+                <p class="text-muted mb-0">Tu sesión de administración se cerrará. deberás volver a autenticarte para realizar cambios internos.</p>
+            </div>
+            <div class="custom-modal-footer d-flex gap-2 w-100">
+                <button type="button" class="btn btn-light btn-round flex-grow-1" data-bs-dismiss="modal">Mantener activo</button>
+                <a href="/logout" class="btn btn-danger btn-round flex-grow-1">Sí, finalizar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Glosario (Crear/Editar) -->
+<div class="modal fade" id="glossaryTermModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-content">
+            <div class="modal-header border-0 p-4 pb-0">
+                <h5 class="fw-bold mb-0" id="glossaryModalTitle">Nuevo término</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="glossaryForm">
+                    <input type="hidden" id="glossaryId">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Nombre del término</label>
+                        <input type="text" class="form-control" id="glossaryTerm" required placeholder="Ej: Inflación">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Categoría</label>
+                        <select class="form-select" id="glossaryCategory" required>
+                            <option value="economia">Economía</option>
+                            <option value="inversion">Inversión</option>
+                            <option value="credito">Crédito</option>
+                            <option value="digital">Digital</option>
+                        </select>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label small fw-bold text-muted">Descripción</label>
+                        <textarea class="form-control" id="glossaryDescription" rows="4" required
+                            placeholder="Escribe aquí el significado..." style="resize: none;"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0 d-flex gap-2">
+                <button type="button" class="btn btn-light btn-round flex-grow-1"
+                    data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-dark btn-round flex-grow-1" id="saveGlossaryBtn">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de SOFIPO (Crear/Editar) -->
+<div class="modal fade" id="sofipoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal-content">
+            <div class="modal-header border-0 p-4 pb-0">
+                <h5 class="fw-bold mb-0" id="sofipoModalTitle">Nueva institución</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="sofipoForm">
+                    <input type="hidden" id="sofipoId">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Nombre de la institución</label>
+                        <input type="text" class="form-control" id="sofipoNombre" required placeholder="Ej: Nu México">
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Tasa anual (%)</label>
+                            <input type="number" step="0.01" class="form-control" id="sofipoTasa" required
+                                placeholder="0.00">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Plazo (días)</label>
+                            <input type="number" class="form-control" id="sofipoPlazo" required placeholder="30">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">NICAP (%)</label>
+                        <input type="number" step="0.01" class="form-control" id="sofipoNicap" required
+                            placeholder="0.00">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">URL del logo (opcional)</label>
+                        <input type="url" class="form-control" id="sofipoLogo" placeholder="https://...">
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label small fw-bold text-muted">Enlace web oficial</label>
+                        <input type="url" class="form-control" id="sofipoUrl" required placeholder="https://...">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0 d-flex gap-2">
+                <button type="button" class="btn btn-light btn-round flex-grow-1"
+                    data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-dark btn-round flex-grow-1" id="saveSofipoBtn">Guardar institución</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+    // Fail-safe Sidebar Toggle
+    function toggleSidebarAdmin(e) {
+        if (e) {
+            if (typeof e.preventDefault === 'function') e.preventDefault();
+            if (typeof e.stopPropagation === 'function') e.stopPropagation();
+        }
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebarBackdrop');
+
+        if (sidebar && backdrop) {
+            sidebar.classList.toggle('active');
+            backdrop.classList.toggle('active');
+            console.log('Sidebar toggled successfully');
+        } else {
+            console.error('Sidebar elements not found');
+            // Fallback for extreme cases
+            const s = document.querySelector('.glass-sidebar');
+            const b = document.querySelector('.sidebar-backdrop');
+            if (s) s.classList.toggle('active');
+            if (b) b.classList.toggle('active');
+        }
+    }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Variables globales del dashboard
+        const navLinks = document.querySelectorAll('.nav-link, .navbar-brand');
+        const sections = document.querySelectorAll('.content-section');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const userItems = document.querySelectorAll('.user-list-item');
+        const sidebar = document.getElementById('sidebar');
+
+        // Loader
+        const loader = document.querySelector('.loader_p');
+        if (loader) {
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    document.body.classList.remove('loader_bg');
+                }, 400);
+            }, 600);
+        }
+
+        // Los event listeners se manejan por onclick directos para máxima compatibilidad
+
+        // Navigation
+        navLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                const sectionId = this.getAttribute('data-section');
+                if (sectionId) {
+                    e.preventDefault();
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    sections.forEach(s => s.classList.add('d-none'));
+                    const target = document.getElementById(sectionId + '-section');
+                    if (target) {
+                        target.classList.remove('d-none');
+                        // Carga de datos bajo demanda
+                        if (sectionId === 'sofipos') loadSofipos();
+                        if (sectionId === 'contenido') loadGlossary();
+                        if (sectionId === 'actividad') loadActivity();
+
+                        // Inicializar gráficas o datos si es necesario
+                        if (sectionId === 'usuarios' && !rolesChart) {
+                            setTimeout(() => {
+                                initUserCharts();
+                                window.dispatchEvent(new Event('resize'));
+                            }, 300);
+                        } else if (sectionId === 'inicio') {
+                            setTimeout(() => {
+                                if (growthChart) growthChart.update();
+                                window.dispatchEvent(new Event('resize'));
+                            }, 300);
+                        } else if (sectionId === 'contenido') {
+                            loadGlossary();
+                        }
+                    }
+
+                    // Cerrar sidebar en móvil al navegar
+                    if (window.innerWidth < 992) {
+                        const sidebarEl = document.getElementById('sidebar');
+                        if (sidebarEl && sidebarEl.classList.contains('active')) {
+                            toggleSidebarAdmin();
+                        }
+                    }
+                }
+            });
+        });
+
+        // Filtrado de usuarios
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const filter = this.getAttribute('data-filter');
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                userItems.forEach(item => {
+                    const role = item.getAttribute('data-role');
+                    if (filter === 'todos' || role === filter) {
+                        item.classList.remove('d-none');
+                        gsap.fromTo(item, { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.4 });
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+            });
+        });
+
+        // Custom Logout Modal
+        const logoutTrigger = document.getElementById('triggerLogout');
+        const logoutModal = new bootstrap.Modal(document.getElementById('customLogoutModal'));
+        if (logoutTrigger) {
+            logoutTrigger.addEventListener('click', () => {
+                // Cerrar sidebar y backdrop instantáneamente en móvil
+                const s = document.getElementById('sidebar');
+                const b = document.getElementById('sidebarBackdrop');
+                if (s) s.classList.remove('active');
+                if (b) b.classList.remove('active');
+                document.body.style.overflow = '';
+                logoutModal.show();
+            });
+        }
+
+        // Search user mock
+        const userSearch = document.getElementById('userSearch');
+        if (userSearch) {
+            userSearch.addEventListener('input', function () {
+                const query = this.value.toLowerCase();
+                document.querySelectorAll('.user-list-item').forEach(item => {
+                    const text = item.innerText.toLowerCase();
+                    item.style.display = text.includes(query) ? 'grid' : 'none';
+                });
+            });
+        }
+
+        // --- MODO OSCURO ---
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const htmlElement = document.documentElement;
+
+        if (themeToggle) {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            htmlElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = htmlElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                htmlElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+        }
+
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.classList.replace('bi-sun-fill', 'bi-moon-fill');
+            } else {
+                themeIcon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+            }
+        }
+
+        // --- DROPDOWN USUARIO Y LOGOUT ---
+        const userBtn = document.getElementById('userBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Cerrar sidebar instantáneamente en móviles mediante clases directas
+                const s = document.getElementById('sidebar');
+                const b = document.getElementById('sidebarBackdrop');
+                if (s) s.classList.remove('active');
+                if (b) b.classList.remove('active');
+                document.body.style.overflow = '';
+                
+                logoutModal.show();
+            });
+        }
+
+        if (userBtn && userDropdown) {
+            userBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isExpanded = userBtn.getAttribute('aria-expanded') === 'true';
+                userBtn.setAttribute('aria-expanded', !isExpanded);
+                userDropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!userDropdown.contains(e.target) && !userBtn.contains(e.target)) {
+                    userBtn.setAttribute('aria-expanded', 'false');
+                    userDropdown.classList.remove('show');
+                }
+            });
+        }
+
+        // --- GRÁFICA DE CRECIMIENTO INICIO ---
+        let growthChart;
+        function initGrowthChart() {
+            const ctx = document.getElementById('growthChart');
+            if (!ctx) return;
+
+            growthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: JSON.parse('{{ growth_labels | tojson | safe }}'),
+                    datasets: [{
+                        label: 'Nuevos usuarios',
+                        data: JSON.parse('{{ growth_data | tojson | safe }}'),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#3b82f6',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.03)' }, border: { display: false } },
+                        x: { grid: { display: false }, border: { display: false } }
+                    }
+                }
+            });
+        }
+        initGrowthChart();
+
+        // --- GSAP ANIMACIONES ---
+        gsap.from(".glass-sidebar", { x: -100, opacity: 0, duration: 0.8, ease: "power3.out" });
+        gsap.from(".header-section", { y: -30, opacity: 0, duration: 0.8, delay: 0.2, ease: "power3.out" });
+        gsap.from(".premium-card", {
+            scale: 0.95,
+            opacity: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            delay: 0.3,
+            ease: "back.out(1.7)"
+        });
+
+        // --- GRÁFICAS DE USUARIOS ---
+        let rolesChart, statusChart;
+        function initUserCharts() {
+            const ctxRoles = document.getElementById('rolesChart');
+            const ctxStatus = document.getElementById('statusChart');
+
+            if (!ctxRoles || !ctxStatus) return;
+
+            // Extraer datos de la lista
+            const rolesFreq = { superadmin: 0, admin: 0, cliente: 0 };
+            userItems.forEach(item => {
+                const role = item.getAttribute('data-role');
+                if (rolesFreq.hasOwnProperty(role)) rolesFreq[role]++;
+            });
+
+            // Animación de entrada para el contenedor de gráficas
+            gsap.from("#userChartsContainer", {
+                y: 30,
+                opacity: 0,
+                duration: 1,
+                ease: "power2.out"
+            });
+
+            rolesChart = new Chart(ctxRoles, {
+                type: 'doughnut',
+                data: {
+                    labels: ['SuperAdmin', 'Admin', 'Cliente'],
+                    datasets: [{
+                        data: [rolesFreq.superadmin, rolesFreq.admin, rolesFreq.cliente],
+                        backgroundColor: ['#ef4444', '#3b82f6', '#10b981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 6, font: { size: 10 } } } },
+                    animation: { duration: 2000, easing: 'easeOutQuart' }
+                }
+            });
+
+            statusChart = new Chart(ctxStatus, {
+                type: 'bar',
+                data: {
+                    labels: ['Activos', 'Pendientes', 'Bloqueados'],
+                    datasets: [{
+                        label: 'Usuarios',
+                        data: [userItems.length, 0, 0], // Mock de utilidad
+                        backgroundColor: '#0f172a',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } },
+                    plugins: { legend: { display: false } },
+                    animation: { duration: 2500, easing: 'easeOutBounce' }
+                }
+            });
+        }
+
+        // Navegación (Removido duplicado y movido arriba)
+
+        // --- EXPORTAR A PDF PROFESIONAL ---
+        const exportBtn = document.getElementById('exportDataBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', function () {
+                const { jsPDF } = window.jspdf;
+                const doc = jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+
+                // Configuración profesional
+                const primaryColor = [15, 23, 42]; // Slate 900
+                const accentColor = [59, 130, 246]; // Blue 500
+
+                // Título y encabezado
+                doc.setFillColor(...primaryColor);
+                doc.rect(0, 0, 210, 40, 'F');
+
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(22);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Mercy Financial Solutions', 15, 20);
+
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Reporte de auditoría de usuarios', 15, 28);
+                doc.text(new Date().toLocaleString(), 155, 28);
+
+                const tableData = [];
+                userItems.forEach(item => {
+                    if (item.classList.contains('d-none')) return;
+                    const name = item.querySelector('h6').innerText;
+                    const email = item.querySelector('small').innerText;
+                    const role = item.querySelector('.role-tag').innerText;
+                    tableData.push([name, email, role, 'Activo']);
+                });
+
+                doc.autoTable({
+                    startY: 50,
+                    head: [['Usuario', 'Correo electrónico', 'Privilegio', 'Estado']],
+                    body: tableData,
+                    headStyles: { fillColor: primaryColor, textColor: [255, 255, 255], fontStyle: 'bold' },
+                    alternateRowStyles: { fillColor: [248, 250, 252] },
+                    margin: { left: 15, right: 15 },
+                    styles: { fontSize: 9, font: 'helvetica', cellPadding: 5 },
+                    didDrawPage: function (data) {
+                        // Pie de página
+                        doc.setFontSize(8);
+                        doc.setTextColor(150);
+                        doc.text('Este es un documento confidencial generado por el sistema administrativo de Mercy.', 15, doc.internal.pageSize.height - 10);
+                        doc.text('Página ' + data.pageNumber, 185, doc.internal.pageSize.height - 10);
+                    }
+                });
+
+                doc.save(`Reporte_Usuarios_Mercy_${Date.now()}.pdf`);
+
+                Swal.fire({
+                    title: '¡Reporte generado!',
+                    text: 'El documento PDF profesional ha sido descargado.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            });
+        }
+
+        const userList = document.querySelector('.user-list');
+        if (userList) {
+            userList.addEventListener('click', function (e) {
+                const viewBtn = e.target.closest('.btn-view-file');
+                if (viewBtn) {
+                    const userId = viewBtn.getAttribute('data-id');
+                    openUserFile(userId);
+                }
+            });
+        }
+
+        let currentlyViewingUserId = null;
+        let currentlyViewingUserRole = null;
+
+        function openUserFile(userId) {
+            const modalElement = document.getElementById('userProfileModal');
+            const modal = new bootstrap.Modal(modalElement);
+
+            // Reset modal state
+            document.getElementById('modal-user-name').innerText = 'Cargando...';
+            currentlyViewingUserId = userId;
+
+            fetch(`/api/admin/usuario_detalle/${userId}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        currentlyViewingUserRole = data.rol;
+                        document.getElementById('modal-user-name').innerText = data.nombre;
+                        document.getElementById('modal-user-email').innerText = data.correo;
+                        document.getElementById('modal-user-date').innerText = `Miembro desde el ${data.fecha_registro}`;
+                        document.getElementById('modal-avatar').innerText = data.nombre[0].toUpperCase();
+
+                        // Nuevos campos del expediente
+                        document.getElementById('modal-last-login').innerText = data.ultima_conexion;
+                        const authMethod = data.metodo_auth === 'Google' ? 'Google' : 'correo y cuenta';
+                        document.getElementById('modal-auth-method').innerHTML = `<i class="bi bi-${data.metodo_auth === 'Google' ? 'google' : 'person-lock'}"></i> Acceso: ${authMethod}`;
+
+                        // Lógica del badge de atención (Prioridad de seguimiento)
+                        const riskBadge = document.getElementById('risk-badge');
+                        const health = data.diagnostico.puntaje_salud || 0;
+
+                        if (health > 70) {
+                            riskBadge.innerText = 'Seguimiento estándar';
+                            riskBadge.className = 'badge bg-success text-white badge-premium rounded-pill px-3 py-2 mb-2';
+                        } else if (health > 40) {
+                            riskBadge.innerText = 'Atención moderada';
+                            riskBadge.className = 'badge bg-warning text-dark badge-premium rounded-pill px-3 py-2 mb-2';
+                        } else {
+                            riskBadge.innerText = 'Atención prioritaria';
+                            riskBadge.className = 'badge bg-danger text-white badge-premium rounded-pill px-3 py-2 mb-2';
+                        }
+
+                        // Botón de Rol (solo si existe - SuperAdmin)
+                        const roleBtnText = document.getElementById('modal-role-text');
+                        const roleBtn = document.getElementById('modal-btn-role');
+                        const clientSections = document.getElementById('modal-client-sections');
+                        
+                        // Ocultar secciones de expediente (test/diag) si el usuario es Admin
+                        if (clientSections) {
+                            clientSections.classList.toggle('d-none', data.rol !== 'cliente');
+                        }
+
+                        if (roleBtn && roleBtnText) {
+                            if (data.rol === 'cliente') {
+                                roleBtnText.innerText = 'Promover a Administrador';
+                                roleBtn.className = 'btn btn-dark btn-round flex-grow-1 d-flex align-items-center justify-content-center gap-2';
+                            } else if (data.rol === 'admin') {
+                                roleBtnText.innerText = 'Quitar permisos de Admin';
+                                roleBtn.className = 'btn btn-outline-dark btn-round flex-grow-1 d-flex align-items-center justify-content-center gap-2';
+                            } else {
+                                // SuperAdmin no se puede tocar
+                                roleBtn.style.display = 'none';
+                            }
+                        }
+
+                        // Lógica del test
+                        const testStatus = document.getElementById('test-status');
+                        if (data.test.completado) {
+                            testStatus.innerText = 'Completado';
+                            testStatus.className = 'fw-bold text-success';
+                            document.getElementById('test-score').innerText = `${data.test.puntuacion} / ${data.test.total}`;
+                            const pct = (data.test.puntuacion / data.test.total) * 100;
+                            document.getElementById('test-progress-bar').style.width = `${pct}%`;
+                            document.getElementById('test-progress-bar').className = `progress-bar bg-${pct > 70 ? 'success' : 'warning'}`;
+                            document.getElementById('test-date').innerText = `Finalizado el ${data.test.fecha}`;
+                        } else {
+                            testStatus.innerText = 'Pendiente';
+                            testStatus.className = 'fw-bold text-warning';
+                            document.getElementById('test-score').innerText = '---';
+                            document.getElementById('test-progress-bar').style.width = '0%';
+                            document.getElementById('test-date').innerText = 'El usuario no ha realizado el test.';
+                        }
+
+                        // Lógica del diagnóstico
+                        const diagScore = document.getElementById('diag-score');
+                        if (data.diagnostico.realizado) {
+                            diagScore.innerText = data.diagnostico.puntaje_salud;
+                            diagScore.className = `fw-bold mb-0 text-${data.diagnostico.puntaje_salud > 70 ? 'success' : (data.diagnostico.puntaje_salud > 40 ? 'warning' : 'danger')}`;
+                            document.getElementById('diag-ingresos').innerText = `$${data.diagnostico.ingresos.toLocaleString()}`;
+                            document.getElementById('diag-gastos').innerText = `$${data.diagnostico.gastos.toLocaleString()}`;
+                            document.getElementById('diag-date').innerText = `Último análisis: ${data.diagnostico.fecha}`;
+                        } else {
+                            diagScore.innerText = '---';
+                            diagScore.className = 'fw-bold mb-0 text-muted';
+                            document.getElementById('diag-ingresos').innerText = '---';
+                            document.getElementById('diag-gastos').innerText = '---';
+                            document.getElementById('diag-date').innerText = 'Sin diagnóstico registrado.';
+                        }
+
+                        modal.show();
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                });
+        }
+
+        // Acciones dentro del modal (Solo si existen - SuperAdmin)
+        const btnRole = document.getElementById('modal-btn-role');
+        if (btnRole) {
+            btnRole.addEventListener('click', () => {
+                if (!currentlyViewingUserId) return;
+                const newRole = currentlyViewingUserRole === 'cliente' ? 'admin' : 'cliente';
+                processRoleChange(currentlyViewingUserId, newRole);
+            });
+        }
+
+        const btnDelete = document.getElementById('modal-btn-delete');
+        if (btnDelete) {
+            btnDelete.addEventListener('click', () => {
+                if (!currentlyViewingUserId) return;
+                deleteUser(currentlyViewingUserId);
+            });
+        }
+
+        function processRoleChange(userId, newRole) {
+            const isPromoting = newRole === 'admin';
+            const title = isPromoting ? '¿Confirmar ascenso?' : '¿Retirar permisos?';
+            const text = isPromoting ? 'Le darás acceso total a las herramientas de gestión.' : 'El usuario perderá sus privilegios y volverá a ser un cliente estándar.';
+            const icon = isPromoting ? 'info' : 'warning';
+
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: icon,
+                showCancelButton: true,
+                confirmButtonColor: isPromoting ? '#0f172a' : '#ef4444',
+                cancelButtonColor: '#f1f5f9',
+                confirmButtonText: isPromoting ? 'Sí, promover' : 'Sí, quitar permisos',
+                cancelButtonText: 'No, cancelar',
+                customClass: {
+                    popup: 'mercy-swal-popup',
+                    title: 'mercy-swal-title',
+                    htmlContainer: 'mercy-swal-html',
+                    confirmButton: 'mercy-swal-confirm',
+                    cancelButton: 'mercy-swal-cancel'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/api/admin/cambiar_rol', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ usuario_id: userId, nuevo_rol: newRole })
+                    })
+                        .then(r => r.json())
+                        .then(d => {
+                            if (d.success) window.location.reload();
+                            else Swal.fire('Error', d.message, 'error');
+                        });
+                }
+            });
+        }
+
+        // --- LÓGICA DEL GLOSARIO REIMAGINADA ---
+        const glossaryModal = new bootstrap.Modal(document.getElementById('glossaryTermModal'));
+        let allGlossaryTerms = [];
+        let currentCategoryFilter = 'all';
+
+        function loadGlossary() {
+            fetch('/api/admin/glosario')
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success) {
+                        allGlossaryTerms = d.data;
+                        renderGlossary();
+                    }
+                });
+        }
+
+        function renderGlossary() {
+            const grid = document.getElementById('glossaryGrid');
+            const searchVal = document.getElementById('glossarySearchInp').value.toLowerCase();
+            grid.innerHTML = '';
+
+            const filtered = allGlossaryTerms.filter(t => {
+                const matchesSearch = t.termino.toLowerCase().includes(searchVal) || t.descripcion.toLowerCase().includes(searchVal);
+                const matchesCat = currentCategoryFilter === 'all' || t.categoria === currentCategoryFilter;
+                return matchesSearch && matchesCat;
+            });
+
+            const emptyState = document.getElementById('glossaryEmptyState');
+            if (emptyState) emptyState.classList.toggle('d-none', filtered.length > 0);
+
+            filtered.forEach(t => {
+                const catClass = `chip-${t.categoria || 'otros'}`;
+                const catLabel = t.categoria ? (t.categoria.charAt(0).toUpperCase() + t.categoria.slice(1)) : 'Otros';
+
+                // Escapamos caracteres para el onclick de forma segura
+                const escapedTerm = t.termino.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const escapedDesc = t.descripcion.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n').replace(/\r/g, '');
+
+                grid.innerHTML += `
+                <div class="glossary-card">
+                    <div class="category-chip ${catClass}">${catLabel}</div>
+                    <h5 class="fw-bold text-dark mb-2">${t.termino}</h5>
+                    <p class="text-muted small flex-grow-1 mb-4" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.6;">${t.descripcion}</p>
+                    <div class="d-flex gap-2 border-top pt-3">
+                        <button class="btn btn-light btn-round py-2 flex-grow-1 text-primary small fw-bold" 
+                                onclick="editTerm(${t.id}, '${escapedTerm}', '${t.categoria}', '${escapedDesc}')">
+                            <i class="bi bi-pencil-square me-1"></i> Editar
+                        </button>
+                        <button class="btn btn-light btn-round py-2 flex-grow-1 text-danger small fw-bold" 
+                                onclick="deleteTerm(${t.id})">
+                            <i class="bi bi-trash3 me-1"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            });
+        }
+
+        // Buscador y Filtros
+        if (document.getElementById('glossarySearchInp')) {
+            document.getElementById('glossarySearchInp').addEventListener('input', renderGlossary);
+        }
+
+        if (document.getElementById('glossaryFilterPills')) {
+            document.getElementById('glossaryFilterPills').addEventListener('click', (e) => {
+                const pill = e.target.closest('.filter-pill');
+                if (!pill) return;
+
+                document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+
+                currentCategoryFilter = pill.getAttribute('data-cat');
+                renderGlossary();
+            });
+        }
+
+        document.getElementById('btnAddNewTerm').addEventListener('click', () => {
+            document.getElementById('glossaryForm').reset();
+            document.getElementById('glossaryId').value = '';
+            document.getElementById('glossaryModalTitle').innerText = 'Nuevo término';
+            glossaryModal.show();
+        });
+
+        window.editTerm = function (id, name, category, desc) {
+            document.getElementById('glossaryId').value = id;
+            document.getElementById('glossaryTerm').value = name;
+            // Normalizamos la categoría para el select (siempre lowercase)
+            document.getElementById('glossaryCategory').value = category ? category.toLowerCase() : 'economia';
+            document.getElementById('glossaryDescription').value = desc;
+            document.getElementById('glossaryModalTitle').innerText = 'Editar término';
+            glossaryModal.show();
+        };
+
+        document.getElementById('saveGlossaryBtn').addEventListener('click', () => {
+            const id = document.getElementById('glossaryId').value;
+            const data = {
+                termino: document.getElementById('glossaryTerm').value,
+                categoria: document.getElementById('glossaryCategory').value,
+                descripcion: document.getElementById('glossaryDescription').value
+            };
+
+            if (!data.termino || !data.descripcion) {
+                Swal.fire('Campos incompletos', 'Olvidaste llenar el nombre o la descripción.', 'warning');
+                return;
+            }
+
+            const url = id ? '/api/admin/glosario/editar' : '/api/admin/glosario/crear';
+            if (id) data.id = id;
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(r => r.json()).then(d => {
+                if (d.success) {
+                    glossaryModal.hide();
+                    loadGlossary();
+                    Swal.fire({
+                        icon: 'success',
+                        title: id ? '¡Término actualizado!' : '¡Término guardado!',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        customClass: { popup: 'mercy-swal-popup' }
+                    });
+                }
+            });
+        });
+
+        window.deleteTerm = function (id) {
+            Swal.fire({
+                title: '¿Eliminar del glosario?',
+                text: 'Este concepto dejará de ser visible para todos los usuarios.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'No, cancelar',
+                customClass: {
+                    popup: 'mercy-swal-popup',
+                    title: 'mercy-swal-title',
+                    confirmButton: 'mercy-swal-confirm',
+                    cancelButton: 'mercy-swal-cancel'
+                },
+                buttonsStyling: false
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch('/api/admin/glosario/eliminar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id })
+                    }).then(r => r.json()).then(d => {
+                        if (d.success) {
+                            loadGlossary();
+                            Swal.fire({ icon: 'success', title: 'Eliminado', timer: 1000, showConfirmButton: false });
+                        }
+                    });
+                }
+            });
+        };
+
+        // --- LÓGICA DE SOFIPOS (CRUD COMPLETO) ---
+        const sofipoModal = new bootstrap.Modal(document.getElementById('sofipoModal'));
+        let allSofipos = [];
+
+        function loadSofipos() {
+            const body = document.getElementById('sofipoListBody');
+            body.innerHTML = '<tr><td colspan="5" class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div> Cargando...</td></tr>';
+
+            fetch('/api/admin/sofipos')
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success) {
+                        allSofipos = d.data;
+                        renderSofipos();
+                    }
+                });
+        }
+
+        function renderSofipos() {
+            const body = document.getElementById('sofipoListBody');
+            body.innerHTML = '';
+
+            const emptyState = document.getElementById('sofipoEmptyState');
+            if (emptyState) emptyState.classList.toggle('d-none', allSofipos.length > 0);
+
+            allSofipos.forEach(s => {
+                body.innerHTML += `
+                <tr>
+                    <td class="ps-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle border d-flex align-items-center justify-content-center sofipo-logo-container" style="width: 40px; height: 40px; overflow: hidden; background: #f8fafc;">
+                                ${s.logo_url ? `<img src="${s.logo_url}" style="width: 100%; height: 100%; object-fit: contain;">` : `<i class="bi bi-building text-muted"></i>`}
+                            </div>
+                            <span class="fw-bold text-dark">${s.nombre}</span>
+                        </div>
+                    </td>
+                    <td class="text-center fw-bold text-primary">${s.tasa_anual}%</td>
+                    <td class="text-center text-muted">${s.plazo_dias} días</td>
+                    <td class="text-center">
+                        <span class="badge ${s.nicap >131 ? 'bg-success' : 'bg-warning'} bg-opacity-10 ${s.nicap > 131 ? 'text-success' : 'text-warning'} rounded-pill"> ${s.nicap}%</span>
+                    </td>
+                    <td class="pe-4 text-end">
+                        <div class="d-flex gap-2 justify-content-end">
+                            <button class="btn btn-light btn-sm rounded-circle" onclick='editSofipo(${s.id})' title="Editar">
+                                <i class="bi bi-pencil-fill text-primary"></i>
+                            </button>
+                            <button class="btn btn-light btn-sm rounded-circle" onclick="deleteSofipo(${s.id})" title="Eliminar">
+                                <i class="bi bi-trash-fill text-danger"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            });
+        }
+
+        window.deleteUser = function (userId) {
+            Swal.fire({
+                title: '¿Confirmar eliminación?',
+                text: 'Esta acción borrará el expediente completo y no podrá recuperarse jamás.',
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Confirmar borrado',
+                cancelButtonText: 'Mantener usuario',
+                customClass: {
+                    popup: 'mercy-swal-popup',
+                    title: 'mercy-swal-title',
+                    htmlContainer: 'mercy-swal-html',
+                    confirmButton: 'mercy-swal-confirm',
+                    cancelButton: 'mercy-swal-cancel'
+                },
+                buttonsStyling: false
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch('/api/admin/eliminar_usuario', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ usuario_id: userId })
+                    })
+                        .then(r => r.json())
+                        .then(d => {
+                            if (d.success) {
+                                Swal.fire('Eliminado', 'El usuario ha sido borrado correctamente.', 'success')
+                                    .then(() => window.location.reload());
+                            } else {
+                                Swal.fire('Error', d.message, 'error');
+                            }
+                        });
+                }
+            });
+        }
+
+        document.getElementById('btnAddNewSofipo').addEventListener('click', () => {
+            document.getElementById('sofipoForm').reset();
+            document.getElementById('sofipoId').value = '';
+            document.getElementById('sofipoModalTitle').innerText = 'Nueva institución';
+            sofipoModal.show();
+        });
+
+        window.editSofipo = function (id) {
+            const sofipo = allSofipos.find(s => s.id === id);
+            if (!sofipo) return;
+
+            document.getElementById('sofipoId').value = sofipo.id;
+            document.getElementById('sofipoNombre').value = sofipo.nombre;
+            document.getElementById('sofipoTasa').value = sofipo.tasa_anual;
+            document.getElementById('sofipoPlazo').value = sofipo.plazo_dias;
+            document.getElementById('sofipoNicap').value = sofipo.nicap;
+            document.getElementById('sofipoLogo').value = sofipo.logo_url || '';
+            document.getElementById('sofipoUrl').value = sofipo.url_web || '';
+            document.getElementById('sofipoModalTitle').innerText = 'Editar institución';
+            sofipoModal.show();
+        };
+
+        document.getElementById('saveSofipoBtn').addEventListener('click', () => {
+            const id = document.getElementById('sofipoId').value;
+            const data = {
+                nombre: document.getElementById('sofipoNombre').value,
+                tasa_anual: document.getElementById('sofipoTasa').value,
+                plazo_dias: document.getElementById('sofipoPlazo').value,
+                nicap: document.getElementById('sofipoNicap').value,
+                logo_url: document.getElementById('sofipoLogo').value,
+                url_web: document.getElementById('sofipoUrl').value
+            };
+
+            if (!data.nombre || !data.tasa_anual || !data.nicap) {
+                Swal.fire('Atención', 'Nombre, Tasa y NICAP son obligatorios.', 'warning');
+                return;
+            }
+
+            const url = id ? '/api/admin/sofipos/editar' : '/api/admin/sofipos/crear';
+            if (id) data.id = id;
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(r => r.json()).then(d => {
+                if (d.success) {
+                    sofipoModal.hide();
+                    loadSofipos();
+                    Swal.fire({
+                        icon: 'success',
+                        title: id ? 'Institución actualizada' : 'Institución agregada',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        customClass: { popup: 'mercy-swal-popup' }
+                    });
+                }
+            });
+        });
+
+        window.deleteSofipo = function (id) {
+            Swal.fire({
+                title: '¿Eliminar institución?',
+                text: 'Esta SOFIPO ya no aparecerá en el ranking de inversiones.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'No, cancelar',
+                customClass: {
+                    popup: 'mercy-swal-popup',
+                    title: 'mercy-swal-title',
+                    confirmButton: 'mercy-swal-confirm',
+                    cancelButton: 'mercy-swal-cancel'
+                },
+                buttonsStyling: false
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch('/api/admin/sofipos/eliminar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id })
+                    }).then(r => r.json()).then(d => {
+                        if (d.success) {
+                            loadSofipos();
+                            Swal.fire({ icon: 'success', title: 'Eliminado', timer: 1000, showConfirmButton: false });
+                        }
+                    });
+                }
+            });
+        };
+
+        // --- LÓGICA DE ACTIVIDAD ---
+        function loadActivity() {
+            const body = document.getElementById('activityListBody');
+            if (body) body.innerHTML = '<tr><td colspan="4" class="text-center py-5"><div class="spinner-border text-primary spinner-border-sm"></div> Cargando historial...</td></tr>';
+
+            fetch('/api/admin/actividad')
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success) renderActivity(d.data);
+                    else if (body) body.innerHTML = '<tr><td colspan="4" class="text-center py-5 text-danger">Error al cargar logs.</td></tr>';
+                })
+                .catch(() => {
+                    if (body) body.innerHTML = '<tr><td colspan="4" class="text-center py-5 text-muted">No hay registros de actividad disponibles.</td></tr>';
+                });
+        }
+
+        function renderActivity(logs) {
+            const body = document.getElementById('activityListBody');
+            const empty = document.getElementById('activityEmptyState');
+            if (!body) return;
+            body.innerHTML = '';
+            if (logs.length === 0) {
+                if (empty) empty.classList.remove('d-none');
+                return;
+            }
+            if (empty) empty.classList.add('d-none');
+            logs.forEach(log => {
+                const badgeClass = `badge-${log.tipo || 'update'}`;
+                body.innerHTML += `
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold text-dark">${log.fecha.split(',')[0]}</span>
+                                <small class="text-muted">${log.fecha.split(',')[1] || ''}</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 0.7rem; color: #64748b;">
+                                    ${log.admin[0]}
+                                </div>
+                                <span class="fw-medium">${log.admin}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="activity-badge ${badgeClass} me-2">${log.tipo || 'evento'}</span>
+                            <span class="small">${log.accion}</span>
+                        </td>
+                        <td class="pe-4 text-end">
+                            <code class="small text-muted">${log.id}</code>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Inicialización
+        const activeSection = document.querySelector('.nav-link.active')?.getAttribute('data-section');
+        if (activeSection === 'sofipos') loadSofipos();
+        if (activeSection === 'contenido') loadGlossary();
+        if (activeSection === 'actividad') loadActivity();
+    });
+</script>
+{% endblock %}

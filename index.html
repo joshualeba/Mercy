@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mercy - tu simulador financiero</title>
+    <link rel="icon" href="https://res.cloudinary.com/dpvm2gro2/image/upload/v1769711039/logo_o4wtjy.ico"
+        type="image/png" />
+    <meta name="description"
+        content="Mercy - Plataforma de educación y simulaciones financieras. Simula créditos, ahorro, inversión, retiro y más.">
+    <meta name="keywords"
+        content="banco, finanzas, simulaciones, gestión de cuentas, dashboard, sistema bancario, ahorro, inversión, crédito">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+    <!-- Lenis Smooth Scroll removido para usar CSS puro -->
+</head>
+
+<body>
+    <div id="loader-screen">
+        <div class="loader-container">
+            <span class="loader"></span>
+            <p class="loader-text">Cargando...</p>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#home">
+                <div class="navbar-logo">
+                    <img src="https://res.cloudinary.com/dpvm2gro2/image/upload/v1769711039/logo_qp8c8w.png"
+                        alt="Logo Mercy" class="logo-img">
+                </div>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">¿Por qué Mercy?</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Servicios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#faq">FAQ</a>
+                    </li>
+                    <li class="nav-item ms-3">
+                        <a class="btn btn-accent" href="registro.html">Registro</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-accent-outline" href="iniciar_sesion.html">Iniciar sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero-section">
+        <video class="hero-video" autoplay muted loop>
+            <source src="https://res.cloudinary.com/dpvm2gro2/video/upload/v1769626121/Video_hero_cfldaf.mp4"
+                type="video/mp4">
+            Tu navegador no soporta video HTML5.
+        </video>
+
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+            <h1 class="hero-title">
+                Mercy te ayuda a <span id="typed-text"></span>
+            </h1>
+            <a href="iniciar_sesion.html" class="btn-simulate">
+                <i class="bi bi-calculator me-2"></i>
+                Simula ahora
+            </a>
+        </div>
+    </section>
+
+    <!-- ¿Por qué elegir Mercy? — Carrusel de tarjetas -->
+    <section id="features" class="section-padding bg-secondary-custom">
+        <div class="container">
+            <h2 class="section-title lazy-load">¿Por qué elegir Mercy?</h2>
+            <p class="section-subtitle lazy-load">La plataforma más completa para dominar tus finanzas personales sin ser experto.</p>
+
+            <div class="why-carousel-wrapper lazy-load">
+                <button class="why-arrow why-arrow-prev" id="whyPrev" aria-label="Anterior">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <div class="why-track-container">
+                    <div class="why-track" id="whyTrack">
+
+                        <div class="why-slide">
+                            <div class="feature-card">
+                                <div class="feature-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                                <h4 class="feature-title">Simulaciones realistas</h4>
+                                <p>Experimenta escenarios financieros completos antes de aplicarlos en la vida real: desde créditos hipotecarios hasta planes de retiro.</p>
+                                <button class="btn btn-outline-primary mt-3 w-100 feature-more-btn"
+                                    data-title="Simulaciones realistas"
+                                    data-desc="Experimenta escenarios financieros completos antes de aplicarlos en la vida real: desde créditos hipotecarios hasta planes de retiro. Permite probar diferentes combinaciones de tasas de interés y plazos de forma segura y visual a través de gráficos interactivos, sin comprometer tus finanzas reales.">Ver más</button>
+                            </div>
+                        </div>
+
+                        <div class="why-slide">
+                            <div class="feature-card">
+                                <div class="feature-icon"><i class="bi bi-robot"></i></div>
+                                <h4 class="feature-title">IA financiera integrada</h4>
+                                <p>Mercy IA, nuestro copiloto con groq, responde tus dudas financieras en tiempo real con acceso a datos actualizados del mercado.</p>
+                                <button class="btn btn-outline-primary mt-3 w-100 feature-more-btn"
+                                    data-title="IA financiera integrada"
+                                    data-desc="Mercy IA es tu asistente personal en todo momento. Desarrollado con tecnología Groq y modelos avanzados como Llama 3, nuestro copiloto resuelve dudas financieras en tiempo real, conectándose a fuentes de datos actualizadas para brindarte información sobre tasas, SOFIPOs y estrategias personalizadas.">Ver más</button>
+                            </div>
+                        </div>
+
+                        <div class="why-slide">
+                            <div class="feature-card">
+                                <div class="feature-icon"><i class="bi bi-pencil-square"></i></div>
+                                <h4 class="feature-title">Test de conocimientos</h4>
+                                <p>Evalúa tu nivel de educación financiera con pruebas interactivas y sube en el ranking global de usuarios.</p>
+                                <button class="btn btn-outline-primary mt-3 w-100 feature-more-btn"
+                                    data-title="Test de conocimientos"
+                                    data-desc="Evalúa tu inteligencia financiera a través de tests dinámicos y divertidos. Cada pregunta está diseñada por expertos para cubrir todos los conceptos esenciales del dinero. Gana puntos, mejora tu puntuación y compite en el ranking global de la comunidad de Mercy.">Ver más</button>
+                            </div>
+                        </div>
+
+                        <div class="why-slide">
+                            <div class="feature-card">
+                                <div class="feature-icon"><i class="bi bi-book"></i></div>
+                                <h4 class="feature-title">Glosario financiero A-Z</h4>
+                                <p>Accede a un diccionario completo de términos financieros explicados en lenguaje claro, desde básico hasta avanzado.</p>
+                                <button class="btn btn-outline-primary mt-3 w-100 feature-more-btn"
+                                    data-title="Glosario financiero A-Z"
+                                    data-desc="La educación financiera comienza entendiendo el idioma del dinero. Nuestro glosario desmitifica conceptos complejos como Interés Compuesto, AFORE, inflación, SOFIPO y NICAP, explicándolos con un lenguaje cotidiano, ejemplos prácticos y sin tecnicismos innecesarios.">Ver más</button>
+                            </div>
+                        </div>
+
+                        <div class="why-slide">
+                            <div class="feature-card">
+                                <div class="feature-icon"><i class="bi bi-heart-pulse"></i></div>
+                                <h4 class="feature-title">Diagnóstico 360°</h4>
+                                <p>Recibe un análisis completo de tu salud financiera actual y una estrategia personalizada para mejorarla.</p>
+                                <button class="btn btn-outline-primary mt-3 w-100 feature-more-btn"
+                                    data-title="Diagnóstico 360°"
+                                    data-desc="A través de un test detallado y personalizado, analizamos tus ingresos, capacidad de ahorro, fondo de emergencia y nivel de endeudamiento. Al finalizar, generamos una puntuación global y un plan de acción sugerido paso a paso para optimizar tu salud financiera.">Ver más</button>
+                            </div>
+                        </div>
+
+                        <div class="why-slide">
+                            <div class="feature-card">
+                                <div class="feature-icon"><i class="bi bi-bar-chart-line"></i></div>
+                                <h4 class="feature-title">Ranking de SOFIPOs</h4>
+                                <p>Compara las tasas de rendimiento de las instituciones financieras más populares de méxico y elige la mejor para ti.</p>
+                                <button class="btn btn-outline-primary mt-3 w-100 feature-more-btn"
+                                    data-title="Ranking de SOFIPOs"
+                                    data-desc="Centralizamos y actualizamos en una sola tabla los rendimientos de instituciones como Nu, Klar, Kubo, Finsus, Ualá y más. Analizamos sus tasas nominales, sus niveles de capitalización (NICAP) y la protección del Fondo PROSOFIPO para que inviertas tu dinero de la manera más segura y rentable.">Ver más</button>
+                            </div>
+                        </div>
+
+                        <div class="why-slide">
+                            <div class="feature-card">
+                                <div class="feature-icon"><i class="bi bi-lightning-charge"></i></div>
+                                <h4 class="feature-title">Resultados instantáneos</h4>
+                                <p>Obtén cálculos, análisis y retroalimentación inmediata en todos tus simuladores para aprender rápido y sin complicaciones.</p>
+                                <button class="btn btn-outline-primary mt-3 w-100 feature-more-btn"
+                                    data-title="Resultados instantáneos"
+                                    data-desc="Nuestra plataforma procesa tus datos en milisegundos. Sin tiempos de espera, sin pantallas de carga. Cada que modifiques una variable en los simuladores, los gráficos y las tablas de datos se actualizan en el momento para ofrecerte retroalimentación instantánea de tus cálculos.">Ver más</button>
+                            </div>
+                        </div>
+
+                        <div class="why-slide">
+                            <div class="feature-card">
+                                <div class="feature-icon"><i class="bi bi-phone"></i></div>
+                                <h4 class="feature-title">Multiplataforma</h4>
+                                <p>Usa Mercy desde cualquier dispositivo, ya sea móvil, tablet o escritorio, con la misma experiencia premium en todos.</p>
+                                <button class="btn btn-outline-primary mt-3 w-100 feature-more-btn"
+                                    data-title="Multiplataforma"
+                                    data-desc="Tu vida financiera está en constante movimiento. Por eso, diseñamos Mercy con un enfoque completamente responsivo. No necesitas instalar aplicaciones; solo accede a través de tu navegador favorito en tu celular, tablet o computadora y mantén siempre acceso a tus simulaciones.">Ver más</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <button class="why-arrow why-arrow-next" id="whyNext" aria-label="Siguiente">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Indicadores del carrusel -->
+            <div class="why-dots" id="whyDots"></div>
+        </div>
+    </section>
+
+    <!-- Banner de frase financiera -->
+    <div class="quote-banner lazy-load">
+        <div class="container">
+            <div class="quote-banner-inner">
+                <i class="bi bi-quote quote-icon"></i>
+                <blockquote class="quote-text">
+                    "No ahorres lo que te queda después de gastar, gasta lo que te queda después de ahorrar."
+                </blockquote>
+                <cite class="quote-author">— Warren Buffett</cite>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nuestros servicios -->
+    <section id="services" class="section-padding">
+        <div class="container">
+            <h2 class="section-title lazy-load">Nuestros servicios</h2>
+            <p class="section-subtitle lazy-load">Herramientas diseñadas para transformar la forma en que gestionas tu dinero.</p>
+
+            <div class="services-grid bento-layout lazy-load">
+
+                <div class="service-card glass-premium">
+                    <div class="glass-icon-wrapper">
+                        <i class="bi bi-piggy-bank"></i>
+                    </div>
+                    <div class="service-card-body">
+                        <h5>Simulador de ahorro</h5>
+                        <p>Define una meta y calcula exactamente cuánto necesitas guardar cada mes.</p>
+                        <ul class="service-features premium-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Metas múltiples</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Interés compuesto</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-card glass-premium">
+                    <div class="glass-icon-wrapper"
+                        style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(29, 78, 216, 0.35)); color: #2563EB; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.2);">
+                        <i class="bi bi-bank"></i>
+                    </div>
+                    <div class="service-card-body">
+                        <h5>Simulador de crédito</h5>
+                        <p>Visualiza tu tabla de amortización detallada antes de endeudarte.</p>
+                        <ul class="service-features premium-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Tabla completa</li>
+                            <li><i class="bi bi-check-circle-fill"></i> PDF Exportable</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-card glass-premium featured-service">
+                    <div class="glass-icon-wrapper"
+                        style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(109, 40, 217, 0.45)); color: #7C3AED; box-shadow: 0 4px 14px rgba(139, 92, 246, 0.22);">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <div class="service-card-body pb-2">
+                        <h5>Simulador de inversión</h5>
+                        <p>El poder de tu dinero multiplicándose en el largo plazo.</p>
+                        <ul class="service-features premium-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Interés compuesto real</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Gráficos avanzados</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Escenarios variables</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-card glass-premium">
+                    <div class="glass-icon-wrapper"
+                        style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(2, 132, 199, 0.38)); color: #0284C7; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.2);">
+                        <i class="bi bi-pie-chart"></i>
+                    </div>
+                    <div class="service-card-body">
+                        <h5>Regla 50/30/20</h5>
+                        <p>Aplica el presupuesto ideal automático y detecta fugas de dinero.</p>
+                        <ul class="service-features premium-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Plan de acción</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-card glass-premium featured-service">
+                    <div class="glass-icon-wrapper"
+                        style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.4)); color: #D97706; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.2);">
+                        <i class="bi bi-umbrella"></i>
+                    </div>
+                    <div class="service-card-body">
+                        <h5>Retiro seguro</h5>
+                        <p>Asegura el futuro que mereces calculando el monto exacto de independencia.</p>
+                        <ul class="service-features premium-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Ajuste por inflación</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Plan 360°</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-card glass-premium">
+                    <div class="glass-icon-wrapper"
+                        style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(185, 28, 28, 0.35)); color: #DC2626; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.2);">
+                        <i class="bi bi-calculator"></i>
+                    </div>
+                    <div class="service-card-body">
+                        <h5>Deudas a 0</h5>
+                        <p>Estrategia bola de nieve o avalancha para liquidar deudas rápido.</p>
+                        <ul class="service-features premium-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Ahorro total de interés</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-card glass-premium">
+                    <div class="glass-icon-wrapper"
+                        style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(157, 23, 77, 0.35)); color: #BE185D; box-shadow: 0 4px 14px rgba(236, 72, 153, 0.2);">
+                        <i class="bi bi-heart-pulse"></i>
+                    </div>
+                    <div class="service-card-body">
+                        <h5>Diagnóstico total</h5>
+                        <p>Puntuación exacta sobre tu salud financiera de forma integral.</p>
+                        <ul class="service-features premium-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Inteligencia clínica</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-card glass-premium">
+                    <div class="glass-icon-wrapper"
+                        style="background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(15, 118, 110, 0.4)); color: #5EEAD4;">
+                        <i class="bi bi-bar-chart-line"></i>
+                    </div>
+                    <div class="service-card-body">
+                        <h5>Top SOFIPOs</h5>
+                        <p>Ranking comparativo con NICAP para que inviertas siempre seguro.</p>
+                        <ul class="service-features premium-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Datos en tiempo real</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CTA en servicios -->
+            <div class="services-cta lazy-load">
+                <div class="services-cta-inner">
+                    <div class="services-cta-text">
+                        <h3>Empieza gratis hoy mismo</h3>
+                        <p>Accede a todas estas herramientas sin costo. crea tu cuenta en menos de un minuto.</p>
+                    </div>
+                    <a href="registro.html" class="btn-simulate">
+                        <i class="bi bi-rocket-takeoff me-2"></i>
+                        Crear cuenta gratis
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Testimonios -->
+    <section id="testimonios" class="section-padding bg-secondary-custom">
+        <div class="container">
+            <div class="section-title lazy-load">
+                <h2>La satisfacción de nuestros clientes, en sus propias palabras</h2>
+            </div>
+
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide testimonial-card lazy-load">
+                        <img src="https://res.cloudinary.com/dpvm2gro2/image/upload/v1773001987/testimonial_man1_tijmxu.jpg"
+                            alt="Javier Hernández" class="testimonial-img">
+                        <div class="stars">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i>
+                        </div>
+                        <p>"Gracias a esta plataforma logré tomar mejores decisiones financieras. me siento más seguro sobre mi futuro económico."</p>
+                        <h5>- javier hernández</h5>
+                    </div>
+
+                    <div class="swiper-slide testimonial-card lazy-load">
+                        <img src="https://res.cloudinary.com/dpvm2gro2/image/upload/v1773001987/testimonial_man2_sg1uh0.jpg"
+                            alt="Carlos Mendoza" class="testimonial-img">
+                        <div class="stars">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i>
+                        </div>
+                        <p>"El simulador de crédito fue clave para planear mi préstamo hipotecario. una herramienta súper útil y fácil de usar."</p>
+                        <h5>- pedro sola</h5>
+                    </div>
+
+                    <div class="swiper-slide testimonial-card lazy-load">
+                        <img src="https://res.cloudinary.com/dpvm2gro2/image/upload/v1773001987/testimonial_man3_nbogzv.jpg"
+                            alt="Ricardo Martín" class="testimonial-img">
+                        <div class="stars">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i>
+                        </div>
+                        <p>"La sección de simulaciones me dio una nueva perspectiva para organizar mis ahorros. información clara y bien explicada."</p>
+                        <h5>- ricardo martín</h5>
+                    </div>
+
+                    <div class="swiper-slide testimonial-card lazy-load">
+                        <img src="https://res.cloudinary.com/dpvm2gro2/image/upload/v1773001986/testimonial_woman1_xgh8xm.jpg"
+                            alt="Ángela Ávila" class="testimonial-img">
+                        <div class="stars">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i>
+                        </div>
+                        <p>"Me encanta la claridad con la que explican cada paso. ideal para quienes no somos expertos en finanzas. muy recomendada."</p>
+                        <h5>- ángela aguilar</h5>
+                    </div>
+
+                    <div class="swiper-slide testimonial-card lazy-load">
+                        <img src="https://res.cloudinary.com/dpvm2gro2/image/upload/v1773001986/testimonial_woman2_rvkwb9.jpg"
+                            alt="Claudia Reyes" class="testimonial-img">
+                        <div class="stars">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i>
+                        </div>
+                        <p>"Una experiencia educativa y práctica. desde que empecé a usar la plataforma, administro mejor mis ingresos y gastos."</p>
+                        <h5>- patricia chapoy</h5>
+                    </div>
+
+                    <div class="swiper-slide testimonial-card lazy-load">
+                        <img src="https://res.cloudinary.com/dpvm2gro2/image/upload/v1773001989/testimonial_woman3_aowyhy.jpg"
+                            alt="Patricia Garza" class="testimonial-img">
+                        <div class="stars">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i>
+                        </div>
+                        <p>"El sitio es intuitivo, visualmente agradable y muy completo. he aprendido a simular sin complicaciones. ¡Gracias!"</p>
+                        <h5>- xóchitl gálvez</h5>
+                    </div>
+                </div>
+                <!-- Paginación -->
+                <div class="swiper-pagination"></div>
+                <!-- Navegación -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección FAQ -->
+    <section id="faq" class="section-padding">
+        <div class="container">
+            <h2 class="section-title lazy-load">Preguntas frecuentes</h2>
+            <p class="section-subtitle lazy-load">Todo lo que necesitas saber sobre Mercy antes de comenzar.</p>
+
+            <div class="faq-wrapper lazy-load">
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>¿Qué es Mercy y para qué sirve?</span>
+                        <i class="bi bi-plus-circle faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Mercy es una plataforma de educación y simulación financiera diseñada para que cualquier persona, sin importar su nivel de conocimiento, pueda tomar mejores decisiones con su dinero. ofrece simuladores de ahorro, crédito, inversión, presupuesto y retiro, junto con un diagnóstico financiero, un glosario completo y un asistente de inteligencia artificial.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>¿Mercy es gratuito?</span>
+                        <i class="bi bi-plus-circle faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Sí, crear una cuenta en Mercy es completamente gratuito. tendrás acceso a todos los simuladores, el diagnóstico financiero, el glosario de términos, el test de conocimientos y nuestra IA financiera sin costo alguno. solo necesitas registrarte con tu correo o cuenta de Google.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>¿Los simuladores usan mis datos reales?</span>
+                        <i class="bi bi-plus-circle faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>No. los simuladores de Mercy funcionan con datos que tú introduces de forma manual para explorar escenarios hipotéticos. no se conectan a tus cuentas bancarias ni acceden a información financiera real. todo es simulación educativa con fines de planificación personal.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>¿Qué es el diagnóstico financiero 360°?</span>
+                        <i class="bi bi-plus-circle faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>El diagnóstico financiero es una herramienta que evalúa tu situación económica actual respondiendo una serie de preguntas sobre tus ingresos, gastos, deudas y metas. al final, obtienes una puntuación de salud financiera y recomendaciones personalizadas para mejorar tu situación.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>¿Qué es Mercy IA y cómo funciona?</span>
+                        <i class="bi bi-plus-circle faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Mercy IA es nuestro asistente de inteligencia artificial integrado en el dashboard. está potenciado por groq y el modelo llama 3.3, lo que le permite responder preguntas financieras con datos actualizados en tiempo real. puedes preguntarle sobre tasas de interés, SOFIPOs, estrategias de ahorro, interpretación de tus simulaciones y mucho más.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>¿Qué son las SOFIPOs y por qué tienen un ranking en Mercy?</span>
+                        <i class="bi bi-plus-circle faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Las SOFIPOs (Sociedades financieras populares) son instituciones financieras reguladas en méxico que ofrecen tasas de rendimiento más atractivas que los bancos tradicionales. en Mercy contamos con un ranking actualizado para que puedas comparar cuál institución te ofrece mejor GAT real y tomar una decisión informada antes de invertir.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>¿Mis datos están seguros en Mercy?</span>
+                        <i class="bi bi-plus-circle faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Sí. Mercy protege tu información personal con contraseñas cifradas (hashing con bcrypt), sesiones seguras y no almacena ningún dato bancario real. tu cuenta puede ser creada con Google OAuth o con correo y contraseña propios, y puedes eliminar tu cuenta en cualquier momento desde tu perfil.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>¿Cómo inicio sesión si ya tengo una cuenta?</span>
+                        <i class="bi bi-plus-circle faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Puedes iniciar sesión desde el botón "Iniciar sesión" en la barra de navegación. si te registraste con tu correo y contraseña, usa esas credenciales. si te registraste con Google, usa el botón "Continuar con Google". las cuentas de ambos métodos son independientes por seguridad.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA final -->
+    <section class="section-padding bg-secondary-custom">
+        <div class="container">
+            <h2 class="section-title lazy-load">¿Listo/a para comenzar?</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center lazy-load">
+                    <p class="lead mb-4">Únete a miles de usuarios que ya están mejorando su salud financiera con Mercy. es momento de tomar el control de tu futuro económico.</p>
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                        <a href="registro.html" class="btn-simulate">
+                            <i class="bi bi-play-circle me-2"></i>
+                            Comenzar simulación
+                        </a>
+                        <button id="btn-info" class="btn btn-outline-primary btn-lg rounded-pill px-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Más información
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="info-modal" class="modal-overlay">
+        <div class="modal-content" >
+            <h3>¿Por qué usar Mercy?</h3>
+            <p>Mercy es una herramienta diseñada para ayudarte a entender y mejorar tu salud financiera. con simulaciones personalizadas y orientación clara, puedes tomar decisiones más informadas sobre tus ahorros, inversiones y gastos.</p>
+            <button id="btn-ok" class="btn btn-primary mt-3"
+                style="background-color: var(--accent-color); border:1px solid #fff;">OK</button>
+        </div>
+    </div>
+
+    <!-- Modal para las features (carrusel) -->
+    <div id="feature-detail-modal" class="modal-overlay glass-overlay-fx">
+        <div class="modal-content glass-feature-modal" >
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="feature-modal-icon-wrapper">
+                    <i class="bi bi-lightning-charge" id="feature-modal-icon"></i>
+                </div>
+                <button type="button" class="btn-close btn-close-white" aria-label="Cerrar"
+                    id="close-feature-modal"></button>
+            </div>
+            <h3 id="feature-modal-title" style="margin-bottom: 1rem; color: #fff; font-weight: 700;">Título</h3>
+            <p id="feature-modal-desc" style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.7; text-align: left;">
+            </p>
+            <button id="close-feature-modal-btn" class="btn-simulate mt-4 w-100"
+                style="padding: 10px;">¡Entendido!</button>
+        </div>
+    </div>
+
+    <div id="terms-modal" class="modal-overlay">
+        <div class="modal-content" id="terms-modal-content" >
+            <h3 style="margin-bottom: 1rem;">Términos y condiciones</h3>
+
+            <div id="terms-modal-body">
+                <p class="mb-4" style="font-size: 0.8em; opacity: 0.7;">Última actualización: 6 de julio de 2025</p>
+                <h4 class="mb-3">1. aceptación de los términos</h4>
+                <p>Al acceder y utilizar la plataforma "Mercy" (en adelante, "la plataforma"), usted acepta y se compromete a cumplir estos términos y condiciones de uso ("términos"). si no está de acuerdo con estos términos, no debe utilizar la plataforma. nos reservamos el derecho de modificar estos términos en cualquier momento. la continuación del uso de la plataforma después de dichas modificaciones constituirá su aceptación de los nuevos términos.</p>
+
+                <h4 class="mb-3">2. descripción del servicio</h4>
+                <p>Mercy es una plataforma diseñada para ofrecer simulaciones y herramientas de análisis financiero con fines educativos y de planificación personal. no proporcionamos asesoramiento financiero profesional, legal, fiscal o de inversión. la información y las simulaciones generadas en la plataforma son solo para fines ilustrativos y no deben considerarse como una recomendación para tomar decisiones financieras reales.</p>
+
+                <h4 class="mb-3">3. registro y cuentas de usuario</h4>
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i
+                            class="bi bi-check-circle-fill me-2"
+                            style="color: var(--success-color); position: absolute; left: 0; top: 5px;"></i> Para
+                        acceder a ciertas funcionalidades de la plataforma, deberá registrarse y crear una cuenta. usted
+                        es responsable de mantener la confidencialidad de su contraseña y de todas las actividades que
+                        ocurran bajo su cuenta.</li>
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i
+                            class="bi bi-check-circle-fill me-2"
+                            style="color: var(--success-color); position: absolute; left: 0; top: 5px;"></i> Usted se
+                        compromete a proporcionar información precisa, completa y actualizada durante el proceso de
+                        registro y a mantenerla así.</li>
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i
+                            class="bi bi-check-circle-fill me-2"
+                            style="color: var(--success-color); position: absolute; left: 0; top: 5px;"></i> Nos
+                        reservamos el derecho de suspender o cancelar su cuenta si la información proporcionada es
+                        falsa, inexacta o incompleta, o si incumple estos términos.</li>
+                </ul>
+
+                <h4 class="mb-3">4. uso aceptable de la plataforma</h4>
+                <p>Usted se compromete a utilizar la plataforma solo para fines lícitos y de acuerdo con estos términos. usted no debe:</p>
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i class="bi bi-x-circle-fill me-2"
+                            style="color: #dc3545; position: absolute; left: 0; top: 5px;"></i> Utilizar la plataforma
+                        de cualquier manera que pueda dañar, deshabilitar, sobrecargar o deteriorar el servidor o la red
+                        de Mercy.</li>
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i class="bi bi-x-circle-fill me-2"
+                            style="color: #dc3545; position: absolute; left: 0; top: 5px;"></i> Intentar obtener acceso
+                        no autorizado a cualquier parte de la plataforma, otras cuentas, sistemas informáticos o redes
+                        conectadas a cualquier servidor de Mercy.</li>
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i class="bi bi-x-circle-fill me-2"
+                            style="color: #dc3545; position: absolute; left: 0; top: 5px;"></i> Utilizar la plataforma
+                        para cualquier actividad fraudulenta o ilegal.</li>
+                    <li class="mb-2" style="position: relative; padding-left: 25px;"><i class="bi bi-x-circle-fill me-2"
+                            style="color: #dc3545; position: absolute; left: 0; top: 5px;"></i> Cargar o transmitir
+                        cualquier virus, gusano, defecto, troyano o cualquier elemento de naturaleza destructiva.</li>
+                </ul>
+
+                <h4 class="mb-3">5. propiedad intelectual</h4>
+                <p>Todos los contenidos de la plataforma, incluyendo, entre otros, textos, gráficos, logotipos, iconos, imágenes, clips de audio, descargas digitales y software, son propiedad de Mercy o de sus proveedores de contenido y están protegidos por leyes de derechos de autor y otras leyes de propiedad intelectual.</p>
+
+                <h4 class="mb-3">6. exención de garantías</h4>
+                <p>La plataforma se proporciona "tal cual" y "según disponibilidad", sin garantías de ningún tipo, ya sean expresas o implícitas. Mercy no garantiza que la plataforma será ininterrumpida, libre de errores o segura, ni que los resultados obtenidos del uso de la plataforma serán precisos o confiables.</p>
+
+                <h4 class="mb-3">7. limitación de responsabilidad</h4>
+                <p>En ningún caso Mercy, sus directores, empleados o agentes serán responsables de cualquier daño directo, indirecto, incidental, especial, consecuente o punitivo, incluyendo, entre otros, pérdida de beneficios, datos o uso, ya sea en una acción contractual, de negligencia o cualquier otra acción torticera, que surja de o en conexión con el uso o rendimiento de la plataforma.</p>
+
+                <h4 class="mb-3">8. indemnización</h4>
+                <p>Usted acepta indemnizar y eximir de responsabilidad a Mercy, sus afiliados, directores, agentes y empleados de cualquier reclamo o demanda, incluidos los honorarios de abogados, realizados por cualquier tercero debido a o que surja de su uso de la plataforma, su violación de estos términos o su violación de cualquier derecho de otro.</p>
+
+                <h4 class="mb-3">9. ley aplicable</h4>
+                <p>Estos términos se regirán e interpretarán de acuerdo con las leyes de méxico, sin tener en cuenta sus principios de conflicto de leyes.</p>
+
+                <h4 class="mb-3">10. contacto</h4>
+                <p>Si tiene alguna pregunta sobre estos términos, puede contactarnos a través de mercysimulaciones@gmail.com</p>
+            </div>
+
+            <button id="btn-terms-ok" class="btn btn-primary mt-3"
+                style="background-color: var(--accent-color); border:1px solid #fff;">Entendido</button>
+        </div>
+    </div>
+
+    <footer class="footer lazy-load">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5>Mercy</h5>
+                    <p>La plataforma más confiable para la simulación y planificación financiera personal.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#"><i class="bi bi-instagram fs-5"></i></a>
+                        <a href="#"><i class="bi bi-youtube fs-5"></i></a>
+                        <a href="#"><i class="bi bi-tiktok fs-5"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Servicios</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="iniciar_sesion.html">Simulaciones</a></li>
+                        <li><a href="iniciar_sesion.html">Test de conocimientos</a></li>
+                        <li><a href="iniciar_sesion.html">Glosario de términos</a></li>
+                        <li><a href="iniciar_sesion.html">Diagnóstico 360°</a></li>
+                        <li><a href="iniciar_sesion.html">Ranking SOFIPOs</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Legal</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" id="termsLink">Términos de uso</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4" style="border-color: #374151;">
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center">
+                    <p class="mb-0">&copy; 2025 Mercy. todos los derechos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot widget (Dashboard Style for landing page) -->
+    <div id="chatbotCta" class="chatbot-call-to-action">
+        ¿Tienes dudas financieras? ¡Pregúntame! <i class="bi bi-robot ms-2 fs-5"></i>
+    </div>
+
+    <button type="button" class="btn btn-primary shadow-lg hover-scale chatbot-trigger" id="landingChatbotTriggerBtn"
+        aria-label="Abrir asistente Mercy">
+        <i class="bi bi-heart-pulse-fill fs-3"></i>
+    </button>
+
+    <div id="landingChatbotContainer" class="chatbot-container d-none">
+        <div class="chatbot-header">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-heart-pulse-fill text-danger me-2 fs-5"></i>
+                <div>
+                    <span class="fw-bold text-dark">Mercy IA</span>
+                </div>
+            </div>
+            <button type="button" id="closeLandingChatbotBtn" class="btn btn-sm btn-link text-muted p-0"
+                aria-label="Cerrar">
+                <i class="bi bi-x-lg fs-6"></i>
+            </button>
+        </div>
+
+        <div class="chatbot-messages" id="landingChatbotMessages">
+            <div class="chat-bubble ai-bubble">
+                ¡Hola! Soy Mercy IA. Estoy aquí para resolver tus dudas sobre la plataforma. ¿En qué puedo ayudarte?
+            </div>
+            <div class="d-flex flex-wrap gap-2 mt-2" id="landingQuickActions">
+                <button class="btn btn-sm btn-outline-primary rounded-pill landing-quick-btn"
+                    data-query="¿Qué puedo hacer en Mercy?">¿Qué es Mercy?</button>
+                <button class="btn btn-sm btn-outline-primary rounded-pill landing-quick-btn"
+                    data-query="¿Cómo me registro en Mercy?">¿Cómo me registro?</button>
+                <button class="btn btn-sm btn-outline-primary rounded-pill landing-quick-btn"
+                    data-query="¿Qué simuladores tienen disponibles?">Simuladores disponibles</button>
+            </div>
+        </div>
+
+        <!-- Botón de detener respuesta -->
+        <div id="landingChatbotStopContainer" class="d-none text-center py-1"
+            style="border-top: 1px solid rgba(0,0,0,0.06);">
+            <button id="landingChatbotStopBtn" class="btn btn-sm btn-light rounded-pill px-3"
+                style="font-size: 0.8rem; color: #6b7280; border: 1px solid #e5e7eb; font-weight: 500;">
+                <i class="bi bi-stop-circle-fill text-danger me-1"></i> Detener
+            </button>
+        </div>
+
+        <div class="chatbot-input-area border-top bg-light">
+            <input type="text" id="landingChatbotInput" class="form-control" placeholder="Escribe tu pregunta..."
+                autocomplete="off">
+            <button id="landingChatbotSendBtn" class="btn btn-primary rounded-circle shadow-sm"
+                style="width: 40px; height: 40px; padding: 0;" aria-label="Enviar">
+                <i class="bi bi-send-fill" style="margin-left: -2px;"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
+    <script>
+        // Lógica para ocultar el loader en la landing page
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader-screen');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    document.body.classList.remove('loader_bg');
+                }, 500);
+            }
+        });
+        
+        // Seguridad por si el evento load tarda demasiado (3 segundos máximo)
+        setTimeout(() => {
+            const loader = document.getElementById('loader-screen');
+            if (loader && loader.style.display !== 'none') {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    document.body.classList.remove('loader_bg');
+                }, 500);
+            }
+        }, 3000);
+    </script>
+    <script src="js/index.js"></script>
+</body>
+
+</html>

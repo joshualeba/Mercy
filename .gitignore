@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entorno virtual
+.venv/
+venv/
+env/
+*.env
+
+# VS Code
+.vscode/
+
+# Base de datos local (SQLite) - no subir a producción
+instance/
+*.db
